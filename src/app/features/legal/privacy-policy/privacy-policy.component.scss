@@ -1,0 +1,67 @@
+@use '../../../../styles/variables' as v;
+@use '../../../../styles/mixins' as m;
+
+.privacy-page {
+  min-height: 100vh;
+  padding: calc(64px + #{v.$space-8}) 0 v.$space-16;
+}
+
+.privacy-header {
+  max-width: 860px;
+  margin-bottom: v.$space-8;
+
+  h1 {
+    margin: 0 0 v.$space-3;
+    font-size: 2rem;
+    font-weight: v.$font-weight-bold;
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    margin: 0 0 v.$space-3;
+    color: v.$color-text-soft;
+    line-height: 1.7;
+  }
+
+  &__meta {
+    font-size: 13px;
+    color: v.$color-text-soft;
+    opacity: 0.9;
+  }
+}
+
+.privacy-section {
+  @include m.card;
+  max-width: 860px;
+  padding: v.$space-6;
+  margin-bottom: v.$space-4;
+
+  h2 {
+    margin: 0 0 v.$space-3;
+    font-size: 1.25rem;
+    font-weight: v.$font-weight-semibold;
+  }
+
+  p {
+    margin: 0 0 v.$space-3;
+    color: v.$color-text;
+    line-height: 1.7;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: v.$space-5;
+    display: flex;
+    flex-direction: column;
+    gap: v.$space-2;
+
+    li {
+      line-height: 1.6;
+      color: v.$color-text;
+    }
+  }
+
+  &--contact {
+    border-left: 4px solid v.$color-primary;
+  }
+}

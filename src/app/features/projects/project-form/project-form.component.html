@@ -1,0 +1,134 @@
+<div class="form-page">
+  <div class="container">
+    <!-- Loading -->
+    <div *ngIf="loading" class="form-skeleton">
+      <app-skeleton width="40%" height="32px"></app-skeleton>
+      <app-skeleton height="56px"></app-skeleton>
+      <app-skeleton height="120px"></app-skeleton>
+    </div>
+
+    <ng-container *ngIf="!loading">
+      <div class="form-page__header">
+        <button mat-icon-button (click)="router.navigate(['/projects'])" matTooltip="Voltar">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h1>{{ isEdit ? 'Editar projeto' : 'Novo projeto' }}</h1>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="project-form">
+        <!-- Title -->
+        <mat-form-field appearance="outline">
+          <mat-label>Título do projeto *</mat-label>
+          <input matInput formControlName="title" placeholder="Ex: App de partilha de receitas">
+          <mat-error *ngIf="form.get('title')?.errors?.['required']">O título é obrigatório.</mat-error>
+          <mat-error *ngIf="form.get('title')?.errors?.['minlength']">Mínimo 3 caracteres.</mat-error>
+        </mat-form-field>
+
+        <!-- Description -->
+        <mat-form-field appearance="outline">
+          <mat-label>Descrição *</mat-label>
+          <textarea matInput formControlName="description" rows="5"
+                    placeholder="Descreve o projeto, os objetivos e o que vais construir..."></textarea>
+          <mat-error *ngIf="form.get('description')?.errors?.['required']">A descrição é obrigatória.</mat-error>
+          <mat-error *ngIf="form.get('description')?.errors?.['minlength']">Mínimo 10 caracteres.</mat-error>
+        </mat-form-field>
+
+        <!-- Status -->
+        <mat-form-field appearance="outline">
+          <mat-label>Estado do projeto</mat-label>
+          <mat-select formControlName="status">
+            <mat-option *ngFor="let s of statusOptions" [value]="s.value">{{ s.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Image upload -->
+        <div class="image-upload">
+          <label>Imagem de capa</label>
+          <div class="image-upload__area" [class.has-image]="imagePreview">
+            <img *ngIf="imagePreview" [src]="imagePreview" alt="Preview">
+            <div class="image-upload__placeholder" *ngIf="!imagePreview">
+              <mat-icon>image</mat-icon>
+              <span>Clica para selecionar uma imagem</span>
+              <small>Tamanho recomendado: 800x500px (rácio 16:10)</small>
+            </div>
+            <input type="file" accept="image/*" (change)="onImageChange($event)" [disabled]="uploadingImage">
+            <mat-spinner *ngIf="uploadingImage" diameter="32" class="upload-spinner"></mat-spinner>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Roles -->
+        <div class="roles-section">
+          <div class="roles-section__header">
+            <h2>Vagas (competências que procuras)</h2>
+            <button type="button" mat-stroked-button color="primary" (click)="addRole()">
+              <mat-icon>add</mat-icon> Adicionar vaga
+            </button>
+          </div>
+
+          <div formArrayName="roles">
+            <div class="role-form" *ngFor="let r of roles.controls; let i = index" [formGroupName]="i">
+              <div class="role-form__header">
+                <span class="role-form__num">Vaga {{ i + 1 }}</span>
+                <button type="button" mat-icon-button color="warn" (click)="removeRole(i)"
+                        *ngIf="roles.length > 1" matTooltip="Remover vaga">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+              <div class="role-form__grid">
+                <mat-form-field appearance="outline">
+                  <mat-label>Título da vaga *</mat-label>
+                  <input matInput formControlName="title" placeholder="Ex: Desenvolvedor Frontend">
+                  <mat-error *ngIf="r.get('title')?.errors?.['required']">Obrigatório.</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Competência</mat-label>
+                  <input matInput
+                         formControlName="skill_name"
+                         [matAutocomplete]="skillAuto"
+                         placeholder="Pesquisar competência…"
+                         autocomplete="off">
+                  <mat-icon matSuffix>search</mat-icon>
+                  <mat-autocomplete #skillAuto="matAutocomplete">
+                    <mat-option value="">— Sem competência específica —</mat-option>
+                    <mat-option *ngFor="let s of getFilteredSkills(i) | async" [value]="s">
+                      {{ s }}
+                    </mat-option>
+                    <mat-option *ngIf="(getFilteredSkills(i) | async)?.length === 0" disabled>
+                      Nenhuma competência encontrada.
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Nº de vagas</mat-label>
+                  <input matInput type="number" formControlName="spots" min="1">
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-col">
+                  <mat-label>Descrição da vaga</mat-label>
+                  <textarea matInput formControlName="description" rows="2"
+                            placeholder="O que irá fazer esta pessoa no projeto..."></textarea>
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <div class="form-page__submit">
+          <button type="button" mat-button (click)="router.navigate(['/projects'])">Cancelar</button>
+          <button type="submit" mat-raised-button color="primary"
+                  [disabled]="submitting || uploadingImage">
+            <mat-spinner *ngIf="submitting" diameter="18"></mat-spinner>
+            <span *ngIf="!submitting">
+              {{ isEdit ? 'Guardar alterações' : 'Criar projeto' }}
+            </span>
+          </button>
+        </div>
+      </form>
+    </ng-container>
+  </div>
+</div>

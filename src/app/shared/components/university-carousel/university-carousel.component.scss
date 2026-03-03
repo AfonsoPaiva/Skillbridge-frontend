@@ -1,0 +1,107 @@
+@use '../../../../styles/variables' as v;
+@use '../../../../styles/mixins' as m;
+
+.carousel-wrapper {
+  padding: (v.$space-20 + v.$space-4) 0 v.$space-12;
+  background: v.$color-surface;
+  border-top: 1px solid v.$color-border;
+  border-bottom: 1px solid v.$color-border;
+  overflow: hidden;
+}
+
+.carousel-title {
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: v.$color-text-soft;
+  margin-bottom: v.$space-6;
+  opacity: 0.7;
+}
+
+.university-splide {
+  padding-top: 1%;
+  position: relative;
+  width: 90%;
+  margin: 0 auto;
+  overflow: visible;
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); // Fade edges
+  -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+
+  // Soft white fades at the edges
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 10%;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  &::before {
+    left: 0;
+    background: linear-gradient(to right, v.$color-surface 0%, rgba(255, 255, 255, 0) 100%);
+  }
+
+  &::after {
+    right: 0;
+    background: linear-gradient(to left, v.$color-surface 0%, rgba(255, 255, 255, 0) 100%);
+  }
+
+  .splide__track {
+    overflow: visible;
+  }
+
+  .splide__list {
+    align-items: stretch;
+  }
+}
+
+.carousel-item {
+  width: 200px;
+  min-width: 200px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: v.$space-4;
+  background: white;
+  border-radius: v.$radius-md;
+  border: 1px solid v.$color-border;
+  cursor: pointer;
+  transition: all v.$transition-base;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    border-color: v.$color-primary;
+    z-index: 1;
+  }
+}
+
+.uni-logo {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: grayscale(100%) opacity(0.6);
+  transition: filter v.$transition-base;
+  pointer-events: none;
+
+  .carousel-item:hover & {
+    filter: grayscale(0%) opacity(1);
+  }
+}
+
+// Responsive
+@include m.md {
+  .carousel-item {
+    width: 220px;
+    min-width: 220px;
+    height: 130px;
+  }
+}

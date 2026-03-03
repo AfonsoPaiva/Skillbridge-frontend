@@ -1,0 +1,57 @@
+<div class="msgs-page" [class.msgs-page--active]="activeConvId !== null">
+  <div class="msgs-sidebar">
+    <div class="msgs-sidebar__header">
+      <h2>Mensagens</h2>
+    </div>
+
+    <div class="msgs-sidebar__body">
+      <ng-container *ngIf="loading">
+        <div class="conv-skeleton" *ngFor="let i of [1,2,3]">
+          <div class="conv-skeleton__avatar"></div>
+          <div class="conv-skeleton__lines">
+            <div class="conv-skeleton__name"></div>
+            <div class="conv-skeleton__preview"></div>
+          </div>
+        </div>
+      </ng-container>
+
+      <div class="msgs-empty" *ngIf="!loading && conversations.length === 0 && !error">
+        <mat-icon>chat_bubble_outline</mat-icon>
+        <span>Ainda não tem conversas.<br>Visite o perfil de alguém para começar.</span>
+      </div>
+
+      <p class="msgs-error" *ngIf="error">{{ error }}</p>
+
+      <button
+        class="conv-item"
+        [class.conv-item--active]="activeConvId === conv.id"
+        [class.conv-item--unread]="conv.unread_count && conv.unread_count > 0"
+        *ngFor="let conv of conversations"
+        (click)="open(conv)"
+        mat-ripple
+      >
+        <div class="conv-item__avatar">
+          <img *ngIf="getOtherUser(conv)?.avatar_url"
+               [src]="getOtherUser(conv)?.avatar_url || ''"
+               [alt]="getOtherUser(conv)?.name || ''" />
+          <span *ngIf="!getOtherUser(conv)?.avatar_url">{{ getInitial(getOtherUser(conv)?.name) }}</span>
+        </div>
+        <div class="conv-item__body">
+          <span class="conv-item__name">{{ getOtherUser(conv)?.name || 'Utilizador' }}</span>
+          <span class="conv-item__sub">{{ getOtherUser(conv)?.university || '' }}</span>
+        </div>
+        <span class="conv-item__badge" *ngIf="conv.unread_count && conv.unread_count > 0">{{ conv.unread_count }}</span>
+        <mat-icon class="conv-item__arrow">chevron_right</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Right panel: conversation outlet or empty placeholder -->
+  <div class="msgs-detail">
+    <router-outlet></router-outlet>
+    <div class="msgs-empty-detail" *ngIf="activeConvId === null">
+      <mat-icon>forum</mat-icon>
+      <p>Selecione uma conversa</p>
+    </div>
+  </div>
+</div>

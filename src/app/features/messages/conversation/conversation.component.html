@@ -1,0 +1,110 @@
+<div class="conv-page">
+  <!-- Header -->
+  <div class="conv-header">
+    <button mat-icon-button (click)="goBack()" class="conv-header__back">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div class="conv-header__avatar" *ngIf="otherUser">
+      <img *ngIf="otherUser!.avatar_url" [src]="otherUser!.avatar_url" [alt]="otherUser!.name" />
+      <span *ngIf="!otherUser!.avatar_url">{{ getInitial(otherUser!.name) }}</span>
+    </div>
+    <div class="conv-header__info">
+      <span class="conv-header__name">{{ otherUser?.name || 'Conversa' }}</span>
+      <span class="conv-header__sub" *ngIf="otherUser?.university">{{ otherUser!.university }}</span>
+    </div>
+    <button mat-icon-button [routerLink]="['/perfil', otherUser!.id]" *ngIf="otherUser" matTooltip="Ver perfil">
+      <mat-icon>person</mat-icon>
+    </button>
+  </div>
+
+  <!-- Messages -->
+  <div class="conv-body">
+    <div class="conv-loading" *ngIf="loading">
+      <mat-spinner diameter="32"></mat-spinner>
+    </div>
+
+    <p class="conv-error" *ngIf="error">{{ error }}</p>
+
+    <div class="conv-empty" *ngIf="!loading && messages.length === 0 && !error">
+      <mat-icon>chat</mat-icon>
+      <p>Nenhuma mensagem ainda.<br>Seja o primeiro a escrever!</p>
+    </div>
+
+    <ng-container *ngFor="let msg of messages; let i = index">
+      <!-- Date separator -->
+      <div class="date-sep" *ngIf="getDateSeparator(i) as label">
+        <span>{{ label }}</span>
+      </div>
+
+      <!-- Application system message card -->
+      <div class="msg-application" *ngIf="msg.is_system && msg.message_type === 'application'; else regularBubble">
+        <mat-icon class="msg-application__icon">assignment_ind</mat-icon>
+        <div class="msg-application__body">
+          <p class="msg-application__text">{{ decodeText(msg) }}</p>
+          <div class="msg-application__actions" *ngIf="!isMine(msg) && (!msg.meta_status || msg.meta_status === 'pending')">
+            <button mat-flat-button color="primary" (click)="respondApplication(msg, 'accept')" [disabled]="isResponding(msg)">
+              <mat-icon>check</mat-icon> Aceitar
+            </button>
+            <button mat-stroked-button color="warn" (click)="respondApplication(msg, 'reject')" [disabled]="isResponding(msg)">
+              <mat-icon>close</mat-icon> Rejeitar
+            </button>
+          </div>
+          <p class="msg-application__status msg-application__status--accepted" *ngIf="!isMine(msg) && msg.meta_status === 'accepted'">
+            <mat-icon>check_circle</mat-icon> Candidatura aceite
+          </p>
+          <p class="msg-application__status msg-application__status--rejected" *ngIf="!isMine(msg) && msg.meta_status === 'rejected'">
+            <mat-icon>cancel</mat-icon> Candidatura rejeitada
+          </p>
+          <p class="msg-application__sent" *ngIf="isMine(msg)">Candidatura enviada</p>
+        </div>
+        <time class="msg-application__time">{{ formatTime(msg.created_at) }}</time>
+      </div>
+
+      <!-- Regular encrypted / plain bubble -->
+      <ng-template #regularBubble>
+        <div
+          class="msg-bubble"
+          [class.msg-bubble--mine]="isMine(msg)"
+          [class.msg-bubble--theirs]="!isMine(msg)"
+        >
+          <div class="msg-bubble__avatar" *ngIf="!isMine(msg)">
+            <img *ngIf="msg.sender?.avatar_url" [src]="msg.sender?.avatar_url || ''" [alt]="msg.sender?.name || ''" />
+            <span *ngIf="!msg.sender?.avatar_url">{{ getInitial(msg.sender?.name) }}</span>
+          </div>
+          <div class="msg-bubble__content">
+            <p>{{ decodeText(msg) }}</p>
+            <time>{{ formatTime(msg.created_at) }}</time>
+          </div>
+        </div>
+      </ng-template>
+    </ng-container>
+
+    <div #messagesEnd></div>
+  </div>
+
+  <!-- Input -->
+  <div class="conv-footer">
+    <mat-form-field appearance="outline" class="conv-footer__input">
+      <textarea
+        matInput
+        [(ngModel)]="newMessage"
+        (keydown)="onEnter($event)"
+        placeholder="Escreva uma mensagem..."
+        rows="1"
+        cdkTextareaAutosize
+        cdkAutosizeMinRows="1"
+        cdkAutosizeMaxRows="5"
+        [disabled]="sending"
+      ></textarea>
+    </mat-form-field>
+    <button
+      mat-icon-button
+      color="primary"
+      (click)="send()"
+      [disabled]="!newMessage.trim() || sending"
+      class="conv-footer__send"
+    >
+      <mat-icon>send</mat-icon>
+    </button>
+  </div>
+</div>

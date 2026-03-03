@@ -1,0 +1,100 @@
+import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import Splide from '@splidejs/splide';
+import type { Options as SplideOptions } from '@splidejs/splide';
+import { AutoScroll } from '@splidejs/splide-extension-auto-scroll';
+
+interface University {
+  name: string;
+  logo: string;
+  url: string;
+}
+
+@Component({
+  selector: 'app-university-carousel',
+  templateUrl: './university-carousel.component.html',
+  styleUrls: ['./university-carousel.component.scss']
+})
+export class UniversityCarouselComponent implements AfterViewInit, OnDestroy {
+  @ViewChild('universitySplide', { static: false }) splideEl?: ElementRef<HTMLElement>;
+  private splide?: Splide;
+
+  private readonly baseUniversities: University[] = [
+    { name: 'Universidade de Lisboa', logo: 'https://www.dges.gov.pt/simges/public/storage/files/instituicoes_uo/219_logotipo.jpg', url: 'https://www.ulisboa.pt' },
+    { name: 'Universidade do Porto', logo: 'https://www.viversaudavel.pt/wp-content/uploads/uporto-noticia-1432129257374-1504021150976-e1582202582700.png', url: 'https://www.up.pt' },
+    { name: 'Universidade de Coimbra', logo: 'https://pages.uc.pt/site/assets/files/312072/logomarca_1290.1200x0.jpg', url: 'https://www.uc.pt' },
+    { name: 'Instituto Politécnico do Cávado e do Ave', logo: 'https://maismagazine.pt/wp-content/uploads/2025/02/IPCA-Logo_v2-1024x532.jpg', url: 'https://www.ipca.pt' },
+    { name: 'Instituto Politécnico do Porto', logo: 'https://www.fmam.pt/wp-content/uploads/2020/11/Politecnico-Porto-FAES.png', url: 'https://www.ipp.pt/' },
+      { name: 'Instituto Politécnico de Lisboa', logo: 'https://portal.ipl.pt/logo_politecnico_lisboa_horizontal_rgb.png', url: 'https://www.ipl.pt' },
+      { name: 'Instituto Politécnico de Viana do Castelo', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLN_NO2X0HCj3ClVJTCrqarwLzfL9chLEvAQ&s', url: 'https://www.ipvc.pt' },
+
+  ];
+
+  universities: University[] = [];
+
+  constructor() {
+    // Initialize universities in constructor to avoid ExpressionChangedAfterItHasBeenCheckedError
+    this.universities = [...this.baseUniversities, ...this.baseUniversities, ...this.baseUniversities];
+  }
+
+  ngAfterViewInit(): void {
+    // Wait for Angular to render slides before initializing Splide
+    setTimeout(() => this.initSplide(), 50);
+  }
+
+  ngOnDestroy(): void {
+    this.splide?.destroy(true);
+  }
+
+  pauseAutoplay(): void {
+    const auto = (this.splide as any)?.Components?.AutoScroll;
+    auto?.pause();
+  }
+
+  resumeAutoplay(): void {
+    const auto = (this.splide as any)?.Components?.AutoScroll;
+    auto?.play();
+  }
+
+  trackByName(_: number, item: University): string {
+    return item.name;
+  }
+
+  openUniversity(url: string): void {
+    window.open(url, '_blank');
+  }
+
+  private initSplide(): void {
+    if (!this.splideEl) {
+      return;
+    }
+
+    const options: SplideOptions & {
+      autoScroll?: { speed: number; pauseOnHover?: boolean; pauseOnFocus?: boolean };
+    } = {
+      type: 'loop',
+      perMove: 1,
+      focus: 0,
+      gap: '2rem',
+      drag: 'free',
+      arrows: false,
+      pagination: false,
+      speed: 600,
+      easing: 'linear',
+      autoWidth: true,
+      autoScroll: {
+        speed: 1,
+        pauseOnHover: true,
+        pauseOnFocus: true
+      },
+      breakpoints: {
+        768: { gap: '1.5rem' },
+        576: { gap: '1rem' }
+      }
+    };
+
+    this.splide = new Splide(this.splideEl.nativeElement, options);
+    this.splide.on('drag', () => this.pauseAutoplay());
+    this.splide.on('dragged', () => this.resumeAutoplay());
+    this.splide.mount({ AutoScroll });
+  }
+}

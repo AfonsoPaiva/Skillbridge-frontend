@@ -1,0 +1,71 @@
+@use 'variables' as v;
+
+// ── Responsive ──────────────────────────────────
+@mixin sm  { @media (min-width: v.$bp-sm)  { @content; } }
+@mixin md  { @media (min-width: v.$bp-md)  { @content; } }
+@mixin lg  { @media (min-width: v.$bp-lg)  { @content; } }
+@mixin xl  { @media (min-width: v.$bp-xl)  { @content; } }
+
+// ── Flex utilities ───────────────────────────────
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+// ── Card ──────────────────────────────────────────
+@mixin card($radius: v.$radius-md) {
+  background: v.$color-bg;
+  border-radius: $radius;
+  box-shadow: v.$shadow-sm;
+  border: 1px solid v.$color-border;
+}
+
+// ── Skeleton pulse ───────────────────────────────
+@mixin skeleton {
+  background: v.$color-surface;
+  border-radius: v.$radius-sm;
+  animation: pulse 1.6s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.85; }
+  50% { opacity: 0.6; }
+  100% { opacity: 0.85; }
+}
+
+// ── Focus ring ────────────────────────────────────
+@mixin focus-ring {
+  outline: 2px solid v.$color-primary;
+  outline-offset: 3px;
+}
+
+// ── Truncate text ─────────────────────────────────
+@mixin truncate($lines: 1) {
+  @if $lines == 1 {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  } @else {
+    display: -webkit-box;
+    -webkit-line-clamp: $lines;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+// ── Container ────────────────────────────────────
+@mixin container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 v.$space-4;
+  @include md { padding: 0 v.$space-6; }
+  @include lg { padding: 0 v.$space-8; }
+}

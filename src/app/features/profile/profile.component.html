@@ -1,0 +1,183 @@
+<div class="profile-page">
+  <!-- Loading skeleton -->
+  <div *ngIf="loading" class="container">
+    <div class="profile-hero-skeleton">
+      <app-skeleton width="120px" height="120px" radius="50%"></app-skeleton>
+      <div class="profile-hero-skeleton__info">
+        <app-skeleton width="200px" height="28px"></app-skeleton>
+        <app-skeleton width="140px" height="16px" style="margin-top:8px"></app-skeleton>
+        <app-skeleton width="180px" height="16px" style="margin-top:4px"></app-skeleton>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && user" @fadeUp>
+    <!-- Hero banner -->
+    <div class="profile-hero">
+      <div class="profile-hero__banner"></div>
+      <div class="container profile-hero__inner">
+        <div class="profile-hero__avatar">
+          <img [src]="user.avatar_url || 'assets/avatar-placeholder.svg'" [alt]="user.name">
+        </div>
+        <div class="profile-hero__info">
+          <h1>{{ user.name }}</h1>
+          <p><mat-icon>school</mat-icon> {{ user.university }} · {{ user.course }}</p>
+          <p><mat-icon>badge</mat-icon> {{ getRoleLabel(user.role) }}</p>
+          <div class="follow-counts">
+            <span class="follow-count-item" (click)="openFollowersDialog()">
+              <strong>{{ followCounts.followers }}</strong> seguidores
+            </span>
+            <span>·</span>
+            <span class="follow-count-item" (click)="openFollowingDialog()">
+              <strong>{{ followCounts.following }}</strong> a seguir
+            </span>
+          </div>
+        </div>
+        <div class="profile-hero__actions" *ngIf="isOwn">
+          <a routerLink="/perfil/eu/editar" mat-raised-button color="primary">
+            <mat-icon>edit</mat-icon> Editar perfil
+          </a>
+          <a routerLink="/projects/novo" mat-stroked-button color="primary">
+            <mat-icon>add</mat-icon> Novo projeto
+          </a>
+        </div>
+
+        <!-- Actions for other users' profiles -->
+        <div class="profile-hero__actions" *ngIf="!isOwn && auth.isLoggedIn">
+          <button mat-raised-button color="primary"
+                  [disabled]="followLoading"
+                  (click)="toggleFollow()">
+            <mat-icon>{{ isFollowing ? 'person_remove' : 'person_add' }}</mat-icon>
+            {{ isFollowing ? 'A seguir' : 'Seguir' }}
+          </button>
+          <button mat-stroked-button color="primary" (click)="sendMessage()">
+            <mat-icon>chat</mat-icon> Mensagem
+          </button>
+          <button mat-stroked-button color="primary" (click)="openRateDialog()">
+            <mat-icon>star</mat-icon> Avaliar
+          </button>
+        </div>
+
+        <!-- Guest CTA -->
+        <div class="profile-hero__actions" *ngIf="!isOwn && !auth.isLoggedIn">
+          <button mat-stroked-button color="primary" (click)="openOnboardingDialog()">
+            <mat-icon>login</mat-icon> Entrar para seguir
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="container profile-content">
+      <!-- Tabs -->
+      <mat-tab-group>
+
+        <!-- Tab: Sobre -->
+        <mat-tab label="Sobre">
+          <div class="tab-body">
+            <!-- Bio -->
+            <div class="section-card">
+              <h3><mat-icon>person</mat-icon> Biografia</h3>
+              <p *ngIf="user.bio">{{ user.bio }}</p>
+              <p class="text-soft" *ngIf="!user.bio">
+                Nenhuma biografia adicionada.
+                <a *ngIf="isOwn" routerLink="/perfil/eu/editar">Adicionar</a>
+              </p>
+            </div>
+
+            <!-- Skills -->
+            <div class="section-card">
+              <h3><mat-icon>build</mat-icon> Competências</h3>
+              <div class="chips-row" *ngIf="user.skills.length > 0">
+                <span class="chip" *ngFor="let s of user.skills">{{ s }}</span>
+              </div>
+              <p class="text-soft" *ngIf="!user.skills.length">
+                Nenhuma competência adicionada.
+                <a *ngIf="isOwn" routerLink="/perfil/eu/editar">Adicionar</a>
+              </p>
+            </div>
+
+            <div class="section-card" *ngIf="socialLinks.length > 0">
+              <h3><mat-icon>link</mat-icon> Links</h3>
+              <div class="social-links">
+                <a *ngFor="let link of socialLinks"
+                   class="social-link"
+                   [href]="link.url"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                  <img [src]="link.iconUrl" [alt]="link.label" class="social-link__icon">
+                  <span>{{ link.key === 'website' ? link.value : (link.value) }}</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- Rating -->
+            <div class="section-card" *ngIf="averageRating > 0">
+              <h3><mat-icon>star</mat-icon> Avaliação média</h3>
+              <div class="rating">
+                <span class="rating__score">{{ averageRating | number:'1.1-1' }}</span>
+                <div class="rating__stars">
+                  <mat-icon *ngFor="let s of getRoundedStars()"
+                            [class.filled]="s === 1">star</mat-icon>
+                </div>
+                <span class="text-soft">({{ reviews.length }} avaliações)</span>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Tab: Avaliações -->
+        <mat-tab [label]="'Avaliações (' + reviews.length + ')'">
+          <div class="tab-body">
+            <div class="review" *ngFor="let r of reviews">
+              <div class="review__header">
+                <img [src]="r.reviewer?.avatar_url || 'assets/avatar-placeholder.svg'"
+                     [alt]="r.reviewer?.name">
+                <div>
+                  <strong>{{ r.reviewer?.name }}</strong>
+                  <div class="review__stars">
+                    <mat-icon *ngFor="let s of getStars(r.rating)"
+                              [class.filled]="s === 1">star</mat-icon>
+                  </div>
+                </div>
+                <span class="text-soft review__date">{{ r.created_at | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <p class="review__comment" *ngIf="r.comment">{{ r.comment }}</p>
+              <mat-divider></mat-divider>
+            </div>
+            <div class="empty-state" *ngIf="reviews.length === 0">
+              <mat-icon>rate_review</mat-icon>
+              <p>Ainda não há avaliações.</p>
+            </div>
+          </div>
+        </mat-tab>
+        <!-- Tab: Projetos do utilizador -->
+        <mat-tab [label]="'Projetos (' + userProjects.length + ')'">
+          <div class="tab-body">
+            <div class="projects-grid" *ngIf="loadingProjects">
+              <app-card-skeleton *ngFor="let _ of [1,2,3,4,5,6]"></app-card-skeleton>
+            </div>
+            <div class="projects-grid" *ngIf="!loadingProjects && userProjects.length > 0" [@list]="userProjects.length">
+              <mat-card class="pcard" *ngFor="let p of userProjects" matRipple [routerLink]="['/projects', p.slug]">
+                <div class="pcard__img">
+                  <img [src]="p.image_url || 'assets/project-placeholder.svg'" [alt]="p.title">
+                  <span class="pcard__badge" [attr.data-status]="p.status">{{ getStatusLabel(p.status) }}</span>
+                </div>
+                <mat-card-content class="pcard__body">
+                  <h3>{{ p.title }}</h3>
+                  <p>{{ p.description }}</p>
+                  <div class="pcard__tags" *ngIf="p.roles?.length">
+                    <span class="chip" *ngFor="let r of p.roles?.slice(0,4)">{{ r.skill_name || r.title }}</span>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            </div>
+            <div class="empty-state" *ngIf="!loadingProjects && userProjects.length === 0">
+              <mat-icon>search_off</mat-icon>
+              <p>Este utilizador não criou nenhum projeto ainda.</p>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+</div>

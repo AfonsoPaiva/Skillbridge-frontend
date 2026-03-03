@@ -1,0 +1,125 @@
+<div class="dashboard">
+  <div class="container">
+
+    <!-- ── Header ── -->
+    <div class="dashboard__header" @fadeUp>
+      <div class="dashboard__welcome">
+        <ng-container *ngIf="loadingUser">
+          <app-skeleton width="200px" height="32px"></app-skeleton>
+          <app-skeleton width="140px" height="16px" style="margin-top:8px"></app-skeleton>
+        </ng-container>
+        <ng-container *ngIf="!loadingUser && user">
+          <h1>{{ getGreeting() }}, {{ user.name.split(' ')[0] }}! 👋</h1>
+          <p class="text-soft">{{ user.university }} · {{ user.course }}</p>
+        </ng-container>
+      </div>
+      <div class="dashboard__actions">
+        <a routerLink="/projects/novo" mat-raised-button color="primary">
+          <mat-icon>add</mat-icon> Novo projeto
+        </a>
+      </div>
+    </div>
+
+    <!-- ── Stats chips ── -->
+    <div class="dashboard__chips" @fadeUp *ngIf="!loadingUser && user">
+      <span class="chip"><mat-icon>badge</mat-icon> {{
+      user.role === 'helper' ? 'Colaborador' :
+      user.role === 'both' ? 'Criador & Colaborador' :
+      'Criador de projetos'
+    }}</span>
+
+      <span class="chip" *ngIf="user.skills.length"><mat-icon>build</mat-icon> {{ user.skills.length }} competência{{ user.skills.length !== 1 ? 's' : '' }}</span>
+    </div>
+
+    <!-- ── Tabs: Projetos / Descobrir ── -->
+    <mat-tab-group [(selectedIndex)]="activeTab" class="dashboard__tabs" @fadeUp>
+
+      <!-- Tab: Descobrir projetos -->
+      <mat-tab label="Descobrir projetos">
+        <div class="tab-content">
+          <!-- loading -->
+          <div class="projects-grid" *ngIf="loadingProjects">
+            <app-card-skeleton *ngFor="let _ of [1,2,3,4,5,6]"></app-card-skeleton>
+          </div>
+
+          <!-- list: recommended projects based on skills -->
+          <div *ngIf="!loadingProjects && recommendedProjects.length > 0">
+            <h2 class="section-title">Recomendados para ti</h2>
+            <div class="projects-grid" [@list]="recommendedProjects.length">
+              <mat-card class="proj-card" *ngFor="let p of recommendedProjects" matRipple
+                        [routerLink]="['/projects', p.slug]">
+                <div class="proj-card__img">
+                  <img [src]="p.image_url || 'assets/project-placeholder.svg'" [alt]="p.title">
+                  <span class="proj-card__status" [attr.data-status]="p.status">
+                    {{ getStatusLabel(p.status) }}
+                  </span>
+                </div>
+                <mat-card-content class="proj-card__body">
+                  <h3>{{ p.title }}</h3>
+                  <p>{{ p.description }}</p>
+                  <div class="proj-card__roles" *ngIf="p.roles?.length">
+                    <span class="chip" *ngFor="let r of p.roles?.slice(0,3)">{{ r.skill_name || r.title }}</span>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            </div>
+          </div>
+
+          <!-- no matching projects based on skills -->
+          <div class="empty-state" *ngIf="!loadingProjects && recommendedProjects.length === 0 && user && user.skills && user.skills.length > 0">
+            <mat-icon>search_off</mat-icon>
+            <h3>Não existem projetos com as tuas competências</h3>
+            <p>Ainda não há projetos que correspondam às tuas competências. Explora todos os projetos!</p>
+            <a routerLink="/projects" mat-raised-button color="primary">Ver todos os projetos</a>
+          </div>
+
+          <!-- no skills added yet -->
+          <div class="empty-state" *ngIf="!loadingProjects && projects.length > 0 && user && (!user.skills || user.skills.length === 0)">
+            <mat-icon>info</mat-icon>
+            <h3>Adiciona competências ao teu perfil</h3>
+            <p>Para receber recomendações personalizadas, adiciona as tuas competências no perfil.</p>
+            <a routerLink="/perfil/eu/editar" mat-raised-button color="primary">Adicionar competências</a>
+          </div>
+
+          <!-- completely empty -->
+          <div class="empty-state" *ngIf="!loadingProjects && projects.length === 0">
+            <mat-icon>search_off</mat-icon>
+            <h3>Nenhum projeto disponível</h3>
+            <p>Sê o primeiro a criar um projeto na comunidade!</p>
+            <a routerLink="/projects/novo" mat-raised-button color="primary">Criar projeto</a>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Tab: O meu perfil rápido -->
+      <mat-tab label="O meu perfil">
+        <div class="tab-content profile-quick" *ngIf="!loadingUser && user" @fadeUp>
+          <div class="profile-quick__avatar">
+            <img [src]="user.avatar_url || 'assets/avatar-placeholder.svg'" [alt]="user.name">
+          </div>
+          <div class="profile-quick__info">
+            <h2>{{ user.name }}</h2>
+            <p class="text-soft">{{ user.email }}</p>
+            <p>{{ user.bio || 'Sem biografia definida.' }}</p>
+            <div class="profile-quick__skills" *ngIf="user.skills.length">
+              <strong>Competências:</strong>
+              <div class="chips-row">
+                <span class="chip" *ngFor="let s of user.skills">{{ s }}</span>
+              </div>
+            </div>
+            <div class="profile-quick__empty" *ngIf="!user.skills.length">
+              <mat-icon>info</mat-icon>
+              <span>Ainda não adicionaste competências ao teu perfil.</span>
+              <a routerLink="/perfil/eu" mat-stroked-button color="primary" style="margin-left:8px">
+                Editar perfil
+              </a>
+            </div>
+          </div>
+          <a routerLink="/perfil/eu" mat-raised-button color="primary" class="profile-quick__edit">
+            <mat-icon>edit</mat-icon> Editar perfil
+          </a>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>

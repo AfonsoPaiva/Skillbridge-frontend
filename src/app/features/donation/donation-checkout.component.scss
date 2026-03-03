@@ -1,0 +1,265 @@
+@use '../../../styles/variables' as v;
+
+.donation-page {
+  padding: v.$space-6 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  &__inner {
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__header {
+    text-align: center;
+    margin-bottom: clamp(v.$space-4, 4vw, v.$space-6);
+  }
+
+  &__icon {
+    font-size: clamp(36px, 8vw, 48px);
+    width: clamp(36px, 8vw, 48px);
+    height: clamp(36px, 8vw, 48px);
+    color:v.$color-primary;
+    margin-bottom: v.$space-2;
+  }
+
+  h1 {
+    margin: 0 0 v.$space-2;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.2;
+  }
+
+  &__lead {
+    color: #6b7280;
+    font-size: clamp(0.9rem, 2vw, 1.05rem);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  &__subtitle {
+    font-size: clamp(1rem, 2.5vw, 1.125rem);
+    font-weight: 600;
+    margin: 0 0 v.$space-3;
+    text-align: center;
+    color: #374151;
+  }
+
+  &__topbar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: v.$space-2;
+  }
+
+  &__error {
+    color: #b42318;
+    margin: v.$space-3 0;
+  }
+
+  &__success {
+    color: #027a48;
+    margin: v.$space-3 0;
+    font-weight: 500;
+  }
+
+  &__amount-selection {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: clamp(v.$space-4, 4vw, v.$space-6);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  }
+
+  &__preset-amounts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    gap: clamp(v.$space-2, 2vw, v.$space-3);
+    margin-bottom: v.$space-3;
+  }
+
+  &__divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: clamp(v.$space-3, 3vw, v.$space-5) 0;
+    color: v.$color-primary;
+    font-size: 0.875rem;
+
+    &::before,
+    &::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    span {
+      padding: 0 v.$space-3;
+      font-weight: 500;
+    }
+  }
+
+  &__custom-amount {
+    margin-bottom: clamp(v.$space-3, 3vw, v.$space-5);
+
+    .custom-amount-field {
+      width: 100%;
+    }
+  }
+
+  &__submit-btn {
+    width: 100%;
+    height: 48px;
+    font-size: clamp(0.9rem, 2vw, 1rem);
+    font-weight: 600;
+    border-radius: 8px;
+    
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+
+  &__secure-note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: v.$space-3;
+    font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+    color: #6b7280;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: #10b981;
+    }
+  }
+
+  &__back {
+    margin-bottom: v.$space-3;
+  }
+
+  &__checkout {
+    margin-top: v.$space-3;
+    width: 100%;
+    flex: 1;
+    // Remove fixed height - let Stripe's embedded checkout determine size
+  }
+}
+
+.preset-amount {
+  position: relative;
+  background: #f9fafb;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: clamp(v.$space-3, 3vw, v.$space-4);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: clamp(70px, 15vw, 80px);
+
+  &:hover {
+    background: #f3f4f6;
+    border-color: v.$color-primary;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  &--active {
+    background: #eef2ff;
+    border-color: v.$color-primary;
+    border-width: 2px;
+
+    .preset-amount__value {
+      color: v.$color-primary;
+      font-weight: 700;
+    }
+  }
+
+  &__value {
+    font-size: clamp(1.25rem, 3vw, 1.5rem);
+    font-weight: 600;
+    color: #111827;
+    transition: color 0.2s ease;
+  }
+
+  &__badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: v.$color-primary;
+    color: white;
+    font-size: clamp(0.55rem, 1.2vw, 0.625rem);
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+.donation-page--dialog {
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+
+  .donation-page__inner {
+    max-width: 100%;
+    padding: v.$space-3;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .donation-page__header {
+    margin-bottom: v.$space-3;
+  }
+
+  .donation-page__icon {
+    font-size: 36px;
+    width: 36px;
+    height: 36px;
+    margin-bottom: v.$space-2;
+  }
+
+  h1 {
+    font-size: 1.375rem;
+    margin-bottom: v.$space-2;
+  }
+
+  .donation-page__lead {
+    font-size: 0.9rem;
+  }
+
+  .donation-page__amount-selection {
+    padding: v.$space-4;
+  }
+
+  .donation-page__preset-amounts {
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: v.$space-2;
+  }
+
+  .preset-amount {
+    min-height: 70px;
+    padding: v.$space-3;
+
+    &__value {
+      font-size: 1.25rem;
+    }
+  }
+
+  .donation-page__checkout {
+    // Let embedded checkout determine its own size
+    margin-top: v.$space-2;
+  }
+}
+

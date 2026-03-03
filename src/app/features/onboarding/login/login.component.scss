@@ -1,0 +1,155 @@
+@use '../../../../styles/variables' as v;
+
+
+.login-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+}
+
+.login-close--corner {
+  position: absolute;
+  top: -12px;
+  right: -20px;
+  z-index: 2;
+}
+
+ mat-dialog-content {
+    max-height: 70vh;
+    overflow-y: hidden !important;
+  }
+
+@media (max-width: 600px) {
+  mat-dialog-content {
+    max-height: 70vh;
+    overflow-y: auto !important;
+  }
+}
+
+.login-logo {
+  display: flex;
+  align-items: center;
+  gap: v.$space-2;
+  font-size: 20px;
+  color: v.$color-text;
+  .logo-icon { font-size: 26px; color: v.$color-primary; }
+  strong { color: v.$color-primary; }
+}
+
+.login-logo--centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+
+  svg {
+    width: 150px;
+    height: 150px;
+    display: block;
+  }
+}
+
+mat-dialog-content {
+  padding-top: v.$space-4 !important;
+}
+
+.login-title {
+  font-size: 1.6rem;
+  font-weight: v.$font-weight-bold;
+  letter-spacing: -0.01em;
+  margin-bottom: v.$space-2;
+}
+
+.login-sub {
+  color: v.$color-text-soft;
+  font-size: 15px;
+  margin-bottom: v.$space-6;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-1;
+}
+
+.full-width { width: 100%; }
+
+.login-btn {
+  width: 100%;
+  height: 44px !important;
+  margin-top: v.$space-2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: v.$space-2;
+
+  .btn-spinner {
+    ::ng-deep circle { stroke: #fff !important; }
+  }
+}
+
+.error-msg {
+  display: flex;
+  align-items: center;
+  gap: v.$space-2;
+  color: #d32f2f;
+  font-size: 14px;
+  padding: v.$space-3;
+  background: #fde8e8;
+  border-radius: v.$radius-sm;
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: v.$space-3;
+  margin: v.$space-5 0 v.$space-4;
+  color: v.$color-text-soft;
+  font-size: 13px;
+  &::before, &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: v.$color-border;
+  }
+}
+
+.social-buttons {
+  display: flex;
+  gap: v.$space-3;
+}
+
+.social-btn {
+  flex: 1;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: v.$space-2 !important;
+  height: 40px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  border-radius: v.$radius-sm !important;
+  border-color: v.$color-border !important;
+  color: v.$color-text !important;
+  transition: background v.$transition-fast !important;
+  svg { flex-shrink: 0; }
+  &:hover:not([disabled]) { background: rgba(0,0,0,.04) !important; }
+  &[disabled] { opacity: .5; cursor: not-allowed; }
+}
+
+.register-link {
+  text-align: center;
+  margin-top: v.$space-4;
+  font-size: 14px;
+  color: v.$color-text-soft;
+
+  button { font-size: 14px !important; }
+}
+
+@media (max-width: 480px) {
+  .social-buttons { flex-direction: column; }
+}

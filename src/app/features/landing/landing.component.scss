@@ -1,0 +1,521 @@
+@use '../../../styles/variables' as v;
+@use '../../../styles/mixins' as m;
+
+// ── Hero ─────────────────────────────────────────
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  padding: v.$space-20 0 v.$space-16;
+
+  &__content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: v.$space-1;
+    background: v.$color-secondary;
+    color: v.$color-primary;
+    border-radius: 999px;
+    padding: v.$space-1 v.$space-3;
+    font-size: 13px;
+    font-weight: v.$font-weight-medium;
+    margin-bottom: v.$space-6;
+
+    mat-icon { font-size: 16px; width: 16px; height: 16px; }
+  }
+
+  &__title {
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    font-weight: v.$font-weight-extrabold;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: v.$space-6;
+    color: v.$color-text;
+  }
+
+  &__sub {
+    font-size: 18px;
+    color: v.$color-text-soft;
+    line-height: 1.7;
+    margin-bottom: v.$space-8;
+
+    strong { color: v.$color-primary; }
+  }
+
+  &__cta {
+    display: flex;
+    gap: v.$space-3;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: v.$space-8;
+  }
+
+  &__stats {
+    display: inline-flex;
+    align-items: center;
+    gap: v.$space-6;
+    background: v.$color-surface;
+    border-radius: v.$radius-xl;
+    padding: v.$space-3 v.$space-8;
+    border: 1px solid v.$color-border;
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      strong { font-size: 22px; font-weight: v.$font-weight-bold; color: v.$color-primary; }
+      span   { font-size: 12px; color: v.$color-text-soft; }
+    }
+    .stat-divider {
+      width: 1px; height: 32px;
+      background: v.$color-border;
+    }
+  }
+
+  &__scroll-hint {
+    position: absolute;
+    bottom: v.$space-6;
+    left: 50%;
+    transform: translateX(-50%);
+    color: v.$color-text-soft;
+    animation: bounce 2s infinite;
+
+    mat-icon { font-size: 32px; width: 32px; height: 32px; }
+  }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50%       { transform: translateX(-50%) translateY(8px); }
+}
+
+// ── CTA buttons ───────────────────────────────────
+.cta-btn {
+  font-size: 15px !important;
+  padding: 10px 28px !important;
+  height: 48px !important;
+
+  mat-icon { margin-right: v.$space-1; }
+
+  &--primary {
+    box-shadow: 0 4px 20px rgba(96, 53, 132, 0.35) !important;
+  }
+  &--white {
+    background: #fff !important;
+    color: v.$color-primary !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
+  }
+}
+
+// ── Sections ─────────────────────────────────────
+.section {
+  padding: v.$space-20 0;
+
+  &--alt {
+    background: v.$color-surface;
+  }
+
+  &__header {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto v.$space-12;
+
+    h2 {
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: v.$font-weight-extrabold;
+      letter-spacing: -0.02em;
+      margin: v.$space-2 0 v.$space-3;
+    }
+    p { color: v.$color-text-soft; font-size: 16px; }
+  }
+
+  &__tag {
+    display: inline-block;
+    padding: v.$space-1 v.$space-3;
+    background: lighten(v.$color-primary, 42%);
+    color: v.$color-primary;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: v.$font-weight-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  &__cta {
+    text-align: center;
+    margin-top: v.$space-10;
+  }
+}
+
+// ── Steps ────────────────────────────────────────
+.steps {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: v.$space-6;
+
+  @include m.md { grid-template-columns: repeat(3, 1fr); }
+}
+
+.step {
+  @include m.card;
+  padding: v.$space-8 v.$space-6;
+  text-align: center;
+  position: relative;
+  transition: transform v.$transition-base, box-shadow v.$transition-base;
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: v.$shadow-md;
+  }
+
+  &__number {
+    position: absolute;
+    top: v.$space-4; right: v.$space-4;
+    font-size: 48px;
+    font-weight: v.$font-weight-extrabold;
+    color: lighten(v.$color-primary, 40%);
+    line-height: 1;
+  }
+
+  &__icon {
+    width: 64px; height: 64px;
+    background: lighten(v.$color-primary, 40%);
+    border-radius: v.$radius-md;
+    @include m.flex-center;
+    margin: 0 auto v.$space-4;
+
+    mat-icon {
+      font-size: 32px; width: 32px; height: 32px;
+      color: v.$color-primary;
+    }
+  }
+
+  h3 { font-weight: v.$font-weight-semibold; margin-bottom: v.$space-2; }
+  p  { color: v.$color-text-soft; font-size: 14px; line-height: 1.6; }
+}
+
+// ── Mission ──────────────────────────────────────
+.mission {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: v.$space-12;
+  align-items: center;
+
+  @include m.lg { grid-template-columns: 1fr 1fr; }
+
+  &__text {
+    h2 {
+      font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+      font-weight: v.$font-weight-extrabold;
+      letter-spacing: -0.02em;
+      margin: v.$space-2 0 v.$space-4;
+    }
+    p {
+      color: v.$color-text-soft;
+      line-height: 1.7;
+      margin-bottom: v.$space-6;
+      strong { color: v.$color-text; }
+    }
+  }
+
+  &__audience {
+    list-style: none;
+    margin-bottom: v.$space-8;
+    display: flex;
+    flex-direction: column;
+    gap: v.$space-2;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: v.$space-2;
+      font-size: 15px;
+      font-weight: v.$font-weight-medium;
+    }
+  }
+
+  &__visual {
+    @include m.flex-center;
+  }
+
+  &__card {
+    @include m.card(v.$radius-lg);
+    padding: v.$space-8;
+    max-width: 360px;
+    text-align: center;
+    box-shadow: v.$shadow-lg;
+
+    display: flex;
+    flex-direction: column;
+    gap: v.$space-3;
+
+    p { font-size: 14px; color: v.$color-text-soft; }
+  }
+
+  &__icon {
+    font-size: 48px !important;
+    width: 48px !important; height: 48px !important;
+    color: v.$color-primary;
+    margin: 0 auto;
+  }
+
+  &__match {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: v.$space-2;
+    background: lighten(v.$color-secondary, 38%);
+    border-radius: v.$radius-sm;
+    padding: v.$space-3;
+    margin-top: v.$space-2;
+
+    strong { color: darken(v.$color-secondary, 5%); }
+  }
+}
+// ── Donation section ─────────────────────────────
+.section--donation {
+  border-top: 1px solid rgba(v.$color-primary, 0.1);
+  border-bottom: 1px solid rgba(v.$color-primary, 0.1);
+}
+
+.donation-section {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.donation-content {
+  padding: v.$space-8;
+  background: white;
+  border-radius: v.$radius-xl;
+  border: 2px solid rgba(v.$color-primary, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+
+  .donation-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: v.$color-primary;
+    margin-bottom: v.$space-4;
+  }
+
+  h2 {
+    font-size: 2rem;
+    font-weight: v.$font-weight-bold;
+    color: v.$color-text;
+    margin-bottom: v.$space-3;
+  }
+
+  > p {
+    color: v.$color-text-soft;
+    line-height: 1.7;
+    margin-bottom: v.$space-6;
+  }
+}
+
+.donation-stats {
+  display: flex;
+  justify-content: center;
+  gap: v.$space-8;
+  margin-bottom: v.$space-6;
+  flex-wrap: wrap;
+
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: v.$space-2;
+    font-weight: v.$font-weight-medium;
+    color: v.$color-text;
+
+    mat-icon {
+      color: v.$color-primary;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+.donation-btn {
+  font-size: 16px !important;
+  padding: 12px 32px !important;
+  height: 54px !important;
+  font-weight: v.$font-weight-semibold !important;
+  box-shadow: 0 4px 20px rgba(v.$color-primary, 0.35) !important;
+
+  mat-icon {
+    margin-right: v.$space-2;
+  }
+}
+
+.donation-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: v.$space-2;
+  margin-top: v.$space-4;
+  font-size: 0.85rem;
+  color: v.$color-text-soft;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: v.$color-tertiary;
+  }
+}
+// ── Benefits ─────────────────────────────────────
+.benefits {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: v.$space-6;
+
+  @include m.lg { grid-template-columns: repeat(4, 1fr); }
+}
+
+  .benefit {
+  @include m.card;
+  padding: v.$space-6;
+  transition: transform v.$transition-base, box-shadow v.$transition-base;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: v.$shadow-md;
+  }
+
+    &__icon {
+    width: 52px; height: 52px;
+    background: lighten(v.$color-primary, 38%);
+    border-radius: v.$radius-sm;
+    @include m.flex-center;
+    margin-bottom: v.$space-4;
+
+    mat-icon {
+      font-size: 26px; width: 26px; height: 26px;
+      color: v.$color-primary;
+    }
+  }
+
+  h3 { font-weight: v.$font-weight-semibold; margin-bottom: v.$space-2; font-size: 15px; }
+  p  { color: v.$color-text-soft; font-size: 13px; line-height: 1.6; }
+}
+
+// ── Projects grid ─────────────────────────────────
+.projects-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: v.$space-5;
+
+  @include m.md { grid-template-columns: repeat(2, 1fr); }
+  @include m.lg { grid-template-columns: repeat(3, 1fr); }
+}
+
+.project-card {
+  cursor: pointer;
+  overflow: hidden;
+  border-radius: v.$radius-md !important;
+  transition: transform v.$transition-base, box-shadow v.$transition-base !important;
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: v.$shadow-md !important;
+  }
+
+  &__img {
+    position: relative;
+    height: 180px;
+    overflow: hidden;
+
+    img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform v.$transition-slow;
+    }
+
+    &:hover img { transform: scale(1.06); }
+  }
+
+  &__badge {
+    position: absolute;
+    top: v.$space-3; right: v.$space-3;
+    background: rgba(255,255,255,0.9);
+    color: v.$color-text-soft;
+    font-size: 11px;
+    font-weight: v.$font-weight-semibold;
+    padding: 2px 10px;
+    border-radius: 999px;
+
+    &.open {
+      background: lighten(v.$color-secondary, 38%);
+      color: darken(v.$color-secondary, 10%);
+    }
+  }
+
+  &__body {
+    padding: v.$space-4 !important;
+    display: flex;
+    flex-direction: column;
+    gap: v.$space-2;
+  }
+
+  &__title {
+    font-size: 16px;
+    font-weight: v.$font-weight-semibold;
+    @include m.truncate(2);
+  }
+
+  &__desc {
+    font-size: 13px;
+    color: v.$color-text-soft;
+    @include m.truncate(2);
+  }
+
+  &__roles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: v.$space-1;
+    margin-top: v.$space-1;
+  }
+}
+
+// ── Empty state ───────────────────────────────────
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: v.$space-20 0;
+
+  mat-icon {
+    font-size: 56px;
+    width: 56px;
+    height: 56px;
+    color: lighten(v.$color-primary, 30%);
+    margin-bottom: v.$space-4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  h3 {
+    font-size: 20px;
+    margin-bottom: v.$space-2;
+  }
+  
+  p {
+    color: v.$color-text-soft;
+    margin-bottom: v.$space-6;
+  }
+}
+

@@ -1,0 +1,61 @@
+<!-- Header -->
+<div mat-dialog-title class="dialog-header">
+  <h2>Avaliar {{ data.userName }}</h2>
+  <button mat-icon-button (click)="close()" matTooltip="Fechar">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<!-- Content -->
+<mat-dialog-content>
+  <form [formGroup]="form" (ngSubmit)="submit()" *ngIf="!loading">
+
+    <!-- Rating stars -->
+    <div class="rating-section">
+      <label>Avaliação *</label>
+      <div class="stars-input" 
+           (mouseleave)="clearHover()">
+        <mat-icon 
+          *ngFor="let star of [1,2,3,4,5]"
+          [class]="getStarClass(star)"
+          (click)="setRating(star)"
+          (mouseenter)="onStarHover(star)">
+          star
+        </mat-icon>
+      </div>
+      <mat-error *ngIf="form.get('rating')?.touched && form.get('rating')?.hasError('min')">
+        Por favor, selecione uma avaliação
+      </mat-error>
+    </div>
+
+    <!-- Comment -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Comentário (opcional)</mat-label>
+      <textarea matInput 
+                formControlName="comment" 
+                rows="4"
+                placeholder="Descreva a sua experiência ao trabalhar com este utilizador..."></textarea>
+      <mat-hint>Máximo 500 caracteres</mat-hint>
+    </mat-form-field>
+
+    <!-- Info message -->
+    <div class="info-message">
+      <mat-icon>info</mat-icon>
+      <p>A sua avaliação será revista por um administrador antes de ser publicada.</p>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<!-- Actions -->
+<mat-dialog-actions *ngIf="!loading">
+  <button mat-button (click)="close()" [disabled]="submitting">
+    Cancelar
+  </button>
+  <button mat-raised-button 
+          color="primary" 
+          (click)="submit()"
+          [disabled]="form.invalid || submitting">
+    <mat-spinner diameter="20" *ngIf="submitting"></mat-spinner>
+    {{ submitting ? 'A submeter...' : 'Submeter avaliação' }}
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,108 @@
+<div class="detail-page">
+  <!-- Loading -->
+  <div class="container" *ngIf="loading">
+    <div class="detail-skeleton">
+      <app-skeleton height="340px" radius="0"></app-skeleton>
+      <div class="detail-skeleton__body">
+        <app-skeleton width="60%" height="36px"></app-skeleton>
+        <app-skeleton width="80%" height="16px"></app-skeleton>
+        <app-skeleton width="70%" height="16px"></app-skeleton>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && project" @fadeUp>
+    <div class="container detail-content">
+      <!-- Info -->
+      <div class="detail-main">
+        <div class="detail-main__header">
+          <div>
+            <div class="header-title-row">
+              <h1>{{ project.title }}</h1>
+              <span class="chip" [class.chip--green]="project.status === 'open'">
+                {{ getStatusLabel(project.status) }}
+              </span>
+            </div>
+            <p class="text-soft" *ngIf="project.owner">
+              <mat-icon>person</mat-icon>
+              <a [routerLink]="['/perfil', project.owner.id]" class="owner-link">{{ project.owner.name }}</a>
+              · {{ project.created_at | date:'dd/MM/yyyy' }}
+            </p>
+          </div>
+          <div class="detail-main__actions" *ngIf="isOwner">
+            <a [routerLink]="['/projects', project.slug, 'editar']" mat-stroked-button color="primary">
+              <mat-icon>edit</mat-icon> Editar
+            </a>
+            <button mat-stroked-button color="warn" (click)="deleteProject()" [disabled]="deleteLoading">
+              <mat-icon>delete</mat-icon> Eliminar
+            </button>
+          </div>
+        </div>
+
+        <!-- Project image -->
+        <div class="detail-main__image">
+          <img [src]="project.image_url || 'assets/project-placeholder.svg'" [alt]="project.title">
+        </div>
+
+        <p class="detail-main__desc">{{ project.description }}</p>
+
+        <mat-divider></mat-divider>
+
+        <!-- Roles -->
+        <div class="detail-roles" *ngIf="project.roles?.length">
+          <h2>Vagas disponíveis</h2>
+          <div class="roles-grid">
+            <mat-card class="role-card" *ngFor="let r of project.roles">
+              <mat-card-content>
+                <div class="role-card__header">
+                  <span class="chip">{{ r.skill_name || r.title }}</span>
+                  <span class="role-card__spots">{{ r.filled }}/{{ r.spots }} preenchidas</span>
+                </div>
+                <h3>{{ r.title }}</h3>
+                <p>{{ r.description }}</p>
+                <button mat-raised-button color="primary"
+                        *ngIf="!isOwner"
+                        [disabled]="applyLoading || r.filled >= r.spots"
+                        (click)="apply(r.id)">
+                  <mat-spinner *ngIf="applyLoading" diameter="16"></mat-spinner>
+                  <span *ngIf="!applyLoading">
+                    {{ r.filled >= r.spots ? 'Vagas esgotadas' : 'Candidatar-me' }}
+                  </span>
+                </button>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+
+        <!-- No roles -->
+        <div class="empty-roles" *ngIf="!project.roles?.length">
+          <mat-icon>group_off</mat-icon>
+          <p>Este projeto ainda não tem vagas criadas.</p>
+        </div>
+
+        <!-- Members -->
+        <div class="detail-members" *ngIf="members.length > 0">
+          <h2>Equipa ({{ acceptedMembersCount }} membros)</h2>
+          <div class="members-list">
+            <div class="member" *ngFor="let m of members" [class.member--pending]="m.status === 'pending'" [class.member--rejected]="m.status === 'rejected'">
+              <img [src]="m.user?.avatar_url || 'assets/avatar-placeholder.svg'" [alt]="m.user?.name">
+              <div class="member__info">
+                <a [routerLink]="['/perfil', m.user?.id]" class="member__name">{{ m.user?.name }}</a>
+                <span class="text-soft member__status" [class.status-accepted]="m.status === 'accepted'" [class.status-pending]="m.status === 'pending'" [class.status-rejected]="m.status === 'rejected'">
+                  {{ getMemberStatusLabel(m.status) }}
+                </span>
+              </div>
+              <button *ngIf="isOwner && m.status === 'accepted'" 
+                      mat-icon-button 
+                      color="warn" 
+                      (click)="removeMember(m)"
+                      matTooltip="Remover membro">
+                <mat-icon>person_remove</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

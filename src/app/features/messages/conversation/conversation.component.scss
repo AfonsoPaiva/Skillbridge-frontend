@@ -1,0 +1,344 @@
+@use '../../../../styles/variables' as v;
+@use '../../../../styles/mixins' as m;
+
+:host, .conv-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  border-right: 1px solid v.$color-border;
+}
+// ...existing code...
+.conv-body {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: v.$space-6 v.$space-4;
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-3;
+  
+  @include m.md {
+    padding: v.$space-8 v.$space-6;
+  }
+}
+
+
+// ── Header ───────────────────────────────────────────
+.conv-header {
+  display: flex;
+  align-items: center;
+  gap: v.$space-3;
+  padding: v.$space-4 v.$space-5;
+  border-bottom: 1px solid v.$color-border;
+  background: v.$color-surface;
+  flex-shrink: 0;
+
+  &__back {
+    flex-shrink: 0;
+    display: none; // hidden on desktop — sidebar always visible
+  }
+
+  @include m.sm {
+    &__back { display: flex; }
+  }
+
+  &__avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: v.$color-primary;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: v.$font-weight-bold;
+    font-size: 15px;
+    flex-shrink: 0;
+    overflow: hidden;
+
+    img { width: 100%; height: 100%; object-fit: cover; }
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  &__name {
+    font-weight: 600;
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__sub {
+    font-size: 12px;
+    color: v.$color-text-soft;
+  }
+}
+
+// ── Message area ─────────────────────────────────────
+.conv-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: v.$space-5 v.$space-5;
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-2;
+  
+  @include m.md {
+    padding: v.$space-6 v.$space-8;
+  }
+}
+
+.conv-loading {
+  display: flex;
+  justify-content: center;
+  padding: v.$space-8;
+}
+
+.conv-error {
+  padding: v.$space-4;
+  color: #d32f2f;
+  font-size: 14px;
+  text-align: center;
+}
+
+.conv-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: v.$space-2;
+  color: v.$color-text-soft;
+  text-align: center;
+
+  mat-icon {
+    font-size: 44px;
+    width: 44px;
+    height: 44px;
+    opacity: .3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+// ── Date separator ───────────────────────────────────
+.date-sep {
+  display: flex;
+  align-items: center;
+  gap: v.$space-3;
+  padding: v.$space-2 0;
+  color: v.$color-text-soft;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+
+  &::before, &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: v.$color-border;
+  }
+}
+
+// ── Bubbles ───────────────────────────────────────────
+.msg-bubble {
+  display: flex;
+  align-items: flex-end;
+  gap: v.$space-2;
+  max-width: 72%;
+
+  &--mine {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+
+    .msg-bubble__content {
+      background: v.$color-primary;
+      color: #fff;
+      border-bottom-right-radius: 4px;
+
+      time { color: rgba(255,255,255,.7); }
+    }
+  }
+
+  &--theirs {
+    align-self: flex-start;
+
+    .msg-bubble__content {
+      background: v.$color-surface;
+      border: 1px solid v.$color-border;
+      border-bottom-left-radius: 4px;
+    }
+  }
+
+  &__avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: v.$color-secondary;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 11px;
+    flex-shrink: 0;
+    overflow: hidden;
+
+    img { width: 100%; height: 100%; object-fit: cover; }
+  }
+
+  &__content {
+    padding: v.$space-2 v.$space-3;
+    border-radius: 16px;
+    max-width: 100%;
+
+    p {
+      margin: 0 0 2px;
+      font-size: 14px;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+
+    time {
+      font-size: 11px;
+      color: v.$color-text-soft;
+      display: block;
+      text-align: right;
+    }
+  }
+}
+
+// ── Input area ────────────────────────────────────────
+.conv-footer {
+  display: flex;
+  align-items: flex-end;
+  gap: v.$space-2;
+  padding: v.$space-3 v.$space-5;
+  border-top: 1px solid v.$color-border;
+  background: v.$color-surface;
+  flex-shrink: 0;
+  
+  @include m.md {
+    padding: v.$space-4 v.$space-8;
+  }
+
+  &__input {
+    flex: 1;
+    ::ng-deep .mat-mdc-form-field-subscript-wrapper { display: none; }
+    ::ng-deep textarea { resize: none; }
+  }
+
+  &__send {
+    flex-shrink: 0;
+    margin-bottom: 4px;
+  }
+}
+
+// ── Application system message card ─────────────────
+.msg-application {
+  display: flex;
+  align-items: flex-start;
+  gap: v.$space-3;
+  margin: v.$space-3 v.$space-4;
+  padding: v.$space-4;
+  background: v.$color-surface;
+  border: 1px solid v.$color-border;
+  border-left: 4px solid v.$color-primary;
+  border-radius: 12px;
+  max-width: 480px;
+
+  &__icon {
+    color: v.$color-primary;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__text {
+    margin: 0 0 v.$space-3 0;
+    font-size: 0.9rem;
+    color: v.$color-text;
+    line-height: 1.5;
+  }
+
+  &__actions {
+    display: flex;
+    gap: v.$space-2;
+    flex-wrap: wrap;
+
+    button {
+      font-size: 0.8rem;
+      height: 34px;
+      line-height: 34px;
+
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        margin-right: 4px;
+      }
+    }
+  }
+
+  &__sent {
+    margin: 0;
+    font-size: 0.8rem;
+    color: v.$color-text-soft;
+    font-style: italic;
+  }
+
+  &__status {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: v.$font-weight-semibold;
+    display: flex;
+    align-items: center;
+    gap: v.$space-1;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+
+    &--accepted {
+      color: #2e7d32;
+      mat-icon {
+        color: #2e7d32;
+      }
+    }
+
+    &--rejected {
+      color: #c62828;
+      mat-icon {
+        color: #c62828;
+      }
+    }
+  }
+
+  &__time {
+    font-size: 0.72rem;
+    color: v.$color-text-soft;
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+}

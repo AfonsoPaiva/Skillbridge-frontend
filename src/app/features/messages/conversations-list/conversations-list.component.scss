@@ -1,0 +1,218 @@
+@use '../../../../styles/variables' as v;
+@use '../../../../styles/mixins' as m;
+
+.msgs-page {
+  display: flex;
+  height: calc(100vh - 64px);
+  margin-top: 64px;
+  overflow: hidden;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  
+  @include m.lg {
+    padding: 0 v.$space-4;
+  }
+}
+
+.msgs-sidebar {
+  width: 320px;
+  flex-shrink: 0;
+  border-right: 1px solid v.$color-border;
+  display: flex;
+  flex-direction: column;
+  background: v.$color-surface;
+
+  &__header {
+    padding: v.$space-6 v.$space-5;
+    border-bottom: 1px solid v.$color-border;
+    h2 { margin: 0; font-size: 1.2rem; font-weight: v.$font-weight-bold; }
+  }
+
+  &__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: v.$space-2 0;
+  }
+}
+
+.conv-item {
+  display: flex;
+  align-items: center;
+  gap: v.$space-3;
+  width: 100%;
+  padding: v.$space-3 v.$space-5;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: background v.$transition-fast;
+
+  &--active {
+    background: rgba(v.$color-primary, 0.08);
+    .conv-item__name { color: v.$color-primary; font-weight: 600; }
+  }
+  
+  &--unread {
+    background: rgba(104, 0, 122, 0.03);
+    
+    .conv-item__name {
+      font-weight: 600;
+      color: v.$color-text;
+    }
+  }
+
+  &:hover { background: v.$color-surface; }
+
+  &__avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: v.$color-primary;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: v.$font-weight-bold;
+    flex-shrink: 0;
+    overflow: hidden;
+    font-size: 16px;
+
+    img { width: 100%; height: 100%; object-fit: cover; }
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__name {
+    font-weight: 500;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__sub {
+    font-size: 12px;
+    color: v.$color-text-soft;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  &__badge {
+    background: v.$color-primary;
+    color: white;
+    font-size: 11px;
+    font-weight: v.$font-weight-bold;
+    padding: 3px 7px;
+    border-radius: 12px;
+    min-width: 20px;
+    text-align: center;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  &__arrow { color: v.$color-text-soft; font-size: 18px; flex-shrink: 0; }
+}
+
+// Skeleton
+.conv-skeleton {
+  display: flex;
+  align-items: center;
+  gap: v.$space-3;
+  padding: v.$space-3 v.$space-4;
+
+  &__avatar {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    background: v.$color-border;
+    flex-shrink: 0;
+    animation: pulse 1.2s ease infinite;
+  }
+
+  &__lines { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+  &__name   { height: 13px; background: v.$color-border; border-radius: 4px; width: 60%; animation: pulse 1.2s ease infinite; }
+  &__preview{ height: 11px; background: v.$color-border; border-radius: 4px; width: 80%; animation: pulse 1.2s ease infinite 0.15s; }
+}
+
+@keyframes pulse {
+  0%,100% { opacity: 1; } 50% { opacity: .5; }
+}
+
+.msgs-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: v.$space-2;
+  padding: v.$space-8 v.$space-4;
+  text-align: center;
+  color: v.$color-text-soft;
+  font-size: 14px;
+  
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    opacity: .4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.msgs-error {
+  padding: v.$space-4;
+  color: #d32f2f;
+  font-size: 14px;
+}
+
+.msgs-empty-detail {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: v.$color-text-soft;
+  gap: v.$space-2;
+  
+  mat-icon {
+    font-size: 56px;
+    width: 56px;
+    height: 56px;
+    opacity: .3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  p {
+    margin: 0;
+    font-size: 15px;
+  }
+}
+
+.msgs-detail {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+
+  // router-outlet renders no DOM — the projected component fills this flex column
+  > * { flex: 1; min-height: 0; }
+
+  @include m.sm { display: none; }
+}
+
+@include m.sm {
+  .msgs-sidebar { width: 100%; }
+  .msgs-detail { display: none; }
+  .msgs-page--active .msgs-sidebar { display: none; }
+  .msgs-page--active .msgs-detail { display: flex; flex: 1; }
+}

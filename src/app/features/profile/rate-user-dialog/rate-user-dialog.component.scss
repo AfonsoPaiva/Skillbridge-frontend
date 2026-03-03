@@ -1,0 +1,153 @@
+@use '../../../../styles/variables' as v;
+@use '../../../../styles/mixins' as m;
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: v.$space-4 v.$space-6;
+  margin: 0;
+  border-bottom: 1px solid v.$color-border;
+
+  h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: v.$font-weight-semibold;
+  }
+}
+
+mat-dialog-content {
+  padding: v.$space-6;
+  min-height: 200px;
+}
+
+.loading-state,
+.empty-state {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: v.$space-3;
+  background: transparent;
+  z-index: 10;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: v.$color-text-soft;
+  }
+
+  p {
+    margin: 0;
+    color: v.$color-text;
+  }
+
+  .text-soft {
+    color: v.$color-text-soft;
+    font-size: 0.875rem;
+  }
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-5;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.rating-section {
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-2;
+
+  label {
+    font-size: 0.875rem;
+    font-weight: v.$font-weight-medium;
+    color: v.$color-text;
+  }
+}
+
+.stars-input {
+  display: flex;
+  gap: v.$space-1;
+
+  mat-icon {
+    cursor: pointer;
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    transition: all 0.2s ease;
+    color: v.$color-border;
+
+    &.star-filled {
+      color: #ffa726;
+      transform: scale(1.1);
+    }
+
+    &.star-empty {
+      color: v.$color-border;
+    }
+
+    &:hover {
+      transform: scale(1.15);
+    }
+  }
+}
+
+mat-error {
+  font-size: 0.75rem;
+  color: #f44336;
+  margin-top: v.$space-1;
+}
+
+.info-message {
+  display: flex;
+  gap: v.$space-2;
+  padding: v.$space-3;
+  background: rgba(104, 0, 122, 0.05);
+  border-radius: v.$radius-sm;
+  border-left: 3px solid v.$color-primary;
+
+  mat-icon {
+    color: v.$color-primary;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: v.$color-text-soft;
+    line-height: 1.4;
+  }
+}
+
+mat-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: v.$space-2;
+  padding: v.$space-4 v.$space-6;
+  border-top: 1px solid v.$color-border;
+  margin: 0;
+
+  button {
+    min-width: 100px;
+  }
+
+  mat-spinner {
+    display: inline-block;
+    margin-right: v.$space-2;
+  }
+}

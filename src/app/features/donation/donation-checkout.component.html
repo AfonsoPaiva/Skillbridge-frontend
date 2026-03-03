@@ -1,0 +1,107 @@
+<section class="donation-page" [class.donation-page--dialog]="isDialog">
+  <div class="container donation-page__inner">
+    <div class="donation-page__topbar" *ngIf="isDialog">
+      <button mat-icon-button (click)="closeDialog()" aria-label="Fechar">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <div class="donation-page__header" *ngIf="showAmountSelection">
+      <mat-icon class="donation-page__icon">volunteer_activism</mat-icon>
+      <h1>Apoiar o SkillBridge</h1>
+      <p class="donation-page__lead">O teu donativo ajuda a manter a plataforma gratuita para todos os estudantes.</p>
+    </div>
+
+    <!-- Amount Selection -->
+    <div class="donation-page__amount-selection" *ngIf="showAmountSelection">
+      <h3 class="donation-page__subtitle">Escolhe o montante</h3>
+      
+      <div class="donation-page__preset-amounts">
+        <button 
+          class="preset-amount" 
+          [class.preset-amount--active]="selectedAmount === 5"
+          (click)="selectedAmount = 5"
+          type="button">
+          <span class="preset-amount__value">€5</span>
+        </button>
+        <button 
+          class="preset-amount" 
+          [class.preset-amount--active]="selectedAmount === 10"
+          (click)="selectedAmount = 10"
+          type="button">
+          <span class="preset-amount__value">€10</span>
+          <span class="preset-amount__badge">Popular</span>
+        </button>
+        <button 
+          class="preset-amount" 
+          [class.preset-amount--active]="selectedAmount === 25"
+          (click)="selectedAmount = 25"
+          type="button">
+          <span class="preset-amount__value">€25</span>
+        </button>
+        <button 
+          class="preset-amount" 
+          [class.preset-amount--active]="selectedAmount === 50"
+          (click)="selectedAmount = 50"
+          type="button">
+          <span class="preset-amount__value">€50</span>
+        </button>
+        <button 
+          class="preset-amount" 
+          [class.preset-amount--active]="selectedAmount === 100"
+          (click)="selectedAmount = 100"
+          type="button">
+          <span class="preset-amount__value">€100</span>
+        </button>
+      </div>
+
+      <div class="donation-page__divider">
+        <span>ou</span>
+      </div>
+
+      <div class="donation-page__custom-amount">
+        <mat-form-field appearance="outline" class="custom-amount-field">
+          <mat-label>Montante personalizado</mat-label>
+          <input 
+            matInput 
+            type="number" 
+            [(ngModel)]="selectedAmount" 
+            min="1" 
+            max="10000" 
+            step="1"
+            placeholder="Insere o valor">
+          <span matTextPrefix>€&nbsp;</span>
+          <mat-hint>Entre €1 e €10.000</mat-hint>
+        </mat-form-field>
+      </div>
+
+      <button 
+        mat-raised-button 
+        color="primary" 
+        class="donation-page__submit-btn"
+        (click)="proceedToCheckout()" 
+        [disabled]="!selectedAmount || selectedAmount < 1">
+        <mat-icon>lock</mat-icon>
+        Continuar para pagamento seguro
+      </button>
+
+      <p class="donation-page__secure-note">
+        <mat-icon>shield</mat-icon>
+        Pagamento 100% seguro processado pela Stripe
+      </p>
+    </div>
+
+    <!-- Loading/Error/Success States -->
+    <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+    <p class="donation-page__error" *ngIf="error">{{ error }}</p>
+    <p class="donation-page__success" *ngIf="paid">Obrigado pelo teu apoio! 💜</p>
+
+    <!-- Back Button (when checkout is shown) -->
+    <button mat-button *ngIf="!showAmountSelection && !loading && !paid" (click)="goBack()" class="donation-page__back">
+      <mat-icon>arrow_back</mat-icon> Alterar montante
+    </button>
+
+    <!-- Embedded Checkout Container -->
+    <div #checkoutContainer class="donation-page__checkout"></div>
+  </div>
+</section>

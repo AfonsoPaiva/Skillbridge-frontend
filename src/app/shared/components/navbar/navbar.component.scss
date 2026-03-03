@@ -1,0 +1,161 @@
+@use '../../../../styles/variables' as v;
+@use '../../../../styles/mixins' as m;
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid transparent;
+  transition: border-color v.$transition-base, box-shadow v.$transition-base,
+              opacity 400ms ease, transform 400ms ease;
+
+  &.scrolled {
+    border-bottom-color: v.$color-border;
+    box-shadow: v.$shadow-sm;
+  }
+
+  &--hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-100%);
+  }
+
+  &__inner {
+    @include m.flex-between;
+    height: 64px;
+  }
+
+  &__logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    transition: all v.$transition-base;
+
+    &:hover {
+      transform: translateY(-2px);
+      opacity: 0.8;
+    }
+
+    &-full {
+      width: 140px;
+      height: 42px;
+      transition: all v.$transition-base;
+      
+      path {
+        transition: fill v.$transition-base;
+      }
+    }
+  }
+
+  &__links {
+    display: none;
+    align-items: center;
+    gap: v.$space-2;
+
+    @include m.md {
+      display: flex;
+    }
+
+    // Navigation links
+    a[mat-button] {
+      color: v.$color-text !important;
+      font-weight: v.$font-weight-medium !important;
+      
+      &.active {
+        color: v.$color-primary !important;
+        background-color: rgba(104, 0, 122, 0.08) !important;
+      }
+      
+      &:hover {
+        background-color: rgba(104, 0, 122, 0.04) !important;
+      }
+    }
+
+    // Icon buttons
+    button[mat-icon-button],
+    a[mat-icon-button] {
+      color: v.$color-text !important;
+      
+      mat-icon {
+        color: v.$color-text !important;
+      }
+      
+      &:hover {
+        background-color: rgba(104, 0, 122, 0.08) !important;
+        
+        mat-icon {
+          color: v.$color-primary !important;
+        }
+      }
+    }
+
+    // Messages icon with badge
+    a[matBadge] {
+      position: relative;
+      
+      ::ng-deep .mat-badge-content {
+        top: 10px !important;
+        right: 10px !important;
+        background-color: #f44336 !important;
+        font-size: 10px !important;
+        font-weight: v.$font-weight-bold !important;
+        min-width: 18px !important;
+        height: 18px !important;
+        line-height: 18px !important;
+      }
+    }
+
+    .avatar-btn {
+      mat-icon {
+        color: v.$color-text !important;
+      }
+      
+      &:hover mat-icon {
+        color: v.$color-primary !important;
+      }
+    }
+  }
+
+  &__hamburger {
+    display: flex;
+    @include m.md { display: none; }
+  }
+
+  &__mobile {
+    display: flex;
+    flex-direction: column;
+    gap: v.$space-2;
+    padding: 0 v.$space-4;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height v.$transition-base, padding v.$transition-base;
+
+    &.open {
+      max-height: 300px;
+      padding: v.$space-4;
+      border-top: 1px solid v.$color-border;
+    }
+
+    @include m.md { display: none; }
+    
+    a {
+      position: relative;
+    }
+  }
+}
+
+.mobile-badge {
+  display: inline-block;
+  background: #f44336;
+  color: white;
+  font-size: 11px;
+  font-weight: v.$font-weight-bold;
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-left: v.$space-2;
+  line-height: 1;
+}

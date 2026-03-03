@@ -1,0 +1,47 @@
+<!-- Header -->
+<div mat-dialog-title class="dialog-header">
+  <h2>{{ title }}</h2>
+  <button mat-icon-button (click)="close()" matTooltip="Fechar">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<!-- Content -->
+<mat-dialog-content>
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-state">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>A carregar...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="!loading && error" class="error-state">
+    <mat-icon>error_outline</mat-icon>
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Empty -->
+  <div *ngIf="!loading && !error && users.length === 0" class="empty-state">
+    <mat-icon>people_outline</mat-icon>
+    <p *ngIf="data.type === 'followers'">Ainda não há seguidores.</p>
+    <p *ngIf="data.type === 'following'">Ainda não segue ninguém.</p>
+  </div>
+
+  <!-- User list -->
+  <div *ngIf="!loading && !error && users.length > 0" class="users-list">
+    <a *ngFor="let user of users" 
+       [routerLink]="['/perfil', user.id]" 
+       (click)="close()"
+       class="user-item"
+       matRipple>
+      <div class="user-item__avatar">
+        <img [src]="user.avatar_url || 'assets/avatar-placeholder.svg'" [alt]="user.name">
+      </div>
+      <div class="user-item__info">
+        <strong>{{ user.name }}</strong>
+        <p class="text-soft">{{ user.university }} · {{ user.course }}</p>
+      </div>
+      <mat-icon class="user-item__arrow">chevron_right</mat-icon>
+    </a>
+  </div>
+</mat-dialog-content>

@@ -1,0 +1,67 @@
+@use '../../../../styles/variables' as v;
+@use '../../../../styles/mixins' as m;
+
+.footer {
+  background: v.$color-text;
+  color: rgba(255,255,255,0.75);
+  padding-top: v.$space-16;
+
+  &__inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: v.$space-8;
+    padding-bottom: v.$space-12;
+
+    @include m.md {
+      grid-template-columns: 2fr 1fr 1fr;
+    }
+  }
+
+  &__brand {
+    .footer__logo {
+      font-size: 22px;
+      font-weight: v.$font-weight-bold;
+      color: #fff;
+      display: block;
+      margin-bottom: v.$space-3;
+    }
+    p {
+      font-size: 14px;
+      line-height: 1.7;
+    }
+  }
+
+  &__links {
+    display: flex;
+    flex-direction: column;
+    gap: v.$space-2;
+
+    h4 {
+      color: #fff;
+      font-weight: v.$font-weight-semibold;
+      margin-bottom: v.$space-2;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    a {
+      color: rgba(255,255,255,0.65);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color v.$transition-fast;
+
+      &:hover {
+        color: lighten(v.$color-secondary, 15%);
+      }
+    }
+  }
+
+  &__bottom {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding: v.$space-4 0;
+    text-align: center;
+    font-size: 13px;
+    @include m.container;
+  }
+}

@@ -1,0 +1,245 @@
+<div class="edit-page">
+  <div class="container">
+    <!-- Skeleton -->
+    <div *ngIf="loading" class="edit-skeleton">
+      <app-skeleton width="160px" height="28px"></app-skeleton>
+      <app-skeleton height="56px"></app-skeleton>
+      <app-skeleton height="56px"></app-skeleton>
+      <app-skeleton height="100px"></app-skeleton>
+    </div>
+
+    <ng-container *ngIf="!loading">
+      <div class="edit-page__header">
+        <button mat-icon-button routerLink="/perfil/eu" matTooltip="Voltar ao perfil">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h1>Editar perfil</h1>
+      </div>
+
+      <!-- Avatar -->
+      <div class="avatar-upload">
+        <div class="avatar-upload__img">
+          <img [src]="avatarPreview || 'assets/avatar-placeholder.svg'" alt="Avatar">
+          <mat-spinner *ngIf="uploadingAvatar" diameter="32" class="avatar-spinner"></mat-spinner>
+        </div>
+        <div class="avatar-upload__actions">
+          <label mat-stroked-button color="primary" class="avatar-label">
+            <mat-icon>upload</mat-icon> Alterar foto
+            <input type="file" accept="image/*" (change)="onAvatarChange($event)" hidden>
+          </label>
+          <p class="text-soft">JPEG, PNG, GIF — máx. 10MB. Redimensionado para 400×400.</p>
+        </div>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="save()" class="edit-form">
+        <!-- Name -->
+        <mat-form-field appearance="outline">
+          <mat-label>Nome *</mat-label>
+          <input matInput formControlName="name">
+          <mat-error *ngIf="form.get('name')?.errors?.['required']">Obrigatório.</mat-error>
+        </mat-form-field>
+
+        <!-- Role selection -->
+        <div class="role-cards" style="margin-bottom:16px">
+          <div class="role-card" [class.selected]="form.get('role')?.value === 'needs_help'"
+               (click)="form.patchValue({ role: 'needs_help' })"
+               matRipple
+               [matRippleCentered]="true"
+               [matRippleRadius]="90"
+               [matRippleAnimation]="{ enterDuration: 220, exitDuration: 220 }">
+            <mat-icon>lightbulb</mat-icon>
+            <strong>Tenho um projeto</strong>
+          </div>
+          <div class="role-card" [class.selected]="form.get('role')?.value === 'helper'"
+               (click)="form.patchValue({ role: 'helper' })"
+               matRipple
+               [matRippleCentered]="true"
+               [matRippleRadius]="90"
+               [matRippleAnimation]="{ enterDuration: 220, exitDuration: 220 }">
+            <mat-icon>build</mat-icon>
+            <strong>Quero colaborar</strong>
+          </div>
+          <div class="role-card" [class.selected]="form.get('role')?.value === 'both'"
+               (click)="form.patchValue({ role: 'both' })"
+               matRipple
+               [matRippleCentered]="true"
+               [matRippleRadius]="90"
+               [matRippleAnimation]="{ enterDuration: 220, exitDuration: 220 }">
+            <mat-icon>swap_horiz</mat-icon>
+            <strong>Ambos</strong>
+          </div>
+        </div>
+        <mat-error *ngIf="form.get('role')?.touched && form.get('role')?.invalid">Escolhe um papel.</mat-error>
+
+        <div class="two-cols">
+          <!-- University -->
+          <mat-form-field appearance="outline">
+            <mat-label>Universidade</mat-label>
+            <input matInput
+                   formControlName="university"
+                   placeholder="Pesquisar instituição…"
+                   [matAutocomplete]="uniAuto"
+                   autocomplete="off">
+            <mat-spinner matSuffix *ngIf="loadingUniversities" diameter="16"></mat-spinner>
+            <mat-icon matSuffix *ngIf="!loadingUniversities">school</mat-icon>
+            <mat-autocomplete #uniAuto="matAutocomplete">
+              <mat-option *ngFor="let u of filteredUniversities$ | async" [value]="u">
+                {{ u }}
+              </mat-option>
+              <mat-option *ngIf="(filteredUniversities$ | async)?.length === 0 && !loadingUniversities"
+                          disabled>
+                Nenhuma instituição encontrada — podes escrever o nome manualmente.
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+
+          <!-- Course -->
+          <mat-form-field appearance="outline">
+            <mat-label>Curso</mat-label>
+            <input matInput
+                   formControlName="course"
+                   [matAutocomplete]="courseAuto"
+                   autocomplete="off">
+            <mat-spinner matSuffix *ngIf="loadingCourses" diameter="16"></mat-spinner>
+            <mat-autocomplete #courseAuto="matAutocomplete">
+              <mat-option *ngFor="let c of filteredCourses$ | async" [value]="c">
+                {{ c }}
+              </mat-option>
+              <mat-option *ngIf="(filteredCourses$ | async)?.length === 0 && !loadingCourses" disabled>
+                Nenhum curso encontrado — escreve manualmente se quiseres.
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" style="max-width:240px">
+          <mat-label>Ano curricular</mat-label>
+          <mat-select formControlName="year">
+            <mat-option *ngFor="let y of yearOptions" [value]="y.value">{{ y.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Bio -->
+        <mat-form-field appearance="outline">
+          <mat-label>Biografia</mat-label>
+          <textarea matInput formControlName="bio" rows="4"
+                    placeholder="Apresenta-te à comunidade..."></textarea>
+          <mat-hint>Conta o que fazes, os teus interesses e objetivos.</mat-hint>
+        </mat-form-field>
+
+        <div class="section-card" formGroupName="contact_links">
+          <h3><mat-icon>link</mat-icon> Links sociais</h3>
+          <p class="text-soft">Adiciona os teus links para aparecerem no perfil.</p>
+
+          <div class="two-cols">
+            <mat-form-field appearance="outline">
+              <mat-label>Website</mat-label>
+              <input matInput formControlName="website" placeholder="https://teusite.com">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>GitHub</mat-label>
+              <input matInput formControlName="github" placeholder="@teu-utilizador">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>LinkedIn</mat-label>
+              <input matInput formControlName="linkedin" placeholder="@teu-perfil">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Instagram</mat-label>
+              <input matInput formControlName="instagram" placeholder="@teu-perfil">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Facebook</mat-label>
+              <input matInput formControlName="facebook" placeholder="@teu-perfil">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>X / Twitter</mat-label>
+              <input matInput formControlName="twitter" placeholder="@teu-perfil">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>TikTok</mat-label>
+              <input matInput formControlName="tiktok" placeholder="@teu-perfil">
+            </mat-form-field>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Skills section -->
+        <div class="skills-section">
+          <h2><mat-icon>build</mat-icon> Competências</h2>
+          <p class="text-soft">As competências que mostras aos outros membros da comunidade.</p>
+
+          <!-- Current skills -->
+          <mat-chip-set class="current-skills">
+            <mat-chip *ngFor="let s of userSkills"
+                      [highlighted]="removingSkill === s"
+                      (removed)="removeSkill(s)">
+              {{ s }}
+              <button matChipRemove [disabled]="removingSkill === s">
+                <mat-icon>{{ removingSkill === s ? 'hourglass_empty' : 'cancel' }}</mat-icon>
+              </button>
+            </mat-chip>
+          </mat-chip-set>
+
+          <p class="text-soft empty-skills" *ngIf="userSkills.length === 0">
+            <mat-icon>info</mat-icon> Ainda não adicionaste competências.
+          </p>
+
+          <!-- Add skill -->
+          <div class="add-skill">
+            <mat-form-field appearance="outline">
+              <mat-label>Adicionar competência</mat-label>
+              <input matInput
+                     [formControl]="skillSearchControl"
+                     [matAutocomplete]="skillAuto"
+                     placeholder="Pesquisar competência…"
+                     autocomplete="off">
+              <mat-icon matSuffix>search</mat-icon>
+              <mat-autocomplete #skillAuto="matAutocomplete" (optionSelected)="onSkillSelected($event)">
+                <mat-option *ngFor="let s of filteredSkills$ | async" [value]="s">
+                  {{ s }}
+                </mat-option>
+                <mat-option *ngIf="(filteredSkills$ | async)?.length === 0" disabled>
+                  Nenhuma competência encontrada.
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+            <button type="button" mat-raised-button color="primary"
+                    [disabled]="!skillSearchControl.value" (click)="addSkill()">
+              <mat-icon>add</mat-icon> Adicionar
+            </button>
+          </div>
+        </div>
+
+        <!-- Danger zone -->
+        <div class="section-card" style="border-color:#e53e3e;background:#fff5f5;">
+          <h3><mat-icon style="color:#e53e3e">warning</mat-icon> Zona perigosa</h3>
+          <p class="text-soft">Operações irreversíveis.</p>
+          <button type="button" mat-stroked-button color="warn" (click)="sendPasswordReset()">
+            <mat-icon>lock</mat-icon> Redefinir palavra-passe via email
+          </button>
+          <button type="button" mat-raised-button color="warn" (click)="deleteAccount()">
+            <mat-icon>delete_forever</mat-icon> Eliminar conta
+          </button>
+        </div>
+
+        <!-- Save -->
+        <div class="edit-form__footer">
+          <button type="button" mat-button routerLink="/perfil/eu">Cancelar</button>
+          <button type="submit" mat-raised-button color="primary"
+                  [disabled]="saving || uploadingAvatar">
+            <mat-spinner *ngIf="saving" diameter="18"></mat-spinner>
+            <span *ngIf="!saving">Guardar alterações</span>
+          </button>
+        </div>
+      </form>
+    </ng-container>
+  </div>
+</div>

@@ -1,0 +1,196 @@
+<!-- ===================== HERO ===================== -->
+<section class="hero">
+  <div class="container hero__content" @fadeUp>
+    <div class="hero__badge">
+      <mat-icon>bolt</mat-icon>
+      <span>Plataforma para estudantes</span>
+    </div>
+    <h1 class="hero__title">
+      Troca <span class="text-primary">competências</span>,<br>
+      constrói o teu <span class="text-secondary">futuro</span>
+    </h1>
+    <p class="hero__sub">
+      SkillBridge é uma incubadora de talentos descentralizada.<br>
+      O foco não é o lucro financeiro — é o <strong>lucro curricular</strong>.
+    </p>
+    <div class="hero__cta">
+      <a (click)="openOnboarding()" mat-raised-button color="primary" class="cta-btn cta-btn--primary">
+        <mat-icon>{{ auth.isLoggedIn ? 'dashboard' : 'rocket_launch' }}</mat-icon>
+        {{ auth.isLoggedIn ? 'Aceder à sua dashboard' : 'Começar agora' }}
+      </a>
+      <a routerLink="/projects" mat-stroked-button color="primary" class="cta-btn">
+        Ver projetos
+      </a>
+    </div>
+  </div>
+  <div class="hero__scroll-hint">
+    <mat-icon>expand_more</mat-icon>
+  </div>
+</section>
+
+<!-- ===================== COMO FUNCIONA ===================== -->
+<section class="section" id="como-funciona">
+  <div class="container">
+    <div class="section__header" @fadeUp>
+      <span class="section__tag">Processo</span>
+      <h2>Como funciona o Matchmaking?</h2>
+      <p>Três passos simples para encontrar o parceiro certo para o teu projeto.</p>
+    </div>
+    <div class="steps" @fadeUp>
+      <div class="step" *ngFor="let s of steps; let i = index">
+        <div class="step__number">{{ i + 1 }}</div>
+        <div class="step__icon">
+          <mat-icon>{{ s.icon }}</mat-icon>
+        </div>
+        <h3>{{ s.title }}</h3>
+        <p>{{ s.desc }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== MISSÃO ===================== -->
+<section class="section section--alt" id="missao">
+  <div class="container mission">
+    <div class="mission__text" @fadeUp>
+      <span class="section__tag">Missão</span>
+      <h2>Democratizar o acesso a<br>portfólios de qualidade</h2>
+      <p>
+        Através da <strong>economia de partilha de competências (skill barter)</strong>,
+        acreditamos que qualquer estudante — independentemente do seu fundo económico —
+        pode construir um portfólio que impressiona empregadores.
+      </p>
+      <ul class="mission__audience">
+        <li><mat-icon color="primary">check_circle</mat-icon> Estudantes do ensino superior</li>
+        <li><mat-icon color="primary">check_circle</mat-icon> Alunos de cursos profissionais</li>
+        <li><mat-icon color="primary">check_circle</mat-icon> Autodidatas e bootcampers</li>
+      </ul>
+      <a (click)="openOnboarding()" mat-raised-button color="primary">
+        Juntar-me à comunidade
+      </a>
+    </div>
+    <div class="mission__visual" @fadeUp>
+      <div class="mission__card">
+        <mat-icon class="mission__icon">swap_horiz</mat-icon>
+        <strong>Skill Barter</strong>
+        <p>Eu sei <span class="chip">Java</span>, precisas de <span class="chip chip--green">UI Design</span></p>
+        <p>Tu sabes <span class="chip chip--green">Figma</span>, eu preciso de <span class="chip">Frontend</span></p>
+        <div class="mission__match">
+          <mat-icon color="accent">favorite</mat-icon>
+          <strong>É um Match!</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== BENEFÍCIOS ===================== -->
+<section class="section" id="beneficios">
+  <div class="container">
+    <div class="section__header" @fadeUp>
+      <span class="section__tag">Porquê?</span>
+      <h2>O que ganhas com o SkillBridge?</h2>
+    </div>
+    <div class="benefits" @fadeUp>
+      <div class="benefit" *ngFor="let b of benefits">
+        <div class="benefit__icon">
+          <mat-icon>{{ b.icon }}</mat-icon>
+        </div>
+        <h3>{{ b.title }}</h3>
+        <p>{{ b.desc }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== APOIADO POR ===================== -->
+<app-university-carousel></app-university-carousel>
+
+<!-- ===================== PROJETOS DESTAQUE ===================== -->
+<section class="section section--alt" id="projetos">
+  <div class="container">
+    <div class="section__header" @fadeUp>
+      <span class="section__tag">Comunidade</span>
+      <h2>Projetos em destaque</h2>
+      <p>Vê o que os estudantes estão a construir agora.</p>
+    </div>
+
+    <!-- Skeleton loading -->
+    <div class="projects-grid" *ngIf="loadingProjects">
+      <app-card-skeleton *ngFor="let _ of [1,2,3,4,5,6]"></app-card-skeleton>
+    </div>
+
+    <!-- Projects grid -->
+    <div class="projects-grid" *ngIf="!loadingProjects && projects.length > 0"
+         [@staggerCards]="projects.length">
+      <mat-card class="project-card" *ngFor="let p of projects" matRipple
+                [routerLink]="['/projects', p.slug]">
+        <div class="project-card__img">
+          <img [src]="p.image_url || 'assets/project-placeholder.svg'" [alt]="p.title">
+          <span class="project-card__badge" [class.open]="p.status==='open'">
+            {{ getStatusLabel(p.status) }}
+          </span>
+        </div>
+        <mat-card-content class="project-card__body">
+          <h3 class="project-card__title">{{ p.title }}</h3>
+          <p class="project-card__desc">{{ p.description }}</p>
+          <div class="project-card__roles" *ngIf="p.roles?.length">
+            <span class="chip" *ngFor="let r of p.roles?.slice(0,3)">{{ r.skill_name || r.title }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Empty state -->
+    <div class="empty-state" *ngIf="!loadingProjects && projects.length === 0" @fadeUp>
+      <mat-icon>folder_open</mat-icon>
+      <h3>Ainda não há projetos</h3>
+      <p>Sê o primeiro a criar um projeto!</p>
+      <a routerLink="/dashboard" mat-raised-button color="primary">Criar projeto</a>
+    </div>
+
+    <div class="section__cta" *ngIf="projects.length > 0">
+      <a routerLink="/projects" mat-stroked-button color="primary">Ver todos os projetos</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== DOAÇÃO ===================== -->
+<section class="section section--donation" id="donation">
+  <div class="container donation-section" @fadeUp>
+    <div class="donation-content">
+      <h2>Apoia-me</h2>
+      <p>
+        Mantenho a plataforma 100% gratuita para estudantes. 
+        O teu donativo ajuda-me a continuar a oferecer este serviço e a 
+        desenvolver novas funcionalidades.
+      </p>
+      <div class="donation-stats">
+        <div class="stat">
+          <mat-icon>people</mat-icon>
+          <span>{{ platformStats.users > 0 ? '+' + platformStats.users : '+0' }} estudantes</span>
+        </div>
+        <div class="stat">
+          <mat-icon>work</mat-icon>
+          <span>{{ platformStats.projects > 0 ? '+' + platformStats.projects : '+0' }} projetos</span>
+        </div>
+        <div class="stat">
+          <mat-icon>verified</mat-icon>
+          <span>100% gratuito</span>
+        </div>
+      </div>
+      <button 
+        mat-raised-button 
+        color="primary" 
+        class="donation-btn"
+        (click)="openDonationDialog()">
+        <mat-icon>favorite</mat-icon>
+        Fazer uma doação
+      </button>
+      <p class="donation-note">
+        <mat-icon>lock</mat-icon>
+        Pagamento seguro
+      </p>
+    </div>
+  </div>
+</section>
