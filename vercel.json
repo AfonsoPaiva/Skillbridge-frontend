@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "installCommand": "npm install",
-  "buildCommand": "npx ng build --configuration production",
+  "buildCommand": "npm install && npx ng build --configuration production",
   "outputDirectory": "dist/skillbridge/browser",
+  "installCommand": "npm install --legacy-peer-deps",
   "framework": null,
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
