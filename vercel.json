@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "installCommand": "npm install",
   "buildCommand": "npx ng build --configuration production",
   "outputDirectory": "dist/skillbridge/browser",
   "framework": null,
