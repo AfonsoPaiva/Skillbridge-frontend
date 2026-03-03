@@ -26,7 +26,6 @@
     "firebase": "^12.9.0",
     "rxjs": "~7.8.0",
     "splide": "^0.0.1-security",
-    "swiper": "^12.1.2",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.0"
   },
