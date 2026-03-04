@@ -37,11 +37,11 @@
 
   &__back {
     flex-shrink: 0;
-    display: none; // hidden on desktop — sidebar always visible
+    display: flex; // visible on mobile by default
   }
 
-  @include m.sm {
-    &__back { display: flex; }
+  @include m.md {
+    &__back { display: none; } // hidden on desktop — sidebar always visible
   }
 
   &__avatar {
@@ -67,6 +67,12 @@
     display: flex;
     flex-direction: column;
     gap: 1px;
+    cursor: pointer;
+    transition: opacity v.$transition-fast;
+    
+    &:hover {
+      opacity: 0.75;
+    }
   }
 
   &__name {

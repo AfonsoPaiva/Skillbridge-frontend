@@ -168,6 +168,12 @@ export class ConversationComponent implements OnInit, AfterViewChecked {
     this.router.navigate(['/messages']);
   }
 
+  goToProfile(): void {
+    if (this.otherUser?.slug) {
+      this.router.navigate(['/perfil', this.otherUser.slug]);
+    }
+  }
+
   respondApplication(msg: Message, action: 'accept' | 'reject'): void {
     if (!msg.meta_project_id || !msg.meta_member_id) return;
     this.respondingIds.add(msg.meta_member_id);

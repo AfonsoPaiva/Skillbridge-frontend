@@ -8,13 +8,13 @@
       <img *ngIf="otherUser!.avatar_url" [src]="otherUser!.avatar_url" [alt]="otherUser!.name" />
       <span *ngIf="!otherUser!.avatar_url">{{ getInitial(otherUser!.name) }}</span>
     </div>
-    <div class="conv-header__info">
-      <span class="conv-header__name">{{ otherUser?.name || 'Conversa' }}</span>
-      <span class="conv-header__sub" *ngIf="otherUser?.university">{{ otherUser!.university }}</span>
+    <div class="conv-header__info" (click)="goToProfile()" *ngIf="otherUser">
+      <span class="conv-header__name">{{ otherUser.name }}</span>
+      <span class="conv-header__sub" *ngIf="otherUser.university">{{ otherUser.university }}</span>
     </div>
-    <button mat-icon-button [routerLink]="['/perfil', otherUser!.slug]" *ngIf="otherUser" matTooltip="Ver perfil">
-      <mat-icon>person</mat-icon>
-    </button>
+    <div class="conv-header__info" *ngIf="!otherUser">
+      <span class="conv-header__name">Conversa</span>
+    </div>
   </div>
 
   <!-- Messages -->
