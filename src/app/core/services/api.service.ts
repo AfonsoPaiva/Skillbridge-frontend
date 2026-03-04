@@ -32,7 +32,7 @@ export class ApiService {
     return this.http.get<User>(`${this.base}/users/me`, { headers: this.authHeaders() });
   }
 
-  getUserById(id: number): Observable<User> {
+  getUserById(id: string | number): Observable<User> {
     return this.http.get<User>(`${this.base}/users/${id}`);
   }
 
@@ -180,34 +180,34 @@ export class ApiService {
   }
 
   // ── Follow ────────────────────────────────────
-  followUser(userId: number): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`${this.base}/users/${userId}/follow`, {}, {
+  followUser(userIdOrSlug: string | number): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.base}/users/${userIdOrSlug}/follow`, {}, {
       headers: this.authHeaders()
     });
   }
 
-  unfollowUser(userId: number): Observable<{ message: string }> {
-    return this.http.delete<{ message: string }>(`${this.base}/users/${userId}/follow`, {
+  unfollowUser(userIdOrSlug: string | number): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.base}/users/${userIdOrSlug}/follow`, {
       headers: this.authHeaders()
     });
   }
 
-  getFollowStatus(userId: number): Observable<{ is_following: boolean }> {
-    return this.http.get<{ is_following: boolean }>(`${this.base}/users/${userId}/follow/status`, {
+  getFollowStatus(userIdOrSlug: string | number): Observable<{ is_following: boolean }> {
+    return this.http.get<{ is_following: boolean }>(`${this.base}/users/${userIdOrSlug}/follow/status`, {
       headers: this.authHeaders()
     });
   }
 
-  getFollowCounts(userId: number): Observable<FollowCounts> {
-    return this.http.get<FollowCounts>(`${this.base}/users/${userId}/follow/counts`);
+  getFollowCounts(userIdOrSlug: string | number): Observable<FollowCounts> {
+    return this.http.get<FollowCounts>(`${this.base}/users/${userIdOrSlug}/follow/counts`);
   }
 
-  getFollowers(userId: number): Observable<FollowList> {
-    return this.http.get<FollowList>(`${this.base}/users/${userId}/followers`);
+  getFollowers(userIdOrSlug: string | number): Observable<FollowList> {
+    return this.http.get<FollowList>(`${this.base}/users/${userIdOrSlug}/followers`);
   }
 
-  getFollowing(userId: number): Observable<FollowList> {
-    return this.http.get<FollowList>(`${this.base}/users/${userId}/following`);
+  getFollowing(userIdOrSlug: string | number): Observable<FollowList> {
+    return this.http.get<FollowList>(`${this.base}/users/${userIdOrSlug}/following`);
   }
 
   // ── Guest sessions ────────────────────────────

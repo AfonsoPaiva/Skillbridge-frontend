@@ -12,7 +12,7 @@
       <span class="conv-header__name">{{ otherUser?.name || 'Conversa' }}</span>
       <span class="conv-header__sub" *ngIf="otherUser?.university">{{ otherUser!.university }}</span>
     </div>
-    <button mat-icon-button [routerLink]="['/perfil', otherUser!.id]" *ngIf="otherUser" matTooltip="Ver perfil">
+    <button mat-icon-button [routerLink]="['/perfil', otherUser!.slug]" *ngIf="otherUser" matTooltip="Ver perfil">
       <mat-icon>person</mat-icon>
     </button>
   </div>

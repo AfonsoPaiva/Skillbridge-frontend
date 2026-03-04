@@ -66,22 +66,23 @@ export class ProfileComponent implements OnInit {
           this.socialLinks = this.buildSocialLinks(u.contact_links);
           this.loading = false;
           this.loadReviews(u.id);
-          this.loadFollowCounts(u.id);
+          this.loadFollowCounts(u.slug);
           this.loadUserProjects(u.id);
         },
         error: () => { this.loading = false; }
       });
     } else {
-      this.api.getUserById(Number(idParam)).subscribe({
+      // idParam can be either a slug (string) or an ID (numeric string)
+      this.api.getUserById(idParam!).subscribe({
         next: (u: User) => {
           this.user = u;
           this.socialLinks = this.buildSocialLinks(u.contact_links);
           this.loading = false;
           this.loadReviews(u.id);
-          this.loadFollowCounts(u.id);
+          this.loadFollowCounts(u.slug);
           this.loadUserProjects(u.id);
           if (this.auth.isLoggedIn) {
-            this.api.getFollowStatus(u.id).subscribe({
+            this.api.getFollowStatus(u.slug).subscribe({
               next: r => this.isFollowing = r.is_following,
               error: () => {}
             });
@@ -101,8 +102,8 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  loadFollowCounts(userId: number): void {
-    this.api.getFollowCounts(userId).subscribe({
+  loadFollowCounts(userIdOrSlug: string | number): void {
+    this.api.getFollowCounts(userIdOrSlug).subscribe({
       next: c => this.followCounts = c,
       error: () => {}
     });
@@ -121,8 +122,8 @@ export class ProfileComponent implements OnInit {
     }
     this.followLoading = true;
     const action = this.isFollowing
-      ? this.api.unfollowUser(this.user.id)
-      : this.api.followUser(this.user.id);
+      ? this.api.unfollowUser(this.user.slug)
+      : this.api.followUser(this.user.slug);
     action.subscribe({
       next: () => {
         this.isFollowing = !this.isFollowing;
@@ -228,7 +229,7 @@ export class ProfileComponent implements OnInit {
       width: '480px',
       maxWidth: '95vw',
       data: {
-        userId: this.user.id,
+        userId: this.user.slug,
         type: 'followers'
       }
     });
@@ -240,7 +241,7 @@ export class ProfileComponent implements OnInit {
       width: '480px',
       maxWidth: '95vw',
       data: {
-        userId: this.user.id,
+        userId: this.user.slug,
         type: 'following'
       }
     });

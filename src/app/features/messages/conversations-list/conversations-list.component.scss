@@ -206,13 +206,45 @@
 
   // router-outlet renders no DOM — the projected component fills this flex column
   > * { flex: 1; min-height: 0; }
-
-  @include m.sm { display: none; }
 }
 
-@include m.sm {
-  .msgs-sidebar { width: 100%; }
-  .msgs-detail { display: none; }
-  .msgs-page--active .msgs-sidebar { display: none; }
-  .msgs-page--active .msgs-detail { display: flex; flex: 1; }
+// Mobile layout: List first, then conversation in separate view
+@media (max-width: 767px) {
+  .msgs-page {
+    // Default: show only sidebar (list)
+    .msgs-sidebar {
+      width: 100%;
+      border-right: none;
+    }
+    
+    .msgs-detail {
+      display: none;
+    }
+    
+    // When conversation is active: hide sidebar, show detail
+    &--active {
+      .msgs-sidebar {
+        display: none;
+      }
+      
+      .msgs-detail {
+        display: flex;
+        width: 100%;
+      }
+    }
+  }
+}
+
+// Desktop/tablet: Always show both panels
+@include m.md {
+  .msgs-page {
+    .msgs-sidebar {
+      width: 320px;
+      display: flex !important;
+    }
+    
+    .msgs-detail {
+      display: flex !important;
+    }
+  }
 }

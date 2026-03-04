@@ -5,6 +5,7 @@ import { MaterialModule } from './material.module';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { SkeletonComponent, CardSkeletonComponent } from './components/skeleton/skeleton.component';
 import { UniversityCarouselComponent } from './components/university-carousel/university-carousel.component';
+import { LazyImgDirective } from './directives/lazy-img.directive';
 
 @NgModule({
   declarations: [
@@ -12,7 +13,14 @@ import { UniversityCarouselComponent } from './components/university-carousel/un
     CardSkeletonComponent,
     UniversityCarouselComponent
   ],
-  imports: [CommonModule, RouterModule, MaterialModule, ReactiveFormsModule, FormsModule],
+  imports: [
+    CommonModule, 
+    RouterModule, 
+    MaterialModule, 
+    ReactiveFormsModule, 
+    FormsModule,
+    LazyImgDirective
+  ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
     CommonModule,
@@ -22,7 +30,8 @@ import { UniversityCarouselComponent } from './components/university-carousel/un
     FormsModule,
     SkeletonComponent,
     CardSkeletonComponent,
-    UniversityCarouselComponent
+    UniversityCarouselComponent,
+    LazyImgDirective
   ]
 })
 export class SharedModule {}

@@ -30,7 +30,7 @@
   <!-- User list -->
   <div *ngIf="!loading && !error && users.length > 0" class="users-list">
     <a *ngFor="let user of users" 
-       [routerLink]="['/perfil', user.id]" 
+       [routerLink]="['/perfil', user.slug]" 
        (click)="close()"
        class="user-item"
        matRipple>

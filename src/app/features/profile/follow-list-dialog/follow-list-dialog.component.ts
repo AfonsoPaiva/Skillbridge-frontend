@@ -4,7 +4,7 @@ import { ApiService } from '../../../core/services/api.service';
 import { User } from '../../../core/models/models';
 
 export interface FollowListDialogData {
-  userId: number;
+  userId: string | number;
   type: 'followers' | 'following';
 }
 

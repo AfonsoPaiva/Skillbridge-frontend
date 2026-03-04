@@ -112,22 +112,28 @@ export class ProjectDetailComponent implements OnInit {
 
   removeMember(member: ProjectMember): void {
     if (!this.project) return;
-    const confirmed = window.confirm(`Tens a certeza que queres remover ${member.user?.name} da equipa?`);
-    if (!confirmed) return;
     
-    this.api.removeProjectMember(this.project.slug, member.id).subscribe({
-      next: () => {
-        this.snack.open('Membro removido com sucesso.', 'Fechar', { duration: 3000 });
-        // Remove from local list
-        this.members = this.members.filter(m => m.id !== member.id);
-        // Reload project to update role counts
-        this.api.getProject(this.project!.slug).subscribe({
-          next: (p: Project) => this.project = p
-        });
-      },
-      error: (e: HttpErrorResponse) => {
-        this.snack.open(e?.error?.error || 'Erro ao remover membro.', 'Fechar', { duration: 4000 });
-      }
+    const snackRef = this.snack.open(
+      `Tens a certeza que queres remover ${member.user?.name} da equipa?`,
+      'Remover',
+      { duration: 5000 }
+    );
+
+    snackRef.onAction().subscribe(() => {
+      this.api.removeProjectMember(this.project!.slug, member.id).subscribe({
+        next: () => {
+          this.snack.open('Membro removido com sucesso.', 'Fechar', { duration: 3000 });
+          // Remove from local list
+          this.members = this.members.filter(m => m.id !== member.id);
+          // Reload project to update role counts
+          this.api.getProject(this.project!.slug).subscribe({
+            next: (p: Project) => this.project = p
+          });
+        },
+        error: (e: HttpErrorResponse) => {
+          this.snack.open(e?.error?.error || 'Erro ao remover membro.', 'Fechar', { duration: 4000 });
+        }
+      });
     });
   }
 
