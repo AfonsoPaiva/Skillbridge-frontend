@@ -49,6 +49,7 @@ export class ConversationComponent implements OnInit, AfterViewChecked {
   error = '';
   shouldScroll = false;
   respondingIds = new Set<number>();
+  readonly MAX_MESSAGE_LENGTH = 100;
 
   constructor(private route: ActivatedRoute, private router: Router, private api: ApiService, private snack: MatSnackBar) {}
 
@@ -117,6 +118,13 @@ export class ConversationComponent implements OnInit, AfterViewChecked {
   send(): void {
     const text = this.newMessage.trim();
     if (!text || this.sending) return;
+    
+    // Validate message length
+    if (text.length > this.MAX_MESSAGE_LENGTH) {
+      this.snack.open(`Mensagem demasiado longa. Máximo: ${this.MAX_MESSAGE_LENGTH} caracteres.`, 'Fechar', { duration: 3000 });
+      return;
+    }
+    
     this.sending = true;
     this.newMessage = '';
     this.api.sendMessage(this.conversationId, text).subscribe({
