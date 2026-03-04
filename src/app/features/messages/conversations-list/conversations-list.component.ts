@@ -34,7 +34,10 @@ export class ConversationsListComponent implements OnInit, OnDestroy {
     // Track active child route for sidebar highlight
     this.routerSub = this.router.events
       .pipe(filter(e => e instanceof NavigationEnd))
-      .subscribe(() => this.syncActiveId());
+      .subscribe(() => {
+        // Use setTimeout to ensure child route is updated
+        setTimeout(() => this.syncActiveId(), 0);
+      });
     this.syncActiveId();
 
     this.api.getMyProfile().subscribe({
@@ -67,6 +70,8 @@ export class ConversationsListComponent implements OnInit, OnDestroy {
   }
 
   open(conv: Conversation): void {
+    // Update activeConvId immediately for instant mobile UI update
+    this.activeConvId = conv.id;
     this.router.navigate([conv.id], { relativeTo: this.route });
   }
 

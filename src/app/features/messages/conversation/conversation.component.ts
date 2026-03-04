@@ -1,9 +1,10 @@
 import {
-  Component, OnInit, ViewChild, ElementRef, AfterViewChecked
+  Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -34,7 +35,7 @@ import { Conversation, Message, User } from '../../../core/models/models';
   templateUrl: './conversation.component.html',
   styleUrls: ['./conversation.component.scss']
 })
-export class ConversationComponent implements OnInit, AfterViewChecked {
+export class ConversationComponent implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('messagesContainer') messagesContainer!: ElementRef<HTMLElement>;
   @ViewChild('messagesEnd') messagesEnd!: ElementRef;
 
@@ -51,18 +52,33 @@ export class ConversationComponent implements OnInit, AfterViewChecked {
   shouldScroll = false;
   respondingIds = new Set<number>();
   readonly MAX_MESSAGE_LENGTH = 100;
+  private routeParamsSub?: Subscription;
 
   constructor(private route: ActivatedRoute, private router: Router, private api: ApiService, private snack: MatSnackBar) {}
 
   ngOnInit(): void {
-    this.conversationId = Number(this.route.snapshot.paramMap.get('id'));
+    // Get current user profile first
     this.api.getMyProfile().subscribe({
       next: me => {
         this.me = me;
-        this.loadConversation();
+        // Subscribe to route param changes to reload conversation when switching
+        this.routeParamsSub = this.route.paramMap.subscribe(params => {
+          const id = params.get('id');
+          if (id) {
+            this.conversationId = Number(id);
+            this.loading = true;
+            this.error = '';
+            this.messages = [];
+            this.loadConversation();
+          }
+        });
       },
       error: () => this.router.navigate(['/messages'])
     });
+  }
+
+  ngOnDestroy(): void {
+    this.routeParamsSub?.unsubscribe();
   }
 
   ngAfterViewChecked(): void {

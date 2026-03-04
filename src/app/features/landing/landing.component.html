@@ -66,7 +66,7 @@
         <li><mat-icon color="primary">check_circle</mat-icon> Autodidatas e bootcampers</li>
       </ul>
       <a (click)="openOnboarding()" mat-raised-button color="primary">
-        Juntar-me à comunidade
+        {{ auth.isLoggedIn ? 'Aceder à minha dashboard' : 'Juntar-me à comunidade' }}
       </a>
     </div>
     <div class="mission__visual" @fadeUp>
