@@ -83,6 +83,30 @@ mat-divider { margin: v.$space-4 0 !important; }
   }
 }
 
+.completed-notice {
+  display: flex;
+  align-items: center;
+  gap: v.$space-2;
+  padding: v.$space-3 v.$space-4;
+  background: rgba(v.$color-primary, 0.08);
+  border-left: 3px solid v.$color-primary;
+  border-radius: v.$radius-sm;
+  margin-bottom: v.$space-4;
+  font-size: 14px;
+  color: v.$color-text;
+  
+  mat-icon {
+    color: v.$color-primary;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+  
+  strong {
+    font-weight: v.$font-weight-semibold;
+  }
+}
+
 .role-form {
   background: v.$color-surface;
   border: 1px solid v.$color-border;

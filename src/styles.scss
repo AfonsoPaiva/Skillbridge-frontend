@@ -98,6 +98,10 @@ html {
   scroll-behavior: smooth;
   font-size: 16px;
   height: 100%;
+  // Optimize font rendering
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
@@ -110,6 +114,9 @@ body {
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
+  // Performance optimizations
+  font-display: swap;
+  min-height: 100vh;
 }
 
 
@@ -131,6 +138,9 @@ body {
   letter-spacing: 0.01em !important;
   transition: all v.$transition-base !important;
   text-transform: none !important;
+  // Performance optimization
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 // Primary buttons
@@ -146,6 +156,7 @@ body {
     background-color: darken(v.$color-primary, 8%) !important;
     box-shadow: v.$shadow-md !important;
     transform: translateY(-1px);
+    will-change: transform;
   }
   
   &:active:not([disabled]) {
@@ -1065,7 +1076,7 @@ body {
 .chip {
   display: inline-flex;
   align-items: center;
-  padding: v.$space-2 v.$space-2;
+  padding: v.$space-2 7px;
   border-radius: 999px;
   font-size: 12px;
   font-weight: v.$font-weight-medium;
@@ -1306,5 +1317,66 @@ body {
     flex-shrink: 0 !important;
     width: 18px !important;
     height: 18px !important;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// ── Mobile Optimizations ──
+// Touch-friendly interactions and performance improvements
+// ═══════════════════════════════════════════════════════════
+
+@media (max-width: 768px) {
+  // Improve touch targets
+  button, a, .mat-mdc-button, .mat-mdc-icon-button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  // Optimize scroll performance
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  // Prevent text size adjustment
+  html {
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  
+  // Optimize images for mobile
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  // Reduce motion for performance
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+  
+  // Container optimization for mobile
+  .container {
+    padding-left: v.$space-4;
+    padding-right: v.$space-4;
+  }
+}
+
+// Touch device optimizations
+@media (hover: none) and (pointer: coarse) {
+  // Remove hover effects on touch devices
+  .mat-mdc-button:hover:not([disabled]),
+  .mat-mdc-raised-button:hover:not([disabled]),
+  .mat-mdc-icon-button:hover:not([disabled]) {
+    transform: none !important;
+  }
+  
+  // Optimize ripple effect
+  .mat-ripple {
+    pointer-events: none;
   }
 }

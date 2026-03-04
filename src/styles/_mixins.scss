@@ -69,3 +69,18 @@
   @include md { padding: 0 v.$space-6; }
   @include lg { padding: 0 v.$space-8; }
 }
+
+// ── Performance optimization ─────────────────────
+@mixin gpu-accelerate {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+@mixin optimize-animation {
+  will-change: transform, opacity;
+}
+
+@mixin contain-layout {
+  contain: layout style paint;
+}

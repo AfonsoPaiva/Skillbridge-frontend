@@ -12,6 +12,8 @@
   border-bottom: 1px solid transparent;
   transition: border-color v.$transition-base, box-shadow v.$transition-base,
               opacity 400ms ease, transform 400ms ease;
+  contain: layout style; // Optimize rendering
+  will-change: transform; // Optimize animations
 
   &.scrolled {
     border-bottom-color: v.$color-border;

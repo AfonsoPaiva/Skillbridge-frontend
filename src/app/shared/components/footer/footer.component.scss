@@ -5,6 +5,12 @@
   background: v.$color-text;
   color: rgba(255,255,255,0.75);
   padding-top: v.$space-16;
+  min-height: 580px; // Reserve more space for mobile layout
+  contain: layout style; // Reduce layout recalculations
+
+  @include m.md {
+    min-height: 380px; // Less space needed in desktop
+  }
 
   &__inner {
     display: grid;

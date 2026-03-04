@@ -41,7 +41,14 @@
 
         <!-- Project image -->
         <div class="detail-main__image">
-          <img [src]="project.image_url || 'assets/project-placeholder.svg'" [alt]="project.title">
+          <img 
+            [src]="project.image_url || 'assets/project-placeholder.svg'" 
+            [alt]="project.title"
+            loading="eager"
+            decoding="async"
+            fetchpriority="high"
+            width="800"
+            height="400">
         </div>
 
         <p class="detail-main__desc">{{ project.description }}</p>

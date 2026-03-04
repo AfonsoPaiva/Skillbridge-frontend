@@ -126,7 +126,13 @@
       <mat-card class="project-card" *ngFor="let p of projects" matRipple
                 [routerLink]="['/projects', p.slug]">
         <div class="project-card__img">
-          <img [src]="p.image_url || 'assets/project-placeholder.svg'" [alt]="p.title">
+          <img 
+            [src]="p.image_url || 'assets/project-placeholder.svg'" 
+            [alt]="p.title"
+            loading="lazy"
+            decoding="async"
+            width="400"
+            height="250">
           <span class="project-card__badge" [class.open]="p.status==='open'">
             {{ getStatusLabel(p.status) }}
           </span>

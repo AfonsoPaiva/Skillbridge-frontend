@@ -44,7 +44,13 @@
     <div class="grid" *ngIf="!loading && filtered.length > 0" [@list]="filtered.length">
       <mat-card class="pcard" *ngFor="let p of filtered" matRipple [routerLink]="['/projects', p.slug]">
         <div class="pcard__img">
-          <img [src]="p.image_url || 'assets/project-placeholder.svg'" [alt]="p.title">
+          <img 
+            [src]="p.image_url || 'assets/project-placeholder.svg'" 
+            [alt]="p.title"
+            loading="lazy"
+            decoding="async"
+            width="400"
+            height="250">
           <span class="pcard__badge" [attr.data-status]="p.status">{{ getStatusLabel(p.status) }}</span>
         </div>
         <mat-card-content class="pcard__body">

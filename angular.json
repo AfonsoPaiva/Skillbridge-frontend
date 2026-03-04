@@ -59,7 +59,9 @@
                   "minify": true,
                   "inlineCritical": true
                 },
-                "fonts": true
+                "fonts": {
+                  "inline": true
+                }
               },
               "sourceMap": false,
               "namedChunks": false,

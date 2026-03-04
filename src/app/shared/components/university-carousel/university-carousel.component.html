@@ -10,7 +10,15 @@
           (click)="openUniversity(uni.url)"
           matRipple
           [matTooltip]="uni.name">
-          <img [src]="uni.logo" [alt]="uni.name" class="uni-logo" draggable="false">
+          <img 
+            [src]="uni.logo" 
+            [alt]="uni.name" 
+            class="uni-logo" 
+            draggable="false"
+            loading="lazy"
+            decoding="async"
+            width="186"
+            height="96">
         </li>
       </ul>
     </div>

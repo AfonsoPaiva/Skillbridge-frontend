@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './core/guards/auth.guard';
+import { SelectivePreloadStrategy } from './core/strategies/selective-preload.strategy';
 
 const routes: Routes = [
   {
@@ -21,11 +22,13 @@ const routes: Routes = [
   {
     path: 'dashboard',
     canActivate: [AuthGuard],
+    data: { preload: true },
     loadChildren: () =>
       import('./features/dashboard/dashboard.module').then(m => m.DashboardModule)
   },
   {
     path: 'projects',
+    data: { preload: true, preloadDelay: 1000 },
     loadChildren: () =>
       import('./features/projects/projects.module').then(m => m.ProjectsModule)
   },
@@ -36,12 +39,14 @@ const routes: Routes = [
   },
   {
     path: 'perfil',
+    data: { preload: true, preloadDelay: 1500 },
     loadChildren: () =>
       import('./features/profile/profile.module').then(m => m.ProfileModule)
   },
   {
     path: 'messages',
     canActivate: [AuthGuard],
+    data: { preload: true, preloadDelay: 2000 },
     loadChildren: () =>
       import('./features/messages/messages.module').then(m => m.MESSAGES_ROUTES)
   },
@@ -59,7 +64,9 @@ const routes: Routes = [
 @NgModule({
   imports: [RouterModule.forRoot(routes, {
     scrollPositionRestoration: 'top',
-    anchorScrolling: 'enabled'
+    anchorScrolling: 'enabled',
+    preloadingStrategy: SelectivePreloadStrategy,
+    initialNavigation: 'enabledBlocking'
   })],
   exports: [RouterModule]
 })

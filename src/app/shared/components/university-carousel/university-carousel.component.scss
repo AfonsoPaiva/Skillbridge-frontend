@@ -7,6 +7,8 @@
   border-top: 1px solid v.$color-border;
   border-bottom: 1px solid v.$color-border;
   overflow: hidden;
+  min-height: 220px; // Reserve space to prevent CLS
+  contain: layout; // Optimize rendering
 }
 
 .carousel-title {
@@ -75,6 +77,7 @@
   transition: all v.$transition-base;
   box-sizing: border-box;
   flex-shrink: 0;
+  contain: layout style; // Optimize rendering
   
   &:hover {
     transform: translateY(-6px);
@@ -85,12 +88,17 @@
 }
 
 .uni-logo {
-  max-width: 100%;
-  max-height: 100%;
+  width: 186px !important;
+  height: 96px !important;
+  max-width: 186px;
+  max-height: 96px;
   object-fit: contain;
   filter: grayscale(100%) opacity(0.6);
   transition: filter v.$transition-base;
   pointer-events: none;
+  aspect-ratio: 186 / 96;
+  will-change: filter;
+  display: block; // Prevent inline spacing issues
 
   .carousel-item:hover & {
     filter: grayscale(0%) opacity(1);

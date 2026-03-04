@@ -57,6 +57,11 @@ export class ProjectFormComponent implements OnInit {
     // Load skills for role forms
     this.api.listSkills().subscribe({ next: (s: string[]) => this.availableSkills = s });
 
+    // Listen to status changes to update role validations
+    this.form.get('status')?.valueChanges.subscribe((status: string) => {
+      this.updateRoleValidators(status);
+    });
+
     // Edit mode
     const slug = this.route.snapshot.paramMap.get('slug');
     if (slug) {
@@ -83,11 +88,14 @@ export class ProjectFormComponent implements OnInit {
   }
 
   addRole(data?: any): void {
+    const currentStatus = this.form.get('status')?.value;
+    const isCompleted = currentStatus === 'completed';
+    
     const rg = this.fb.group({
-      title: [data?.title || '', Validators.required],
+      title: [data?.title || '', isCompleted ? [] : [Validators.required]],
       description: [data?.description || ''],
       skill_name: [data?.skill_name || ''],
-      spots: [data?.spots || 1, [Validators.required, Validators.min(1)]]
+      spots: [data?.spots || 1, isCompleted ? [] : [Validators.required, Validators.min(1)]]
     });
     const index = this.roles.length;
     this.roles.push(rg);
@@ -156,6 +164,32 @@ export class ProjectFormComponent implements OnInit {
     this.roleSkillFilters.set(index, filtered$);
   }
   
+
+  private updateRoleValidators(status: string): void {
+    const isCompleted = status === 'completed';
+    
+    this.roles.controls.forEach((roleGroup: any) => {
+      const titleControl = roleGroup.get('title');
+      const spotsControl = roleGroup.get('spots');
+      
+      if (isCompleted) {
+        // Remove required validators for completed projects
+        titleControl?.clearValidators();
+        spotsControl?.clearValidators();
+      } else {
+        // Add required validators for non-completed projects
+        titleControl?.setValidators([Validators.required]);
+        spotsControl?.setValidators([Validators.required, Validators.min(1)]);
+      }
+      
+      titleControl?.updateValueAndValidity();
+      spotsControl?.updateValueAndValidity();
+    });
+  }
+  
+  get isCompletedProject(): boolean {
+    return this.form.get('status')?.value === 'completed';
+  }
   getFilteredSkills(index: number): Observable<string[]> {
     return this.roleSkillFilters.get(index) || of(this.availableSkills);
   }
