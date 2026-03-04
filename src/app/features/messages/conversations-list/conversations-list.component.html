@@ -52,6 +52,10 @@
     <div class="msgs-empty-detail" *ngIf="activeConvId === null">
       <mat-icon>forum</mat-icon>
       <p>Selecione uma conversa</p>
+      <button mat-stroked-button routerLink="/mensagens" class="msgs-empty__back">
+        <mat-icon>arrow_back</mat-icon>
+        Voltar às mensagens
+      </button>
     </div>
   </div>
 </div>

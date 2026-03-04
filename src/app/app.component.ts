@@ -31,7 +31,7 @@ export const routeAnimation = trigger('routeAnimation', [
     <main [@routeAnimation]="getRouteState(outlet)">
       <router-outlet #outlet="outlet"></router-outlet>
     </main>
-    <app-footer></app-footer>
+    <app-footer *ngIf="!hideFooter"></app-footer>
   `,
   styles: [`
     :host {
@@ -48,11 +48,19 @@ export const routeAnimation = trigger('routeAnimation', [
   animations: [routeAnimation]
 })
 export class AppComponent implements OnInit {
+  hideFooter = false;
   constructor(private auth: AuthService, private router: Router, private api: ApiService) {}
 
   ngOnInit(): void {
     this.auth.restoreSession();
     this.auth.prefetchUserProfile(this.api);
+    
+    // Hide footer on messages routes
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: NavigationEnd) => {
+      this.hideFooter = event.url.includes('/mensagens');
+    });
   }
 
   getRouteState(outlet: RouterOutlet): string {
