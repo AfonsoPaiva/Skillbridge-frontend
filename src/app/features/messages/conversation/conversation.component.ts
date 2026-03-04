@@ -35,6 +35,7 @@ import { Conversation, Message, User } from '../../../core/models/models';
   styleUrls: ['./conversation.component.scss']
 })
 export class ConversationComponent implements OnInit, AfterViewChecked {
+  @ViewChild('messagesContainer') messagesContainer!: ElementRef<HTMLElement>;
   @ViewChild('messagesEnd') messagesEnd!: ElementRef;
 
   conversationId = 0;
@@ -148,7 +149,15 @@ export class ConversationComponent implements OnInit, AfterViewChecked {
   }
 
   scrollToBottom(): void {
-    try { this.messagesEnd.nativeElement.scrollIntoView({ behavior: 'smooth' }); } catch {}
+    try {
+      const container = this.messagesContainer?.nativeElement;
+      if (container) {
+        container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+        return;
+      }
+
+      this.messagesEnd.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    } catch {}
   }
 
   getInitial(name?: string): string {
