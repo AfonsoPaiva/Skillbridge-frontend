@@ -19,16 +19,10 @@
   z-index: 2;
 }
 
- mat-dialog-content {
-    max-height: 70vh;
-    overflow-y: hidden !important;
-  }
-
-@media (max-width: 600px) {
-  mat-dialog-content {
-    max-height: 70vh;
-    overflow-y: auto !important;
-  }
+mat-dialog-content {
+  max-height: 70vh;
+  overflow-y: auto !important;
+  overflow-x: hidden;
 }
 
 .ob-close {
