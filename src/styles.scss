@@ -1375,8 +1375,5 @@ body {
     transform: none !important;
   }
   
-  // Optimize ripple effect
-  .mat-ripple {
-    pointer-events: none;
-  }
+  // Ripple effect remains interactive on touch devices
 }
