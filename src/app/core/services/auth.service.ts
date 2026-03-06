@@ -175,6 +175,14 @@ export class AuthService {
       clearTimeout(this.tokenRefreshTimer);
       this.tokenRefreshTimer = null;
     }
+    
+    // Sign out from Firebase to clear auth state
+    if (this.firebaseAuth) {
+      import('firebase/auth').then(({ signOut }) => {
+        signOut(this.firebaseAuth!).catch(() => {});
+      });
+    }
+    
     localStorage.removeItem('sb_token');
     localStorage.removeItem('sb_user');
     localStorage.removeItem('sb_onboarded');
