@@ -49,6 +49,8 @@ export class FooterComponent {
     // Call Klaro's show method to open the cookie consent modal
     if (typeof (window as any).klaro !== 'undefined') {
       (window as any).klaro.show();
+    } else {
+      console.warn('Klaro not loaded yet');
     }
   }
 }
