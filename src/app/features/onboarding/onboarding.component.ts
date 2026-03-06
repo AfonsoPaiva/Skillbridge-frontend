@@ -15,10 +15,13 @@ import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
 import {
   getAuth,
   signInWithPopup,
+  createUserWithEmailAndPassword,
   GoogleAuthProvider,
   FacebookAuthProvider,
   OAuthProvider,
-  UserCredential
+  UserCredential,
+  setPersistence,
+  browserLocalPersistence
 } from 'firebase/auth';
 import {
   trigger, transition, style, animate, query, group
@@ -317,7 +320,7 @@ export class OnboardingComponent implements OnInit {
     });
   }
 
-  submit(): void {
+  async submit(): Promise<void> {
     if (this.accountForm.invalid) return;
     this.loading = true;
     this.error = '';
@@ -325,76 +328,77 @@ export class OnboardingComponent implements OnInit {
     const emailVal: string = this.accountForm.get('email')!.value;
     const passwordVal: string = this.accountForm.get('password')!.value;
 
-    // Step 1 – create Firebase account via REST
-    this.http.post<{
-      idToken: string;
-      localId: string;
-      email: string;
-    }>(
-      `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${environment.firebaseApiKey}`,
-      { email: emailVal, password: passwordVal, returnSecureToken: true }
-    ).subscribe({
-      next: (fb) => {
-        // Persist session so authHeaders() works for the register call
-        this.auth.setUser({
-          uid: fb.localId,
-          email: fb.email,
-          displayName: this.personalForm.get('name')!.value,
-          token: fb.idToken
-        });
+    try {
+      const fbAuth = getAuth(this.getFirebaseApp());
+      
+      // Set persistence before creating account
+      await setPersistence(fbAuth, browserLocalPersistence);
+      
+      // Create Firebase account
+      const cred: UserCredential = await createUserWithEmailAndPassword(fbAuth, emailVal, passwordVal);
+      const idToken = await cred.user.getIdToken();
+      const tokenResult = await cred.user.getIdTokenResult();
+      const expiresAt = new Date(tokenResult.expirationTime).getTime();
 
-        // Step 2 – create profile in our backend
-        const guestToken = localStorage.getItem('sb_guest_token') || undefined;
-        const payload: RegisterInput = {
-          name: this.personalForm.get('name')!.value,
-          university: this.academicForm.get('university')!.value,
-          course: this.academicForm.get('course')!.value,
-          year: this.academicForm.get('year')!.value,
-          bio: '',
-          role: this.roleForm.get('role')!.value,
-          guest_session_token: guestToken
-        };
+      // Persist session so authHeaders() works for the register call
+      this.auth.setUser({
+        uid: cred.user.uid,
+        email: cred.user.email,
+        displayName: this.personalForm.get('name')!.value,
+        token: idToken,
+        expiresAt
+      });
 
-        this.api.registerUser(payload).subscribe({
-          next: () => {
-            // Step 3 – add selected skills (helpers only)
-            if (this.isHelper && this.selectedSkills.length > 0) {
-              let idx = 0;
-              const addNext = () => {
-                if (idx >= this.selectedSkills.length) {
-                  this.finishRegistration();
-                  return;
-                }
-                this.api.addSkill(this.selectedSkills[idx++]).subscribe({
-                  next: addNext,
-                  error: addNext // skip failed skills silently
-                });
-              };
-              addNext();
-            } else {
-              this.finishRegistration();
-            }
-          },
-          error: (err) => {
-            this.loading = false;
-            this.error = err?.error?.error ?? 'Erro ao criar perfil. Tenta novamente.';
+      // Step 2 – create profile in our backend
+      const guestToken = localStorage.getItem('sb_guest_token') || undefined;
+      const payload: RegisterInput = {
+        name: this.personalForm.get('name')!.value,
+        university: this.academicForm.get('university')!.value,
+        course: this.academicForm.get('course')!.value,
+        year: this.academicForm.get('year')!.value,
+        bio: '',
+        role: this.roleForm.get('role')!.value,
+        guest_session_token: guestToken
+      };
+
+      this.api.registerUser(payload).subscribe({
+        next: () => {
+          // Step 3 – add selected skills (helpers only)
+          if (this.isHelper && this.selectedSkills.length > 0) {
+            let idx = 0;
+            const addNext = () => {
+              if (idx >= this.selectedSkills.length) {
+                this.finishRegistration();
+                return;
+              }
+              this.api.addSkill(this.selectedSkills[idx++]).subscribe({
+                next: addNext,
+                error: addNext // skip failed skills silently
+              });
+            };
+            addNext();
+          } else {
+            this.finishRegistration();
           }
-        });
-      },
-      error: (err) => {
-        this.loading = false;
-        const code: string = err?.error?.error?.message ?? '';
-        if (code.includes('EMAIL_EXISTS')) {
-          this.error = 'Este email já está registado.';
-        } else if (code.includes('WEAK_PASSWORD')) {
-          this.error = 'A palavra-passe deve ter pelo menos 6 caracteres.';
-        } else if (code.includes('INVALID_EMAIL')) {
-          this.error = 'Endereço de email inválido.';
-        } else {
-          this.error = 'Erro ao criar conta. Verifica os dados e tenta novamente.';
+        },
+        error: (err) => {
+          this.loading = false;
+          this.error = err?.error?.error ?? 'Erro ao criar perfil. Tenta novamente.';
         }
+      });
+    } catch (err: any) {
+      this.loading = false;
+      const code: string = err?.code ?? '';
+      if (code.includes('auth/email-already-in-use')) {
+        this.error = 'Este email já está registado.';
+      } else if (code.includes('auth/weak-password')) {
+        this.error = 'A palavra-passe deve ter pelo menos 6 caracteres.';
+      } else if (code.includes('auth/invalid-email')) {
+        this.error = 'Endereço de email inválido.';
+      } else {
+        this.error = 'Erro ao criar conta. Verifica os dados e tenta novamente.';
       }
-    });
+    }
   }
 
   // ── Social login ────────────────────────────────────────────────────────────
@@ -413,6 +417,8 @@ export class OnboardingComponent implements OnInit {
 
     const app = this.getFirebaseApp();
     const fbAuth = getAuth(app);
+// Set persistence before sign-in
+    await setPersistence(fbAuth, browserLocalPersistence).catch(() => {});
 
     let authProvider: GoogleAuthProvider | FacebookAuthProvider | OAuthProvider;
     if (provider === 'google') {
@@ -426,13 +432,16 @@ export class OnboardingComponent implements OnInit {
     try {
       const credential: UserCredential = await signInWithPopup(fbAuth, authProvider);
       const idToken = await credential.user.getIdToken();
+      const tokenResult = await credential.user.getIdTokenResult();
+      const expiresAt = new Date(tokenResult.expirationTime).getTime();
       const name = this.personalForm.get('name')?.value || credential.user.displayName || '';
 
       this.auth.setUser({
         uid: credential.user.uid,
         email: credential.user.email,
         displayName: name,
-        token: idToken
+        token: idToken,
+        expiresAt
       });
 
       const guestToken = localStorage.getItem('sb_guest_token') || undefined;

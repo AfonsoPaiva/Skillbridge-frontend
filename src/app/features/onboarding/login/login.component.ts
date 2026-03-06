@@ -7,10 +7,13 @@ import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
 import {
   getAuth,
   signInWithPopup,
+  signInWithEmailAndPassword,
   GoogleAuthProvider,
   FacebookAuthProvider,
   OAuthProvider,
-  UserCredential
+  UserCredential,
+  setPersistence,
+  browserLocalPersistence
 } from 'firebase/auth';
 import { AuthService } from '../../../core/services/auth.service';
 import { ApiService } from '../../../core/services/api.service';
@@ -67,65 +70,76 @@ export class LoginComponent {
     }, 200);
   }
 
-  submit(): void {
+  async submit(): Promise<void> {
     if (this.form.invalid) return;
     this.loading = true;
     this.error = '';
 
     const { email, password } = this.form.value;
 
-    this.http.post<{ idToken: string; localId: string; email: string }>(
-      `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${environment.firebaseApiKey}`,
-      { email, password, returnSecureToken: true }
-    ).subscribe({
-      next: (fb) => {
-        this.auth.setUser({ uid: fb.localId, email: fb.email, displayName: null, token: fb.idToken });
+    try {
+      const fbAuth = getAuth(this.getFirebaseApp());
+      
+      // Set persistence to keep user logged in
+      await setPersistence(fbAuth, browserLocalPersistence);
+      
+      // Sign in with Firebase
+      const cred: UserCredential = await signInWithEmailAndPassword(fbAuth, email, password);
+      const idToken = await cred.user.getIdToken();
+      const tokenResult = await cred.user.getIdTokenResult();
+      const expiresAt = new Date(tokenResult.expirationTime).getTime();
 
-        // Fetch backend profile
-        this.api.getMyProfile().subscribe({
-          next: () => {
-            this.loading = false;
-            localStorage.setItem('sb_onboarded', '1');
-            this.close();
-            this.router.navigate(['/dashboard']);
-          },
-          error: (profileErr) => {
-            // User exists in Firebase but not in our DB — force onboarding
-            this.loading = false;
-            this.close();
-            setTimeout(() => {
-              this.dialog.open(OnboardingComponent, {
-                width: '540px',
-                maxWidth: '95vw',
-                maxHeight: '90vh',
-                panelClass: 'onboarding-dialog',
-                autoFocus: false,
-                restoreFocus: false,
-                disableClose: true,
-                data: {
-                  socialMode: true,
-                  name: '',
-                  email: fb.email
-                } as OnboardingDialogData
-              });
-            }, 200);
-          }
-        });
-      },
-      error: (err) => {
-        this.loading = false;
-        const code: string = err?.error?.error?.message ?? '';
-        if (code.includes('INVALID_PASSWORD') || code.includes('INVALID_LOGIN_CREDENTIALS') || code.includes('EMAIL_NOT_FOUND')) {
-          this.error = 'Email ou palavra-passe incorretos.';
-        } else if (code.includes('TOO_MANY_ATTEMPTS')) {
-          this.error = 'Demasiadas tentativas. Aguarda uns minutos.';
-        } else if (code.includes('USER_DISABLED')) {
-          this.error = 'Esta conta foi desativada.';
-        } else {
-          this.error = 'Erro ao iniciar sessão. Tenta novamente.';
+      this.auth.setUser({ 
+        uid: cred.user.uid, 
+        email: cred.user.email, 
+        displayName: cred.user.displayName, 
+        token: idToken,
+        expiresAt
+      });
+
+      // Fetch backend profile
+      this.api.getMyProfile().subscribe({
+        next: () => {
+          this.loading = false;
+          localStorage.setItem('sb_onboarded', '1');
+          this.close();
+          this.router.navigate(['/dashboard']);
+        },
+        error: (profileErr) => {
+          // User exists in Firebase but not in our DB — force onboarding
+          this.loading = false;
+          this.close();
+          setTimeout(() => {
+            this.dialog.open(OnboardingComponent, {
+              width: '540px',
+              maxWidth: '95vw',
+              maxHeight: '90vh',
+              panelClass: 'onboarding-dialog',
+              autoFocus: false,
+              restoreFocus: false,
+              disableClose: true,
+              data: {
+                socialMode: true,
+                name: cred.user.displayName || '',
+                email: cred.user.email
+              } as OnboardingDialogData
+            });
+          }, 200);
         }
+      });
+    } catch (err: any) {
+      this.loading = false;
+      const code: string = err?.code ?? '';
+      if (code.includes('auth/invalid-credential') || code.includes('auth/wrong-password') || code.includes('auth/user-not-found')) {
+        this.error = 'Email ou palavra-passe incorretos.';
+      } else if (code.includes('auth/too-many-requests')) {
+        this.error = 'Demasiadas tentativas. Aguarda uns minutos.';
+      } else if (code.includes('auth/user-disabled')) {
+        this.error = 'Esta conta foi desativada.';
+      } else {
+        this.error = 'Erro ao iniciar sessão. Tenta novamente.';
       }
-    });
+    }
   }
 
   private getFirebaseApp(): FirebaseApp {
@@ -138,6 +152,9 @@ export class LoginComponent {
     this.error = '';
     const fbAuth = getAuth(this.getFirebaseApp());
 
+    // Set persistence before sign-in
+    await setPersistence(fbAuth, browserLocalPersistence).catch(() => {});
+
     let authProvider: GoogleAuthProvider | FacebookAuthProvider | OAuthProvider;
     if (provider === 'google') authProvider = new GoogleAuthProvider();
     else if (provider === 'facebook') authProvider = new FacebookAuthProvider();
@@ -146,7 +163,16 @@ export class LoginComponent {
     try {
       const cred: UserCredential = await signInWithPopup(fbAuth, authProvider);
       const idToken = await cred.user.getIdToken();
-      this.auth.setUser({ uid: cred.user.uid, email: cred.user.email, displayName: cred.user.displayName, token: idToken });
+      const tokenResult = await cred.user.getIdTokenResult();
+      const expiresAt = new Date(tokenResult.expirationTime).getTime();
+      
+      this.auth.setUser({ 
+        uid: cred.user.uid, 
+        email: cred.user.email, 
+        displayName: cred.user.displayName, 
+        token: idToken,
+        expiresAt
+      });
 
       this.api.getMyProfile().subscribe({
         next: () => {

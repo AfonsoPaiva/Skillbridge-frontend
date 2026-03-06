@@ -29,9 +29,8 @@
 
   <!-- User list -->
   <div *ngIf="!loading && !error && users.length > 0" class="users-list">
-    <a *ngFor="let user of users" 
-       [routerLink]="['/perfil', user.slug]" 
-       (click)="close()"
+    <div *ngFor="let user of users" 
+       (click)="navigateToProfile(user.slug)"
        class="user-item"
        matRipple>
       <div class="user-item__avatar">
@@ -42,6 +41,6 @@
         <p class="text-soft">{{ user.university }} · {{ user.course }}</p>
       </div>
       <mat-icon class="user-item__arrow">chevron_right</mat-icon>
-    </a>
+    </div>
   </div>
 </mat-dialog-content>

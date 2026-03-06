@@ -44,4 +44,11 @@ export class FooterComponent {
       restoreFocus: false
     });
   }
+
+  openCookieSettings(): void {
+    // Call Klaro's show method to open the cookie consent modal
+    if (typeof (window as any).klaro !== 'undefined') {
+      (window as any).klaro.show();
+    }
+  }
 }

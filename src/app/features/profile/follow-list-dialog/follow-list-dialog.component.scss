@@ -71,8 +71,7 @@ mat-dialog-content {
   }
 
   &:hover {
-    background-color: rgba(104, 0, 122, 0.04);
-  }
+    background-color: rgba(104, 0, 122, 0.04);    cursor: pointer;  }
 
   &__avatar {
     flex-shrink: 0;

@@ -52,6 +52,8 @@ export class AppComponent implements OnInit {
   constructor(private auth: AuthService, private router: Router, private api: ApiService) {}
 
   ngOnInit(): void {
+    // Initialize Firebase auth with persistence before restoring session
+    this.auth.initializeFirebaseAuth();
     this.auth.restoreSession();
     this.auth.prefetchUserProfile(this.api);
     

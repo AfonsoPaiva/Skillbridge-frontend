@@ -1,4 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ApiService } from '../../../core/services/api.service';
 import { User } from '../../../core/models/models';
@@ -20,6 +21,7 @@ export class FollowListDialogComponent implements OnInit {
 
   constructor(
     private api: ApiService,
+    private router: Router,
     private dialogRef: MatDialogRef<FollowListDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: FollowListDialogData
   ) {}
@@ -54,5 +56,10 @@ export class FollowListDialogComponent implements OnInit {
 
   close(): void {
     this.dialogRef.close();
+  }
+
+  navigateToProfile(slug: string): void {
+    this.dialogRef.close();
+    this.router.navigate(['/perfil', slug]);
   }
 }

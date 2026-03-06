@@ -27,6 +27,7 @@
       <a *ngIf="!auth.isLoggedIn" (click)="openLogin()" style="cursor:pointer">Iniciar Sessão</a>
       <a *ngIf="auth.isLoggedIn" routerLink="/perfil/eu">O meu perfil</a>
       <a routerLink="/politicas-e-privacidade">Políticas e Privacidade</a>
+      <a (click)="openCookieSettings()" style="cursor:pointer">Gerir Cookies</a>
       <a (click)="openDonation()" style="cursor:pointer; color: #17ff15;">
         <mat-icon style="font-size: 14px; width: 14px; height: 14px; vertical-align: middle; margin-right: 4px;">favorite</mat-icon>
         Apoiar o projeto
