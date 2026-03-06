@@ -1,18 +1,30 @@
 /* Klaro Custom Theme for SkillBridge - Force light mode with brand colors */
 
-/* Force light mode backgrounds */
-.klaro * {
-  color-scheme: light !important;
-}
-
+/* FORCE LIGHT MODE - Override browser dark mode */
+.klaro,
+.klaro *,
 .klaro .cookie-notice,
 .klaro .cookie-modal,
 .klaro .cm-modal,
 .klaro .cookie-modal .cm-body,
 .klaro .cookie-modal .cm-header,
-.klaro .cookie-modal .cm-footer {
+.klaro .cookie-modal .cm-footer,
+.klaro .cn-body,
+.klaro .cm-app,
+.klaro .cm-list-input,
+.klaro .cm-list-label {
+  color-scheme: light !important;
+  background-color: #ffffff !important;
   background: #ffffff !important;
   color: #0b0b0b !important;
+  filter: none !important;
+  -webkit-filter: none !important;
+}
+
+/* Override dark mode for specific elements */
+.klaro .cookie-modal .cm-app-input + .cm-app-label,
+.klaro .cookie-modal .cm-list-input + .cm-list-label {
+  background-color: transparent !important;
 }
 
 /* Font family */
