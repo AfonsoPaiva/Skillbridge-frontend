@@ -61,7 +61,7 @@ export class AppComponent implements OnInit {
     this.router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd)
     ).subscribe((event) => {
-      this.hideFooter = event.url.includes('/mensagens');
+      this.hideFooter = event.url.includes('/messages');
     });
   }
 
