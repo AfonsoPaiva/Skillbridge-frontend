@@ -29,9 +29,119 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons&display=block" rel="stylesheet">
   
-  <!-- Klaro Cookie Consent (managed remotely via Kiprotect) -->
+  <!-- Klaro Cookie Consent (self-hosted via CDN to avoid ad blockers) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/klaro@0.7.22/dist/klaro.min.css">
   <link rel="stylesheet" href="assets/klaro-custom.css">
-  <script async src="https://api.kiprotect.com/v1/privacy-managers/d0e5d401013c7d154a79424fd07363ba/klaro.js"></script>
+  <script>
+    // Klaro Cookie Consent Configuration for SkillBridge
+    window.klaroConfig = {
+      lang: 'pt',
+      
+      translations: {
+        pt: {
+          consentModal: {
+            title: 'Definições de Cookies',
+            description: 'Aqui podes ver e personalizar as informações que recolhemos sobre ti.',
+          },
+          consentNotice: {
+            changeDescription: 'Houve alterações desde a tua última visita, por favor atualiza o teu consentimento.',
+            description: 'Utilizamos cookies e tecnologias semelhantes para oferecer a melhor experiência no SkillBridge. Clica em "Aceitar todos" para consentir ou "Personalizar" para gerir as tuas preferências.',
+            learnMore: 'Personalizar',
+            title: 'Cookies & Privacidade',
+          },
+          ok: 'Aceitar todos',
+          acceptAll: 'Aceitar todos',
+          acceptSelected: 'Guardar seleção',
+          decline: 'Rejeitar todos',
+          close: 'Fechar',
+          save: 'Guardar',
+          service: {
+            purpose: 'Finalidade',
+            purposes: 'Finalidades',
+            required: {
+              title: 'Sempre necessário',
+              description: 'Este serviço é essencial para o funcionamento do site.'
+            },
+            disableAll: {
+              title: 'Alternar todas as aplicações',
+              description: 'Usa este interruptor para ativar/desativar todas as aplicações.'
+            },
+          },
+          poweredBy: 'Criado por estudantes e para estudantes',
+        },
+      },
+
+      storageMethod: 'localStorage',
+      storageName: 'klaro-sb',
+      cookieExpiresAfterDays: 365,
+      
+      htmlTexts: true,
+      embedded: false,
+      groupByPurpose: true,
+      
+      mustConsent: false,
+      acceptAll: true,
+      hideDeclineAll: false,
+      hideLearnMore: false,
+      noticeAsModal: false,
+      
+      services: [
+        {
+          name: 'essencial',
+          title: 'Cookies Essenciais',
+          description: 'Necessários para autenticação, sessão e preferências.',
+          purposes: ['essencial'],
+          required: true,
+          optOut: false,
+          default: true,
+          cookies: [
+            /^sb_/,
+            'klaro-sb'
+          ]
+        },
+        {
+          name: 'firebase',
+          title: 'Firebase Authentication',
+          description: 'Autenticação segura da tua conta.',
+          purposes: ['essencial', 'funcional'],
+          required: true,
+          optOut: false,
+          default: true,
+          cookies: [
+            /^firebase/,
+            '__session'
+          ]
+        },
+        {
+          name: 'stripe',
+          title: 'Stripe (Doações)',
+          description: 'Processa pagamentos seguros quando fazes uma doação.',
+          purposes: ['pagamentos'],
+          required: false,
+          optOut: true,
+          default: true,
+          cookies: [
+            /^__stripe/,
+            'm'
+          ]
+        },
+        {
+          name: 'analytics',
+          title: 'Análise e Estatísticas',
+          description: 'Ajuda-nos a melhorar a experiência de todos.',
+          purposes: ['analytics'],
+          required: false,
+          optOut: true,
+          default: false,
+        }
+      ],
+      
+      callback: function(consent, service) {
+        console.log('Klaro consent updated:', service ? service.name : 'all services', consent);
+      },
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/klaro@0.7.22/dist/klaro-no-css.min.js"></script>
 </head>
 <body>
   <app-root></app-root>
