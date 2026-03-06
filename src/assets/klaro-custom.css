@@ -12,7 +12,20 @@
 .klaro .cn-body,
 .klaro .cm-app,
 .klaro .cm-list-input,
-.klaro .cm-list-label {
+.klaro .cm-list-label,
+.klaro .cm-list-label span,
+.klaro .cm-app-label span,
+.klaro .cm-app-title,
+.klaro .cm-list-title,
+.klaro .cm-app-description,
+.klaro .cm-list-description,
+.klaro .cm-purposes,
+.klaro .cm-purpose,
+.klaro .cn-buttons,
+.klaro .cm-modal .cm-body,
+.klaro .cm-modal .cm-header,
+.klaro .cm-modal .cm-footer,
+.klaro .cm-toggle-all {
   color-scheme: light !important;
   background-color: #ffffff !important;
   background: #ffffff !important;
@@ -25,6 +38,26 @@
 .klaro .cookie-modal .cm-app-input + .cm-app-label,
 .klaro .cookie-modal .cm-list-input + .cm-list-label {
   background-color: transparent !important;
+}
+
+/* Force white background on all modal containers */
+.klaro .cookie-modal,
+.klaro .cm-modal,
+.klaro .cm-body,
+.klaro .cm-container {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+}
+
+/* Ensure all text elements are dark */
+.klaro .cm-modal *:not(button):not(.slider) {
+  color: #0b0b0b !important;
+}
+
+/* Force switch backgrounds to white */
+.klaro .cookie-modal .cm-list-label .slider,
+.klaro .cookie-modal .cm-app-label .slider {
+  background-color: #ddd !important;
 }
 
 /* Font family */
