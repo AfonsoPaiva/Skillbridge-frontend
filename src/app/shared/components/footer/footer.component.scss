@@ -68,6 +68,12 @@
     padding: v.$space-4 0;
     text-align: center;
     font-size: 13px;
+    color: rgba(255,255,255,0.85);
     @include m.container;
+    
+    span {
+      display: inline-block;
+      color: inherit;
+    }
   }
 }

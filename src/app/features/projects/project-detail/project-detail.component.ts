@@ -149,4 +149,23 @@ export class ProjectDetailComponent implements OnInit {
   get acceptedMembersCount(): number {
     return this.members.filter(m => m.status === 'accepted').length;
   }
+
+  /** Get the correct profile route for a user (slug or 'eu' if current user) */
+  getProfileRoute(userSlug?: string): string[] {
+    if (!userSlug) return ['/perfil'];
+    
+    // Compare firebase_uid if available
+    const currentFirebaseUid = this.auth.currentUser?.uid;
+    if (currentFirebaseUid && this.project?.owner?.firebase_uid === currentFirebaseUid && this.project.owner.slug === userSlug) {
+      return ['/perfil/eu'];
+    }
+    
+    // Check members
+    const member = this.members.find(m => m.user?.slug === userSlug);
+    if (currentFirebaseUid && member?.user?.firebase_uid === currentFirebaseUid) {
+      return ['/perfil/eu'];
+    }
+    
+    return ['/perfil', userSlug];
+  }
 }

@@ -78,6 +78,14 @@ export class ProfileComponent implements OnInit {
         // idParam can be either a slug (string) or an ID (numeric string)
         this.api.getUserById(idParam!).subscribe({
           next: (u: User) => {
+            // If logged in and viewing own profile, redirect to /perfil/eu
+            if (this.auth.isLoggedIn && this.auth.currentUser) {
+              if (u.firebase_uid === this.auth.currentUser.uid) {
+                this.router.navigate(['/perfil/eu'], { replaceUrl: true });
+                return;
+              }
+            }
+
             this.user = u;
             this.socialLinks = this.buildSocialLinks(u.contact_links);
             this.loading = false;

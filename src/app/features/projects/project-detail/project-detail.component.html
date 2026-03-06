@@ -25,7 +25,7 @@
             </div>
             <p class="text-soft" *ngIf="project.owner">
               <mat-icon>person</mat-icon>
-              <a [routerLink]="['/perfil', project.owner.slug]" class="owner-link">{{ project.owner.name }}</a>
+              <a [routerLink]="getProfileRoute(project.owner.slug)" class="owner-link">{{ project.owner.name }}</a>
               · {{ project.created_at | date:'dd/MM/yyyy' }}
             </p>
           </div>
@@ -94,7 +94,7 @@
             <div class="member" *ngFor="let m of members" [class.member--pending]="m.status === 'pending'" [class.member--rejected]="m.status === 'rejected'">
               <img [src]="m.user?.avatar_url || 'assets/avatar-placeholder.svg'" [alt]="m.user?.name">
               <div class="member__info">
-                <a [routerLink]="['/perfil', m.user?.slug]" class="member__name">{{ m.user?.name }}</a>
+                <a [routerLink]="getProfileRoute(m.user?.slug)" class="member__name">{{ m.user?.name }}</a>
                 <span class="text-soft member__status" [class.status-accepted]="m.status === 'accepted'" [class.status-pending]="m.status === 'pending'" [class.status-rejected]="m.status === 'rejected'">
                   {{ getMemberStatusLabel(m.status) }}
                 </span>

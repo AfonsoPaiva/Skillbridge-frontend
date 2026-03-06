@@ -186,7 +186,12 @@ export class ConversationComponent implements OnInit, OnDestroy, AfterViewChecke
 
   goToProfile(): void {
     if (this.otherUser?.slug) {
-      this.router.navigate(['/perfil', this.otherUser.slug]);
+      // Check if viewing own profile (shouldn't happen, but handle it)
+      if (this.me && this.otherUser.slug === this.me.slug) {
+        this.router.navigate(['/perfil/eu']);
+      } else {
+        this.router.navigate(['/perfil', this.otherUser.slug]);
+      }
     }
   }
 

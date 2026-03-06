@@ -2,6 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ApiService } from '../../../core/services/api.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { User } from '../../../core/models/models';
 
 export interface FollowListDialogData {
@@ -21,6 +22,7 @@ export class FollowListDialogComponent implements OnInit {
 
   constructor(
     private api: ApiService,
+    private auth: AuthService,
     private router: Router,
     private dialogRef: MatDialogRef<FollowListDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: FollowListDialogData
@@ -60,6 +62,16 @@ export class FollowListDialogComponent implements OnInit {
 
   navigateToProfile(slug: string): void {
     this.dialogRef.close();
+    
+    // Check if this is the current user's profile by comparing firebase_uid
+    if (this.auth.isLoggedIn && this.auth.currentUser) {
+      const targetUser = this.users.find(u => u.slug === slug);
+      if (targetUser && targetUser.firebase_uid === this.auth.currentUser.uid) {
+        this.router.navigate(['/perfil/eu']);
+        return;
+      }
+    }
+    
     this.router.navigate(['/perfil', slug]);
   }
 }
