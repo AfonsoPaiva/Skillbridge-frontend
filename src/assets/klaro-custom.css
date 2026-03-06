@@ -1,63 +1,71 @@
-/* Klaro Custom Theme for SkillBridge - Force light mode with brand colors */
+/* Klaro Custom Theme for SkillBridge - Brand color customization */
 
-/* FORCE LIGHT MODE - Override browser dark mode */
+/* FORCE WHITE/LIGHT MODE - Override any dark mode */
 .klaro,
 .klaro *,
 .klaro .cookie-notice,
 .klaro .cookie-modal,
 .klaro .cm-modal,
-.klaro .cookie-modal .cm-body,
-.klaro .cookie-modal .cm-header,
-.klaro .cookie-modal .cm-footer,
+.klaro .cm-body,
+.klaro .cm-header,
+.klaro .cm-footer,
 .klaro .cn-body,
 .klaro .cm-app,
-.klaro .cm-list-input,
-.klaro .cm-list-label,
-.klaro .cm-list-label span,
-.klaro .cm-app-label span,
-.klaro .cm-app-title,
-.klaro .cm-list-title,
-.klaro .cm-app-description,
-.klaro .cm-list-description,
-.klaro .cm-purposes,
-.klaro .cm-purpose,
-.klaro .cn-buttons,
-.klaro .cm-modal .cm-body,
-.klaro .cm-modal .cm-header,
-.klaro .cm-modal .cm-footer,
-.klaro .cm-toggle-all {
+.klaro .cm-list,
+.klaro .cookie-modal .cm-body,
+.klaro .cookie-modal .cm-header,
+.klaro .cookie-modal .cm-footer {
   color-scheme: light !important;
   background-color: #ffffff !important;
   background: #ffffff !important;
   color: #0b0b0b !important;
-  filter: none !important;
-  -webkit-filter: none !important;
 }
 
-/* Override dark mode for specific elements */
+/* Force transparent background for labels */
+.klaro .cookie-modal .cm-app-label,
+.klaro .cookie-modal .cm-list-label,
 .klaro .cookie-modal .cm-app-input + .cm-app-label,
 .klaro .cookie-modal .cm-list-input + .cm-list-label {
   background-color: transparent !important;
+  background: transparent !important;
 }
 
-/* Force white background on all modal containers */
-.klaro .cookie-modal,
-.klaro .cm-modal,
-.klaro .cm-body,
-.klaro .cm-container {
+/* Force white background on all list elements and containers */
+.klaro .cm-purposes,
+.klaro .cm-purpose,
+.klaro .cm-services,
+.klaro .cm-service,
+.klaro .cm-content,
+.klaro .cm-caret,
+.klaro ul.cm-purposes,
+.klaro ul.cm-content,
+.klaro li.cm-purpose,
+.klaro li.cm-service,
+.klaro .cm-purpose > div,
+.klaro .cm-service > div,
+.klaro .cm-toggle-all,
+.klaro .cm-list-description,
+.klaro .cm-app-description,
+.klaro .purposes,
+.klaro .cm-caret a,
+.klaro .cm-required,
+.klaro .cm-opt-out {
   background-color: #ffffff !important;
   background: #ffffff !important;
-}
-
-/* Ensure all text elements are dark */
-.klaro .cm-modal *:not(button):not(.slider) {
   color: #0b0b0b !important;
 }
 
-/* Force switch backgrounds to white */
-.klaro .cookie-modal .cm-list-label .slider,
-.klaro .cookie-modal .cm-app-label .slider {
-  background-color: #ddd !important;
+/* Force all spans and divs inside modal to have proper colors */
+.klaro .cm-modal span,
+.klaro .cm-modal div:not(.slider) {
+  background-color: transparent !important;
+  color: inherit !important;
+}
+
+/* Ensure paragraphs are white background */
+.klaro .cm-modal p {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
 }
 
 /* Font family */
@@ -65,7 +73,7 @@
   font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
 }
 
-/* Botões primários - cor roxa do SkillBridge */
+/* Primary buttons - SkillBridge purple */
 .klaro .cn-buttons button.cm-btn.cm-btn-success,
 .klaro .cookie-modal .cm-footer .cm-btn.cm-btn-success,
 .klaro button.cm-btn.cm-btn-accept-all {
@@ -81,7 +89,7 @@
   border-color: #540060 !important;
 }
 
-/* Botões secundários */
+/* Secondary buttons */
 .klaro .cn-buttons button.cm-btn.cm-btn-info,
 .klaro .cookie-modal .cm-footer .cm-btn.cm-btn-info,
 .klaro button.cm-btn.cm-btn-accept {
@@ -98,7 +106,7 @@
   border-color: #540060 !important;
 }
 
-/* Botão decline */
+/* Decline button */
 .klaro .cn-buttons button.cm-btn.cm-btn-decline,
 .klaro button.cm-btn.cm-btn-decline-all {
   color: rgba(11, 11, 11, 0.62) !important;
@@ -111,7 +119,7 @@
   background: rgba(11, 11, 11, 0.06) !important;
 }
 
-/* Switches ativos - cor roxa */
+/* Active switches - purple */
 .klaro .cookie-modal .cm-list-input:checked + .cm-list-label .slider,
 .klaro .cookie-modal .cm-app-input:checked + .cm-app-label .slider {
   background: #68007a !important;
@@ -122,7 +130,7 @@
   background: #540060 !important;
 }
 
-/* Links */
+/* Links - purple */
 .klaro a,
 .klaro .cm-link {
   color: #68007a !important;
@@ -133,42 +141,26 @@
   color: #540060 !important;
 }
 
-/* Títulos - cor roxa */
+/* Close button - black */
+.klaro .cookie-modal .cm-header button.hide,
+.klaro .cookie-modal .cm-header button.hide svg,
+.klaro .cookie-modal .cm-header button.hide svg line {
+  stroke: #0b0b0b !important;
+  color: #0b0b0b !important;
+}
+
+.klaro .cookie-modal .cm-header button.hide:hover svg line {
+  stroke: #68007a !important;
+}
+
+/* Header titles - purple */
 .klaro .cookie-modal .cm-header h1.title,
 .klaro .cookie-modal .cm-header h1,
 .klaro .cookie-notice .cn-body .cn-title {
   color: #68007a !important;
 }
 
-/* Títulos dos serviços */
-.klaro .cookie-modal .cm-app-title,
-.klaro .cookie-modal .cm-list-title {
-  color: #0b0b0b !important;
-}
-
-/* Labels */
-.klaro .cookie-modal .cm-app-label,
-.klaro .cookie-modal .cm-list-label {
-  color: #0b0b0b !important;
-}
-
-/* Descrições */
-.klaro .cookie-notice .cn-body p,
-.klaro .cookie-notice .cn-body .cn-description,
-.klaro .cookie-modal .cm-app-description,
-.klaro .cookie-modal .cm-list-description,
-.klaro .cookie-modal .cm-body p,
-.klaro .cookie-modal .cm-header p {
-  color: rgba(11, 11, 11, 0.62) !important;
-}
-
-/* Purpose badges */
-.klaro .cookie-modal .cm-purposes .cm-purpose {
-  background: rgba(104, 0, 122, 0.1) !important;
-  color: #68007a !important;
-}
-
-/* Cookie notice button (floating button) */
+/* Cookie notice floating button - purple */
 .klaro .cookie-notice-button {
   background: #68007a !important;
   color: #ffffff !important;
@@ -178,34 +170,8 @@
   background: #540060 !important;
 }
 
-/* Overlay com tonalidade roxa */
-.klaro .cookie-modal-backdrop {
-  background: rgba(104, 0, 122, 0.25) !important;
-}
-
-/* Close button */
-.klaro .cookie-modal .cm-header button.cm-close {
-  color: rgba(11, 11, 11, 0.62) !important;
-}
-
-.klaro .cookie-modal .cm-header button.cm-close:hover {
-  color: #68007a !important;
-}
-
-/* Borders com tonalidade roxa */
+/* Notice border - purple accent */
 .klaro .cookie-notice {
   border-top: 2px solid #68007a !important;
-}
-
-.klaro .cookie-modal {
-  border: 1px solid rgba(104, 0, 122, 0.12) !important;
-}
-
-.klaro .cookie-modal .cm-header {
-  border-bottom: 1px solid rgba(104, 0, 122, 0.12) !important;
-}
-
-.klaro .cookie-modal .cm-footer {
-  border-top: 1px solid rgba(104, 0, 122, 0.12) !important;
 }
 
