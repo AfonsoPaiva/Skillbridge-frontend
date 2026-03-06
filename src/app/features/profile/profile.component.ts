@@ -56,41 +56,45 @@ export class ProfileComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const idParam = this.route.snapshot.paramMap.get('id');
-    this.isOwn = idParam === 'eu' || this.route.snapshot.routeConfig?.path === 'eu';
+    // Subscribe to route param changes to reload profile when navigating between profiles
+    this.route.paramMap.subscribe(params => {
+      const idParam = params.get('id');
+      this.isOwn = idParam === 'eu' || this.route.snapshot.routeConfig?.path === 'eu';
+      this.loading = true;
 
-    if (this.isOwn) {
-      this.api.getMyProfile().subscribe({
-        next: (u: User) => {
-          this.user = u;
-          this.socialLinks = this.buildSocialLinks(u.contact_links);
-          this.loading = false;
-          this.loadReviews(u.id);
-          this.loadFollowCounts(u.slug);
-          this.loadUserProjects(u.id);
-        },
-        error: () => { this.loading = false; }
-      });
-    } else {
-      // idParam can be either a slug (string) or an ID (numeric string)
-      this.api.getUserById(idParam!).subscribe({
-        next: (u: User) => {
-          this.user = u;
-          this.socialLinks = this.buildSocialLinks(u.contact_links);
-          this.loading = false;
-          this.loadReviews(u.id);
-          this.loadFollowCounts(u.slug);
-          this.loadUserProjects(u.id);
-          if (this.auth.isLoggedIn) {
-            this.api.getFollowStatus(u.slug).subscribe({
-              next: r => this.isFollowing = r.is_following,
-              error: () => {}
-            });
-          }
-        },
-        error: () => { this.loading = false; this.router.navigate(['/projects']); }
-      });
-    }
+      if (this.isOwn) {
+        this.api.getMyProfile().subscribe({
+          next: (u: User) => {
+            this.user = u;
+            this.socialLinks = this.buildSocialLinks(u.contact_links);
+            this.loading = false;
+            this.loadReviews(u.id);
+            this.loadFollowCounts(u.slug);
+            this.loadUserProjects(u.id);
+          },
+          error: () => { this.loading = false; }
+        });
+      } else {
+        // idParam can be either a slug (string) or an ID (numeric string)
+        this.api.getUserById(idParam!).subscribe({
+          next: (u: User) => {
+            this.user = u;
+            this.socialLinks = this.buildSocialLinks(u.contact_links);
+            this.loading = false;
+            this.loadReviews(u.id);
+            this.loadFollowCounts(u.slug);
+            this.loadUserProjects(u.id);
+            if (this.auth.isLoggedIn) {
+              this.api.getFollowStatus(u.slug).subscribe({
+                next: r => this.isFollowing = r.is_following,
+                error: () => {}
+              });
+            }
+          },
+          error: () => { this.loading = false; this.router.navigate(['/projects']); }
+        });
+      }
+    });
   }
 
   loadReviews(userId: number): void {
