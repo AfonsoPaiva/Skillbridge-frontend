@@ -424,7 +424,9 @@ export class OnboardingComponent implements OnInit {
     if (provider === 'google') {
       authProvider = new GoogleAuthProvider();
     } else if (provider === 'github') {
+      // GitHub provider with email scope
       authProvider = new GithubAuthProvider();
+      authProvider.addScope('user:email'); // Request access to user's email
     } else {
       // Microsoft OAuth provider with proper configuration
       authProvider = new OAuthProvider('microsoft.com');
