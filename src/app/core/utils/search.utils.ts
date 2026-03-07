@@ -132,6 +132,64 @@ export function safeAutocomplete(
 }
 
 /**
+ * Autocomplete com ranking por similaridade para resultados mais relevantes.
+ * Prioriza: correspondência exata > prefixo > palavras do texto > substring.
+ */
+export function rankedAutocomplete(
+  items: string[],
+  query: string,
+  maxResults: number = 50
+): string[] {
+  if (!query || query.trim().length === 0) {
+    return items.slice(0, maxResults);
+  }
+
+  const sanitizedQuery = sanitizeInput(query);
+  if (!sanitizedQuery) return items.slice(0, maxResults);
+
+  const normalizedQuery = normalizeText(sanitizedQuery);
+  const queryWords = normalizedQuery.split(' ').filter(Boolean);
+
+  const ranked = items
+    .map(item => {
+      const normalizedItem = normalizeText(item);
+      const itemWords = normalizedItem.split(' ').filter(Boolean);
+      let score = 0;
+
+      if (normalizedItem === normalizedQuery) score += 1000;
+      if (normalizedItem.startsWith(normalizedQuery)) score += 700;
+      if (normalizedItem.includes(normalizedQuery)) score += 300;
+
+      for (const queryWord of queryWords) {
+        if (queryWord.length < 2) continue;
+
+        if (itemWords.some(word => word.startsWith(queryWord))) {
+          score += 200;
+        } else if (itemWords.some(word => word.includes(queryWord))) {
+          score += 120;
+        } else if (flexibleSearch(normalizedItem, queryWord)) {
+          score += 60;
+        }
+      }
+
+      if (score === 0 && !flexibleSearch(item, normalizedQuery)) {
+        return { item, score: -1 };
+      }
+
+      return { item, score };
+    })
+    .filter(entry => entry.score >= 0)
+    .sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      return a.item.localeCompare(b.item, 'pt', { sensitivity: 'base' });
+    })
+    .slice(0, maxResults)
+    .map(entry => entry.item);
+
+  return ranked;
+}
+
+/**
  * Debounce para otimizar buscas em tempo real
  * @param func - Função a executar
  * @param wait - Tempo de espera em ms (padrão: 300ms)

@@ -5,11 +5,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ContactLinks, User, UniversitySearchResult } from '../../../core/models/models';
+import { ContactLinks, User } from '../../../core/models/models';
 import { DeleteAccountDialogComponent } from '../../../shared/components/delete-account-dialog/delete-account-dialog.component';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Observable, of, BehaviorSubject, combineLatest } from 'rxjs';
-import { startWith, debounceTime, distinctUntilChanged, map, switchMap, catchError } from 'rxjs/operators';
+import { startWith, debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
+import { rankedAutocomplete } from '../../../core/utils/search.utils';
 import { getAuth, sendPasswordResetEmail } from 'firebase/auth';
 import { initializeApp, getApps } from 'firebase/app';
 import { environment } from '../../../../environments/environment';
@@ -115,27 +116,32 @@ export class EditProfileComponent implements OnInit {
       }
     });
 
-    // Setup reactive university search using backend endpoint
+    // Setup reactive local university search (fast, no per-keystroke API requests)
     this.filteredUniversities$ = this.form.get('university')!.valueChanges.pipe(
       startWith(''),
-      debounceTime(300),
+      debounceTime(120),
       distinctUntilChanged(),
-      switchMap(query => {
-        const q = typeof query === 'string' ? query.trim() : '';
-        if (!q) {
-          // Return initial set with "Outra" option
-          return this.api.searchUniversities('', 20).pipe(
-            map(results => [...results.map(r => r.estabelecimento), 'Outra']),
-            catchError(() => of(this.getFallbackUniversities()))
-          );
-        }
-        // Search on backend
-        return this.api.searchUniversities(q, 20).pipe(
-          map(results => [...results.map(r => r.estabelecimento), 'Outra']),
-          catchError(() => of(this.getFallbackUniversities()))
-        );
+      map(query => {
+        const q = typeof query === 'string' ? query : '';
+        return rankedAutocomplete(this.universities, q, 20);
       })
     );
+
+    this.loadingUniversities = true;
+    this.api.listUniversities().subscribe({
+      next: list => {
+        this.universities = [...list, 'Outra'];
+        this.loadingUniversities = false;
+        const ctrl = this.form.get('university')!;
+        ctrl.setValue(ctrl.value, { emitEvent: true });
+      },
+      error: () => {
+        this.universities = this.getFallbackUniversities();
+        this.loadingUniversities = false;
+        const ctrl = this.form.get('university')!;
+        ctrl.setValue(ctrl.value, { emitEvent: true });
+      }
+    });
 
     // fetch courses when university changes
     this.form.get('university')!.valueChanges.pipe(distinctUntilChanged()).subscribe(val => {
@@ -161,12 +167,11 @@ export class EditProfileComponent implements OnInit {
     // Reactive autocomplete for courses
     this.filteredCourses$ = this.form.get('course')!.valueChanges.pipe(
       startWith(''),
-      debounceTime(200),
+      debounceTime(120),
       distinctUntilChanged(),
       map((q: string) => {
-        const query = typeof q === 'string' ? q.trim().toLowerCase() : '';
-        if (!query) return this.courses.slice(0, 50);
-        return this.courses.filter(c => c.toLowerCase().includes(query)).slice(0, 50);
+        const query = typeof q === 'string' ? q : '';
+        return rankedAutocomplete(this.courses, query, 50);
       })
     );
 
