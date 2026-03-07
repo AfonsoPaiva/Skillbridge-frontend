@@ -20,6 +20,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { ApiService } from '../../../core/services/api.service';
 import { environment } from '../../../../environments/environment';
 import { OnboardingComponent, OnboardingDialogData } from '../onboarding.component';
+import { ForgotPasswordDialogComponent } from './forgot-password-dialog.component';
 import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
@@ -72,46 +73,22 @@ export class LoginComponent {
   }
 
   async forgotPassword(): Promise<void> {
-    // Get email from form or ask user
-    const emailControl = this.form.get('email');
-    let email = emailControl?.value?.trim() || '';
-
-    // If no email in form, ask user to enter it
-    if (!email || !emailControl?.valid) {
-      const userEmail = prompt('Insere o teu email para recuperar a palavra-passe:');
-      if (!userEmail) return; // User cancelled
-      email = userEmail.trim();
-    }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      alert('Por favor insere um email válido.');
-      return;
-    }
-
-    // Show loading state
-    const originalError = this.error;
-    this.error = '';
-    this.loading = true;
-
-    // Request password reset
-    this.api.requestPasswordReset(email).subscribe({
-      next: () => {
-        this.loading = false;
-        alert(`✅ Email enviado!\n\nEnviámos um link de recuperação para ${email}.\nVerifica a tua caixa de entrada (e spam).`);
-      },
-      error: (err) => {
-        this.loading = false;
-        console.error('Password reset error:', err);
-        if (err.status === 404) {
-          alert('❌ Email não encontrado.\n\nNão existe nenhuma conta registada com esse email.');
-        } else {
-          alert('❌ Erro ao enviar email.\n\nTenta novamente mais tarde.');
-        }
-        this.error = originalError;
-      }
+    // Open dialog for password reset
+    const dialogRef = this.dialog.open(ForgotPasswordDialogComponent, {
+      width: '500px',
+      maxWidth: '95vw',
+      panelClass: 'forgot-password-dialog',
+      autoFocus: true,
+      restoreFocus: false
     });
+
+    // Pre-fill email if already entered in login form
+    const emailControl = this.form.get('email');
+    if (emailControl?.valid && emailControl.value) {
+      dialogRef.componentInstance.form.patchValue({
+        email: emailControl.value.trim()
+      });
+    }
   }
 
   async submit(): Promise<void> {
