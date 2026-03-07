@@ -3,31 +3,19 @@
 </div>
 
 <mat-dialog-content>
-  <div class="warning-section">
-    <mat-icon class="warning-icon">warning</mat-icon>
-    <h3>Atenção: Esta ação é irreversível</h3>
-  </div>
-
   <div class="content">
-    <p>A eliminação da tua conta irá:</p>
-    <ul>
-      <li>Remover permanentemente todos os teus dados pessoais</li>
-      <li>Eliminar todos os projetos que criaste</li>
-      <li>Remover todas as candidaturas e avaliações</li>
-      <li>Apagar todas as mensagens e conversas</li>
-      <li>Eliminar todas as conexões e seguidores</li>
-    </ul>
+    <p>Esta ação é permanente e vai remover o teu perfil e dados associados.</p>
 
     <p class="confirmation-instruction">
-      Para confirmar, escreve <strong>ELIMINAR</strong> no campo abaixo:
+      Escreve <strong>ELIMINAR</strong> para confirmar.
     </p>
 
-    <mat-form-field class="full-width">
+    <mat-form-field appearance="outline" class="full-width">
       <mat-label>Confirmação</mat-label>
-      <input 
-        matInput 
+      <input
+        matInput
         [(ngModel)]="confirmationText"
-        placeholder="Escreve ELIMINAR"
+        placeholder="ELIMINAR"
         autocomplete="off">
     </mat-form-field>
   </div>

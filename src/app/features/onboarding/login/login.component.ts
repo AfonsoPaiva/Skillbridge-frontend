@@ -10,6 +10,7 @@ import {
   signInWithPopup,
   signInWithEmailAndPassword,
   sendEmailVerification,
+  fetchSignInMethodsForEmail,
   GoogleAuthProvider,
   GithubAuthProvider,
   OAuthProvider,
@@ -276,25 +277,23 @@ export class LoginComponent {
       if (code === 'auth/account-exists-with-different-credential') {
         const email = err?.customData?.email;
         if (email) {
-          // Try to fetch sign-in methods for this email
-          import('firebase/auth').then(({ fetchSignInMethodsForEmail }) => {
-            fetchSignInMethodsForEmail(fbAuth, email).then((methods) => {
-              if (methods.length > 0) {
-                const providerNames: { [key: string]: string } = {
-                  'google.com': 'Google',
-                  'github.com': 'GitHub',
-                  'microsoft.com': 'Microsoft',
-                  'password': 'email e palavra-passe'
-                };
-                const providerName = providerNames[methods[0]] || methods[0];
-                this.error = `Este email já está registado. Inicia sessão com ${providerName}.`;
-              } else {
-                this.error = 'Este email já está registado com outro método de login.';
-              }
-            }).catch(() => {
+          try {
+            const methods = await fetchSignInMethodsForEmail(fbAuth, email);
+            if (methods.length > 0) {
+              const providerNames: { [key: string]: string } = {
+                'google.com': 'Google',
+                'github.com': 'GitHub',
+                'microsoft.com': 'Microsoft',
+                'password': 'email e palavra-passe'
+              };
+              const providerName = providerNames[methods[0]] || methods[0];
+              this.error = `Este email já está registado. Inicia sessão com ${providerName}.`;
+            } else {
               this.error = 'Este email já está registado com outro método de login.';
-            });
-          });
+            }
+          } catch {
+            this.error = 'Este email já está registado com outro método de login.';
+          }
         } else {
           this.error = 'Este email já está registado com outro método de login.';
         }

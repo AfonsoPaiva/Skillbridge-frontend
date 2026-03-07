@@ -116,14 +116,23 @@ mat-dialog-content {
 
 .error-msg {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: v.$space-2;
-  color: #d32f2f;
+  color: v.$color-text;
   font-size: 14px;
-  padding: v.$space-3;
-  background: #fde8e8;
+  line-height: 1.4;
+  padding: v.$space-3 v.$space-4;
+  margin: v.$space-2 0;
+  background: rgba(104, 0, 122, 0.08);
+  border: 1px solid v.$color-border;
   border-radius: v.$radius-sm;
-  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    margin-top: 1px;
+    color: v.$color-primary;
+  }
 }
 
 .divider {
