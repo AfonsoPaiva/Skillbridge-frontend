@@ -597,7 +597,9 @@ export class OnboardingComponent implements OnInit {
       });
     }
     
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/dashboard']).then(() => {
+      window.scrollTo(0, 0);
+    });
   }
 
   openDonationDialog(): void {

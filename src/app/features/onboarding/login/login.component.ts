@@ -136,7 +136,9 @@ export class LoginComponent {
           this.loading = false;
           localStorage.setItem('sb_onboarded', '1');
           this.close();
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/dashboard']).then(() => {
+            window.scrollTo(0, 0);
+          });
         },
         error: (profileErr) => {
           // User exists in Firebase but not in our DB — force onboarding
@@ -226,7 +228,9 @@ export class LoginComponent {
         next: () => {
           this.loading = false;
           this.close();
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/dashboard']).then(() => {
+            window.scrollTo(0, 0);
+          });
         },
         error: (err) => {
           if (err.status === 404) {
@@ -253,7 +257,9 @@ export class LoginComponent {
           } else {
             this.loading = false;
             this.close();
-            this.router.navigate(['/dashboard']);
+            this.router.navigate(['/dashboard']).then(() => {
+              window.scrollTo(0, 0);
+            });
           }
         }
       });
