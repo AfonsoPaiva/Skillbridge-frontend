@@ -73,45 +73,6 @@ export class LoginComponent {
     }, 200);
   }
 
-  async forgotPassword(): Promise<void> {
-    const emailControl = this.form.get('email');
-    let email = emailControl?.value?.trim() || '';
-
-    // If no valid email in form, ask user
-    if (!email || !emailControl?.valid) {
-      const userEmail = prompt('Insere o teu email para recuperar a palavra-passe:');
-      if (!userEmail) return;
-      email = userEmail.trim();
-      
-      // Validate email format
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        this.snackBar.open('Email inválido', 'Fechar', { duration: 4000, panelClass: ['error-snackbar'] });
-        return;
-      }
-    }
-
-    this.loading = true;
-    this.api.requestPasswordReset(email).subscribe({
-      next: () => {
-        this.loading = false;
-        this.snackBar.open(
-          `✅ Email enviado para ${email}. Verifica a tua caixa de entrada e spam.`,
-          'OK',
-          { duration: 6000, panelClass: ['success-snackbar'] }
-        );
-      },
-      error: (err) => {
-        this.loading = false;
-        if (err.status === 404) {
-          this.snackBar.open('Email não encontrado', 'Fechar', { duration: 4000, panelClass: ['error-snackbar'] });
-        } else {
-          this.snackBar.open('Erro ao enviar email. Tenta novamente.', 'Fechar', { duration: 4000, panelClass: ['error-snackbar'] });
-        }
-      }
-    });
-  }
-
   async submit(): Promise<void> {
     if (this.form.invalid) return;
     this.loading = true;

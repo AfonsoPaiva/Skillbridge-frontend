@@ -1,3 +1,6 @@
+<!-- Forgot Password Popover -->
+<app-forgot-password-popover #forgotPasswordPopover></app-forgot-password-popover>
+
 <!-- Header -->
 <div mat-dialog-title class="login-header">
   <div class="login-logo--centered">
@@ -49,7 +52,7 @@
 
     <!-- Forgot password link -->
     <div class="forgot-password-link">
-      <button type="button" mat-button color="primary" (click)="forgotPassword()">
+      <button type="button" mat-button color="primary" (click)="forgotPasswordPopover.toggle()">
         Esqueci-me da palavra-passe
       </button>
     </div>
