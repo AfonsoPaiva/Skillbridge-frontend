@@ -155,15 +155,26 @@
           <input matInput [(ngModel)]="skillSearch" placeholder="Ex: Python, Figma...">
           <mat-icon matSuffix>search</mat-icon>
         </mat-form-field>
-        <div class="skills-grid">
-          <button *ngFor="let s of filteredSkills.slice(0,20)"
-                  mat-stroked-button
-                  [color]="isSkillSelected(s) ? 'primary' : ''"
-                  (click)="toggleSkill(s)"
-                  class="skill-btn">
-            {{ s }}
-          </button>
+
+        <div class="skills-sections" *ngIf="filteredSkillSections.length > 0; else noSkillsFound">
+          <div class="skills-section" *ngFor="let section of filteredSkillSections">
+            <h3>{{ section.label }}</h3>
+            <div class="skills-grid">
+              <button *ngFor="let s of section.skills"
+                      mat-stroked-button
+                      [color]="isSkillSelected(s) ? 'primary' : ''"
+                      (click)="toggleSkill(s)"
+                      class="skill-btn">
+                {{ s }}
+              </button>
+            </div>
+          </div>
         </div>
+
+        <ng-template #noSkillsFound>
+          <p class="ob-step__empty">Nenhuma competência encontrada para esta pesquisa.</p>
+        </ng-template>
+
         <div class="ob-step__hint" *ngIf="selectedSkills.length === 0">
           <mat-icon>info</mat-icon>
           Seleciona pelo menos uma competência para avançar.

@@ -216,6 +216,27 @@
               <mat-icon>add</mat-icon> Adicionar
             </button>
           </div>
+
+          <div class="skills-catalog" *ngIf="filteredSkillSections.length > 0; else noSkillResults">
+            <div class="skills-catalog__section" *ngFor="let section of filteredSkillSections">
+              <h4>{{ section.label }}</h4>
+              <div class="skills-catalog__grid">
+                <button type="button"
+                        mat-stroked-button
+                        class="skills-catalog__btn"
+                        *ngFor="let skill of section.skills"
+                        (click)="addSkill(skill)">
+                  {{ skill }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <ng-template #noSkillResults>
+            <p class="text-soft empty-skills" *ngIf="availableSkills.length > 0">
+              <mat-icon>search_off</mat-icon> Nenhuma competência disponível para esta pesquisa.
+            </p>
+          </ng-template>
         </div>
 
         <!-- Danger zone -->

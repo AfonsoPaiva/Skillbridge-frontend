@@ -6,7 +6,7 @@ import {
   User, Project, ProjectRole, ProjectMember, Review,
   GuestSession, GuestSessionInput, Conversation, Message,
   DonationStats, RegisterInput, FollowCounts, FollowList,
-  UniversitySearchResult
+  UniversitySearchResult, SkillsListResponse
 } from '../models/models';
 import { AuthService } from './auth.service';
 import { environment } from '../../../environments/environment';
@@ -77,8 +77,12 @@ export class ApiService {
   }
 
   // ── Skills ────────────────────────────────────
-  listSkills(): Observable<string[]> {
-    return this.http.get<string[]>(`${this.base}/skills`);
+  listSkills(): Observable<SkillsListResponse> {
+    return this.http.get<SkillsListResponse>(`${this.base}/skills`);
+  }
+
+  listSkillsFlat(): Observable<string[]> {
+    return this.listSkills().pipe(map(res => res.skills || []));
   }
 
   addSkill(skill: string): Observable<{ skills: string[] }> {

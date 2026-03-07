@@ -5,12 +5,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ContactLinks, User } from '../../../core/models/models';
+import { ContactLinks, User, SkillSection, SkillsListResponse } from '../../../core/models/models';
 import { DeleteAccountDialogComponent } from '../../../shared/components/delete-account-dialog/delete-account-dialog.component';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Observable, of, BehaviorSubject, combineLatest } from 'rxjs';
 import { startWith, debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
-import { rankedAutocomplete } from '../../../core/utils/search.utils';
+import { rankedAutocomplete, sanitizeInput } from '../../../core/utils/search.utils';
 import { getAuth, sendPasswordResetEmail } from 'firebase/auth';
 import { initializeApp, getApps } from 'firebase/app';
 import { environment } from '../../../../environments/environment';
@@ -29,6 +29,7 @@ export class EditProfileComponent implements OnInit {
   userEmail: string | null = null; // used for password reset
   userSkills: string[] = [];
   availableSkills: string[] = [];
+  availableSkillSections: SkillSection[] = [];
   removingSkill = '';
   
   // skills autocomplete with search
@@ -111,8 +112,9 @@ export class EditProfileComponent implements OnInit {
 
     // Load skills and setup autocomplete
     this.api.listSkills().subscribe({ 
-      next: (s: string[]) => {
-        this.availableSkills = s;
+      next: (res: SkillsListResponse) => {
+        this.availableSkills = res.skills || [];
+        this.availableSkillSections = res.sections || [];
         this.setupSkillsAutocomplete();
       }
     });
@@ -231,10 +233,12 @@ export class EditProfileComponent implements OnInit {
     });
   }
 
-  addSkill(): void {
-    const s = (this.skillSearchControl.value || '').trim();
-    if (!s || this.userSkills.includes(s)) return;
-    this.api.addSkill(s).subscribe({
+  addSkill(skillName?: string): void {
+    const rawSkill = (skillName ?? this.skillSearchControl.value ?? '').toString().trim();
+    const skill = this.resolveSkill(rawSkill);
+    if (!skill || this.userSkills.includes(skill)) return;
+
+    this.api.addSkill(skill).subscribe({
       next: (res: { skills: string[] }) => {
         this.userSkills = res.skills;
         this.userSkillsSubject.next(this.userSkills);
@@ -245,8 +249,10 @@ export class EditProfileComponent implements OnInit {
   }
 
   onSkillSelected(event: any): void {
-    // Auto-add when option is selected
-    setTimeout(() => this.addSkill(), 0);
+    const selected = event?.option?.value;
+    if (selected) {
+      this.addSkill(selected);
+    }
   }
 
   removeSkill(skill: string): void {
@@ -285,6 +291,20 @@ export class EditProfileComponent implements OnInit {
     return this.availableSkills.filter(s => !this.userSkills.includes(s));
   }
 
+  get filteredSkillSections(): SkillSection[] {
+    const query = sanitizeInput((this.skillSearchControl.value || '').toString()).toLowerCase();
+    return this.availableSkillSections
+      .map(section => ({
+        ...section,
+        skills: section.skills.filter(skill => {
+          if (this.userSkills.includes(skill)) return false;
+          if (!query) return true;
+          return skill.toLowerCase().includes(query);
+        })
+      }))
+      .filter(section => section.skills.length > 0);
+  }
+
   private setupSkillsAutocomplete(): void {
     // Combine skill search input with user's current skills to filter
     this.filteredSkills$ = combineLatest([
@@ -299,7 +319,7 @@ export class EditProfileComponent implements OnInit {
         // Filter out skills already added by user
         const available = this.availableSkills.filter(s => !userSkills.includes(s));
         // Apply search filter with limit for performance
-        const q = (query || '').trim();
+        const q = sanitizeInput((query || '').toString());
         if (q.length === 0) {
           // Show first 30 when no search query
           return available.slice(0, 30);
@@ -309,6 +329,19 @@ export class EditProfileComponent implements OnInit {
         return available.filter(s => s.toLowerCase().includes(lower)).slice(0, 50);
       })
     );
+  }
+
+  private resolveSkill(rawSkill: string): string {
+    if (!rawSkill) return '';
+    const exact = this.availableSkills.find(s => s === rawSkill);
+    if (exact) return exact;
+
+    const normalized = rawSkill.toLowerCase();
+    const caseInsensitive = this.availableSkills.find(s => s.toLowerCase() === normalized);
+    if (caseInsensitive) return caseInsensitive;
+
+    this.snack.open('Seleciona uma competência válida da lista.', 'Fechar', { duration: 3000 });
+    return '';
   }
 
   private getFirebaseApp() {

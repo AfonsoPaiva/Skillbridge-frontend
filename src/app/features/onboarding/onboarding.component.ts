@@ -7,7 +7,7 @@ import { Observable, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operators';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
-import { RegisterInput } from '../../core/models/models';
+import { RegisterInput, SkillSection, SkillsListResponse } from '../../core/models/models';
 import { environment } from '../../../environments/environment';
 import { DonationCheckoutComponent } from '../donation/donation-checkout.component';
 import { rankedAutocomplete, sanitizeInput } from '../../core/utils/search.utils';
@@ -130,17 +130,31 @@ export class OnboardingComponent implements OnInit {
   accountForm!: FormGroup;
 
   availableSkills: string[] = [];
+  availableSkillSections: SkillSection[] = [];
   selectedSkills: string[] = [];
   skillSearch = '';
 
   get filteredSkills(): string[] {
     const sanitized = sanitizeInput(this.skillSearch);
-    const available = this.availableSkills.filter(s => !this.selectedSkills.includes(s));
+    const available = this.availableSkills;
     if (!sanitized) {
       return available.slice(0, 50);
     }
     const lower = sanitized.toLowerCase();
     return available.filter(s => s.toLowerCase().includes(lower)).slice(0, 50);
+  }
+
+  get filteredSkillSections(): SkillSection[] {
+    const sanitized = sanitizeInput(this.skillSearch).toLowerCase();
+    return this.availableSkillSections
+      .map(section => ({
+        ...section,
+        skills: section.skills.filter(skill => {
+          if (!sanitized) return true;
+          return skill.toLowerCase().includes(sanitized);
+        })
+      }))
+      .filter(section => section.skills.length > 0);
   }
 
   constructor(
@@ -184,7 +198,10 @@ export class OnboardingComponent implements OnInit {
     }
 
     this.api.listSkills().subscribe({
-      next: (s: string[]) => this.availableSkills = s,
+      next: (res: SkillsListResponse) => {
+        this.availableSkillSections = res.sections || [];
+        this.availableSkills = res.skills || [];
+      },
       error: () => {}
     });
 

@@ -54,7 +54,7 @@ export class ProjectFormComponent implements OnInit {
     });
 
     // Load skills for role forms
-    this.api.listSkills().subscribe({ next: (s: string[]) => this.availableSkills = s });
+    this.api.listSkillsFlat().subscribe({ next: (s: string[]) => this.availableSkills = s });
 
     // Listen to status changes to update role validations
     this.form.get('status')?.valueChanges.subscribe((status: string) => {

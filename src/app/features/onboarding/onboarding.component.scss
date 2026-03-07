@@ -349,10 +349,8 @@ mat-dialog-content {
   display: flex;
   flex-wrap: wrap;
   gap: v.$space-2;
-  margin-top: v.$space-3;
-  max-height: 180px;
-  overflow-y: auto;
-  padding: v.$space-1;
+  margin-top: v.$space-2;
+  padding: v.$space-1 0;
 }
 
 .skill-btn {
@@ -363,6 +361,29 @@ mat-dialog-content {
 }
 
 // ── Info box ──────────────────────────────────────
+
+.skills-sections {
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: v.$space-1;
+}
+
+.skills-section {
+  margin-bottom: v.$space-3;
+
+  h3 {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: v.$font-weight-semibold;
+    color: v.$color-primary;
+  }
+}
+
+.ob-step__empty {
+  margin-top: v.$space-3;
+  color: v.$color-text-soft;
+  font-size: 14px;
+}
 .info-box {
   display: flex;
   gap: v.$space-4;

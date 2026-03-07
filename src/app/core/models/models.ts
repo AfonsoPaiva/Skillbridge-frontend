@@ -152,6 +152,18 @@ export interface Skill {
   name: string;
 }
 
+export interface SkillSection {
+  id: string;
+  label: string;
+  skills: string[];
+}
+
+export interface SkillsListResponse {
+  count: number;
+  sections: SkillSection[];
+  skills: string[];
+}
+
 export interface RegisterInput {
   name: string;
   university?: string;
