@@ -29,7 +29,6 @@ export class ProjectFormComponent implements OnInit {
 
   statusOptions = [
     { value: 'open', label: 'Aberto — aceitar candidaturas' },
-    { value: 'in_progress', label: 'Em progresso — equipa formada' },
     { value: 'completed', label: 'Concluído' }
   ];
 

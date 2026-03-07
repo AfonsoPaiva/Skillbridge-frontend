@@ -81,6 +81,9 @@
     button[mat-icon-button],
     a[mat-icon-button] {
       color: v.$color-text !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
       
       mat-icon {
         color: v.$color-text !important;
@@ -100,14 +103,23 @@
       position: relative;
       
       ::ng-deep .mat-badge-content {
-        top: 10px !important;
-        right: 10px !important;
+        top: 8px !important;
+        right: 8px !important;
         background-color: #f44336 !important;
         font-size: 10px !important;
         font-weight: v.$font-weight-bold !important;
-        min-width: 18px !important;
-        height: 18px !important;
-        line-height: 18px !important;
+        min-width: 16px !important;
+        height: 16px !important;
+        line-height: 16px !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 4px;
+      }
+      
+      ::ng-deep .mat-mdc-button-touch-target {
+        height: 100%;
+        width: 100%;
       }
     }
 
