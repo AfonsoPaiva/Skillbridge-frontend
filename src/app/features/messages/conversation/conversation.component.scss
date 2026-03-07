@@ -256,7 +256,14 @@
 
   &__send {
     flex-shrink: 0;
-    margin-bottom: 4px;
+    align-self: flex-end;
+    margin-bottom: 1.34375em; // Aligns with Material form field bottom
+    
+    // Fix touch target alignment
+    ::ng-deep .mat-mdc-button-touch-target {
+      height: 100%;
+      width: 100%;
+    }
   }
 }
 
