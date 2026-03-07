@@ -45,6 +45,7 @@ export class EditProfileComponent implements OnInit {
   courses: string[] = [];
   filteredCourses$ = of<string[]>([]);
   loadingCourses = false;
+  private lastUniversitySelection = '';
 
   yearOptions = [
     { value: '1', label: '1.º ano (Licenciatura)' },
@@ -145,14 +146,30 @@ export class EditProfileComponent implements OnInit {
 
     // fetch courses when university changes
     this.form.get('university')!.valueChanges.pipe(distinctUntilChanged()).subscribe(val => {
-      if (typeof val === 'string' && val !== 'Outra' && val.trim() !== '') {
+      const selectedUniversity = typeof val === 'string' ? val.trim() : '';
+      const courseCtrl = this.form.get('course')!;
+
+      if (selectedUniversity !== this.lastUniversitySelection) {
+        this.lastUniversitySelection = selectedUniversity;
+        this.courses = [];
+        courseCtrl.setValue('', { emitEvent: true });
+      }
+
+      if (
+        selectedUniversity !== '' &&
+        selectedUniversity !== 'Outra' &&
+        this.universities.includes(selectedUniversity)
+      ) {
         this.loadingCourses = true;
-        this.api.listCourses(val).subscribe({
+        this.api.listCourses(selectedUniversity).subscribe({
           next: c => {
+            const currentUniversity = this.form.get('university')!.value;
+            if (currentUniversity !== selectedUniversity) {
+              return;
+            }
             this.courses = c;
             this.loadingCourses = false;
-            const ctrl = this.form.get('course')!;
-            ctrl.setValue(ctrl.value, { emitEvent: true });
+            courseCtrl.setValue(courseCtrl.value, { emitEvent: true });
           },
           error: () => {
             this.courses = [];
@@ -246,6 +263,7 @@ export class EditProfileComponent implements OnInit {
 
   save(): void {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
+    if (!this.validateAcademicSelection()) return;
     this.saving = true;
     const payload = {
       ...this.form.value,
@@ -352,6 +370,41 @@ export class EditProfileComponent implements OnInit {
       'ISCTE', 'Universidade Lusófona', 'Instituto Politécnico de Lisboa',
       'Instituto Politécnico do Porto', 'Outra'
     ];
+  }
+
+  private validateAcademicSelection(): boolean {
+    const university = (this.form.get('university')?.value || '').trim();
+    const course = (this.form.get('course')?.value || '').trim();
+
+    if (!university && !course) {
+      return true;
+    }
+
+    if (!university || !course) {
+      this.snack.open('Universidade e curso devem ser preenchidos em conjunto.', 'Fechar', { duration: 3500 });
+      return false;
+    }
+
+    if (university === 'Outra') {
+      return true;
+    }
+
+    if (!this.universities.includes(university)) {
+      this.snack.open('Seleciona uma universidade válida da lista.', 'Fechar', { duration: 3500 });
+      return false;
+    }
+
+    if (this.courses.length === 0) {
+      this.snack.open('Não foi possível validar os cursos dessa universidade. Seleciona novamente.', 'Fechar', { duration: 3500 });
+      return false;
+    }
+
+    if (!this.courses.includes(course)) {
+      this.snack.open('O curso selecionado não pertence à universidade escolhida.', 'Fechar', { duration: 3500 });
+      return false;
+    }
+
+    return true;
   }
 
   private normalizeContactLinks(value?: ContactLinks): ContactLinks {

@@ -116,6 +116,7 @@ export class OnboardingComponent implements OnInit {
   courses: string[] = [];
   filteredCourses$!: Observable<string[]>;
   loadingCourses = false;
+  private lastUniversitySelection = '';
 
   // Step 0: role choice
   roleForm!: FormGroup;
@@ -218,14 +219,30 @@ export class OnboardingComponent implements OnInit {
     this.academicForm.get('university')!.valueChanges.pipe(
       distinctUntilChanged()
     ).subscribe(val => {
-      if (typeof val === 'string' && val !== 'Outra' && val.trim() !== '') {
+      const selectedUniversity = typeof val === 'string' ? val.trim() : '';
+      const courseCtrl = this.academicForm.get('course')!;
+
+      if (selectedUniversity !== this.lastUniversitySelection) {
+        this.lastUniversitySelection = selectedUniversity;
+        this.courses = [];
+        courseCtrl.setValue('', { emitEvent: true });
+      }
+
+      if (
+        selectedUniversity !== '' &&
+        selectedUniversity !== 'Outra' &&
+        this.universities.includes(selectedUniversity)
+      ) {
         this.loadingCourses = true;
-        this.api.listCourses(val).subscribe({
+        this.api.listCourses(selectedUniversity).subscribe({
           next: c => {
+            const currentUniversity = this.academicForm.get('university')!.value;
+            if (currentUniversity !== selectedUniversity) {
+              return;
+            }
             this.courses = c;
             this.loadingCourses = false;
-            const ctrl = this.academicForm.get('course')!;
-            ctrl.setValue(ctrl.value, { emitEvent: true });
+            courseCtrl.setValue(courseCtrl.value, { emitEvent: true });
           },
           error: () => {
             this.courses = [];
@@ -256,6 +273,37 @@ export class OnboardingComponent implements OnInit {
       'ISCTE', 'Universidade Lusófona', 'Instituto Politécnico de Lisboa',
       'Instituto Politécnico do Porto', 'Outra'
     ];
+  }
+
+  private validateAcademicSelection(): boolean {
+    const university = (this.academicForm.get('university')?.value || '').trim();
+    const course = (this.academicForm.get('course')?.value || '').trim();
+
+    if (!university || !course) {
+      this.error = 'Seleciona universidade e curso antes de continuar.';
+      return false;
+    }
+
+    if (university === 'Outra') {
+      return true;
+    }
+
+    if (!this.universities.includes(university)) {
+      this.error = 'Seleciona uma universidade válida da lista.';
+      return false;
+    }
+
+    if (this.courses.length === 0) {
+      this.error = 'Não foi possível validar os cursos dessa universidade. Seleciona novamente.';
+      return false;
+    }
+
+    if (!this.courses.includes(course)) {
+      this.error = 'O curso selecionado não pertence à universidade escolhida.';
+      return false;
+    }
+
+    return true;
   }
 
   get progress(): number {
@@ -330,6 +378,7 @@ export class OnboardingComponent implements OnInit {
 
   async submit(): Promise<void> {
     if (this.accountForm.invalid) return;
+    if (!this.validateAcademicSelection()) return;
     this.loading = true;
     this.error = '';
 
@@ -425,6 +474,7 @@ export class OnboardingComponent implements OnInit {
   }
 
   async signInWithProvider(provider: 'google' | 'github' | 'microsoft'): Promise<void> {
+    if (!this.validateAcademicSelection()) return;
     this.loading = true;
     this.error = '';
 
@@ -544,6 +594,7 @@ export class OnboardingComponent implements OnInit {
 
   /** Submit registration for social-login users (already authenticated, skip account step) */
   submitSocial(): void {
+    if (!this.validateAcademicSelection()) return;
     this.loading = true;
     this.error = '';
 
