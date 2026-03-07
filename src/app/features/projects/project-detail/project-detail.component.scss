@@ -82,6 +82,7 @@
 .role-card {
   border-radius: v.$radius-md !important;
   text-align: left;
+  align-items: unset !important;
   
   &__header { 
     @include m.flex-between; 
@@ -110,7 +111,6 @@
 
   mat-card-content { 
     padding: v.$space-5 !important;
-    display: flex;
     flex-direction: column;
     align-items: flex-start;
   }
