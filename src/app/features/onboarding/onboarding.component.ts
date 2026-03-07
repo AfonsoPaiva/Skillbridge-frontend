@@ -17,7 +17,7 @@ import {
   signInWithPopup,
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
-  FacebookAuthProvider,
+  GithubAuthProvider,
   OAuthProvider,
   UserCredential,
   setPersistence,
@@ -411,7 +411,7 @@ export class OnboardingComponent implements OnInit {
     });
   }
 
-  async signInWithProvider(provider: 'google' | 'facebook' | 'microsoft'): Promise<void> {
+  async signInWithProvider(provider: 'google' | 'github' | 'microsoft'): Promise<void> {
     this.loading = true;
     this.error = '';
 
@@ -420,13 +420,22 @@ export class OnboardingComponent implements OnInit {
 // Set persistence before sign-in
     await setPersistence(fbAuth, browserLocalPersistence).catch(() => {});
 
-    let authProvider: GoogleAuthProvider | FacebookAuthProvider | OAuthProvider;
+    let authProvider: GoogleAuthProvider | GithubAuthProvider | OAuthProvider;
     if (provider === 'google') {
       authProvider = new GoogleAuthProvider();
-    } else if (provider === 'facebook') {
-      authProvider = new FacebookAuthProvider();
+    } else if (provider === 'github') {
+      authProvider = new GithubAuthProvider();
     } else {
+      // Microsoft OAuth provider with proper configuration
       authProvider = new OAuthProvider('microsoft.com');
+      authProvider.setCustomParameters({
+        prompt: 'select_account',
+        tenant: 'common' // Allows both personal and work/school accounts
+      });
+      // Request basic profile scopes
+      authProvider.addScope('openid');
+      authProvider.addScope('profile');
+      authProvider.addScope('email');
     }
 
     try {

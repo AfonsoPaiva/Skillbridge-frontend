@@ -156,9 +156,22 @@ export class LoginComponent {
     await setPersistence(fbAuth, browserLocalPersistence).catch(() => {});
 
     let authProvider: GoogleAuthProvider | GithubAuthProvider | OAuthProvider;
-    if (provider === 'google') authProvider = new GoogleAuthProvider();
-    else if (provider === 'github') authProvider = new GithubAuthProvider();
-    else authProvider = new OAuthProvider('microsoft.com');
+    if (provider === 'google') {
+      authProvider = new GoogleAuthProvider();
+    } else if (provider === 'github') {
+      authProvider = new GithubAuthProvider();
+    } else {
+      // Microsoft OAuth provider with proper configuration
+      authProvider = new OAuthProvider('microsoft.com');
+      authProvider.setCustomParameters({
+        prompt: 'select_account',
+        tenant: 'common' // Allows both personal and work/school accounts
+      });
+      // Request basic profile scopes
+      authProvider.addScope('openid');
+      authProvider.addScope('profile');
+      authProvider.addScope('email');
+    }
 
     try {
       const cred: UserCredential = await signInWithPopup(fbAuth, authProvider);
