@@ -9,7 +9,7 @@ import {
   signInWithPopup,
   signInWithEmailAndPassword,
   GoogleAuthProvider,
-  FacebookAuthProvider,
+  GithubAuthProvider,
   OAuthProvider,
   UserCredential,
   setPersistence,
@@ -147,7 +147,7 @@ export class LoginComponent {
     return initializeApp({ apiKey: environment.firebaseApiKey, authDomain: environment.firebaseAuthDomain });
   }
 
-  async signInWithProvider(provider: 'google' | 'facebook' | 'microsoft'): Promise<void> {
+  async signInWithProvider(provider: 'google' | 'github' | 'microsoft'): Promise<void> {
     this.loading = true;
     this.error = '';
     const fbAuth = getAuth(this.getFirebaseApp());
@@ -155,9 +155,9 @@ export class LoginComponent {
     // Set persistence before sign-in
     await setPersistence(fbAuth, browserLocalPersistence).catch(() => {});
 
-    let authProvider: GoogleAuthProvider | FacebookAuthProvider | OAuthProvider;
+    let authProvider: GoogleAuthProvider | GithubAuthProvider | OAuthProvider;
     if (provider === 'google') authProvider = new GoogleAuthProvider();
-    else if (provider === 'facebook') authProvider = new FacebookAuthProvider();
+    else if (provider === 'github') authProvider = new GithubAuthProvider();
     else authProvider = new OAuthProvider('microsoft.com');
 
     try {
