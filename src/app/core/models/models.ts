@@ -4,6 +4,7 @@ export interface User {
   name: string;
   slug: string;
   email: string;
+  email_verified: boolean;
   university: string;
   course: string;
   year: string;

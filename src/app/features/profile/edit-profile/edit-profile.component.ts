@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ContactLinks, User } from '../../../core/models/models';
+import { DeleteAccountDialogComponent } from '../../../shared/components/delete-account-dialog/delete-account-dialog.component';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Observable, of, BehaviorSubject, combineLatest } from 'rxjs';
 import { startWith, debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
@@ -79,7 +81,8 @@ export class EditProfileComponent implements OnInit {
     private api: ApiService,
     private router: Router,
     private snack: MatSnackBar,
-    private auth: AuthService   // to clear session on delete
+    private auth: AuthService,   // to clear session on delete
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -296,16 +299,23 @@ export class EditProfileComponent implements OnInit {
   }
 
   deleteAccount(): void {
-    if (!confirm('Tem a certeza que quer eliminar a sua conta? Esta ação não pode ser desfeita.')) {
-      return;
-    }
-    this.api.deleteMyAccount().subscribe({
-      next: () => {
-        this.snack.open('Conta eliminada.', 'Fechar', { duration: 3000 });
-        this.auth.clearSession();
-        this.router.navigate(['/landing']);
-      },
-      error: () => this.snack.open('Erro ao eliminar conta.', 'Fechar', { duration: 3000 })
+    const dialogRef = this.dialog.open(DeleteAccountDialogComponent, {
+      width: '500px',
+      maxWidth: '95vw',
+      panelClass: 'delete-account-dialog'
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.api.deleteMyAccount().subscribe({
+          next: () => {
+            this.snack.open('Conta eliminada.', 'Fechar', { duration: 3000 });
+            this.auth.clearSession();
+            this.router.navigate(['/landing']);
+          },
+          error: () => this.snack.open('Erro ao eliminar conta.', 'Fechar', { duration: 3000 })
+        });
+      }
     });
   }
 

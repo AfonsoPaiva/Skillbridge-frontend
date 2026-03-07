@@ -579,15 +579,24 @@ export class OnboardingComponent implements OnInit {
     localStorage.removeItem('sb_needs_onboarding');
     this.loading = false;
     
-    // Show verification notice if email was sent
-    if (this.emailVerificationSent) {
-      alert('✅ Conta criada com sucesso!\n\n📧 Enviámos um email de verificação.\nPor favor verifica a tua caixa de entrada (e spam) para ativar a tua conta.\n\nPodes explorar a plataforma, mas precisarás verificar o email para fazer login futuramente.');
-    }
-    
-    // Close dialog and navigate to dashboard
+    // Close onboarding dialog
     if (this.dialogRef) {
       this.dialogRef.close();
     }
+    
+    // Show verification dialog if email was sent (email/password registration)
+    if (this.emailVerificationSent) {
+      // Import the component
+      import('./email-verification-dialog/email-verification-dialog.component').then(({ EmailVerificationDialogComponent }) => {
+        this.dialog.open(EmailVerificationDialogComponent, {
+          width: '500px',
+          maxWidth: '95vw',
+          disableClose: true,
+          panelClass: 'email-verification-dialog'
+        });
+      });
+    }
+    
     this.router.navigate(['/dashboard']);
   }
 

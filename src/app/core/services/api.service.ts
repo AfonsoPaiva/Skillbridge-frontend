@@ -63,6 +63,18 @@ export class ApiService {
     return this.http.post<{ message: string }>(`${this.base}/users/password-reset`, { email });
   }
 
+  updateEmailVerificationStatus(): Observable<{ message: string; email_verified: boolean }> {
+    return this.http.post<{ message: string; email_verified: boolean }>(`${this.base}/users/me/verify-email`, {}, {
+      headers: this.authHeaders()
+    });
+  }
+
+  checkEmailVerificationStatus(): Observable<{ email_verified: boolean }> {
+    return this.http.get<{ email_verified: boolean }>(`${this.base}/users/me/email-verified`, {
+      headers: this.authHeaders()
+    });
+  }
+
   // ── Skills ────────────────────────────────────
   listSkills(): Observable<string[]> {
     return this.http.get<string[]>(`${this.base}/skills`);

@@ -1,0 +1,47 @@
+<div mat-dialog-title class="dialog-header">
+  <h2>Verificação de Email</h2>
+</div>
+
+<mat-dialog-content>
+  <div class="verification-content">
+    <div class="timer-section">
+      <div class="timer-display">{{ formattedTime }}</div>
+      <p class="timer-label">Tempo para verificar o email</p>
+    </div>
+
+    <div class="instructions">
+      <p>Foi enviado um email de verificação para o teu endereço de email.</p>
+      <p>Por favor, verifica a tua caixa de entrada e também a pasta de spam.</p>
+      <p>Depois de verificares o email, clica no botão abaixo para continuar.</p>
+    </div>
+
+    <div class="error-message" *ngIf="error && !error.includes('sucesso')">
+      {{ error }}
+    </div>
+
+    <div class="success-message" *ngIf="error && error.includes('sucesso')">
+      {{ error }}
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button 
+    mat-raised-button 
+    color="primary" 
+    (click)="checkVerification(true)"
+    [disabled]="checking || isExpired">
+    <mat-icon *ngIf="!checking">check_circle</mat-icon>
+    <mat-spinner *ngIf="checking" diameter="20"></mat-spinner>
+    <span *ngIf="!checking">Já Verifiquei</span>
+    <span *ngIf="checking">A verificar...</span>
+  </button>
+  
+  <button 
+    mat-stroked-button 
+    (click)="resendEmail()"
+    [disabled]="checking || isExpired">
+    <mat-icon>email</mat-icon>
+    Reenviar Email
+  </button>
+</mat-dialog-actions>

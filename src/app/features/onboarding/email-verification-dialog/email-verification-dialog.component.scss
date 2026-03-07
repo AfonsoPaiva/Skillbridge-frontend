@@ -1,0 +1,123 @@
+@use '../../../../styles/variables' as v;
+@use '../../../../styles/mixins' as m;
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: v.$space-4 v.$space-6;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: v.$color-text;
+  }
+}
+
+mat-dialog-content {
+  padding: v.$space-6;
+  min-height: 300px;
+}
+
+.verification-content {
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-6;
+  align-items: center;
+  text-align: center;
+}
+
+.timer-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: v.$space-2;
+  padding: v.$space-4;
+  background: v.$color-bg;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.timer-display {
+  font-size: 3rem;
+  font-weight: 700;
+  color: v.$color-primary;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+}
+
+.timer-label {
+  margin: 0;
+  font-size: 0.875rem;
+  color: v.$color-text-muted;
+  font-weight: 500;
+}
+
+.instructions {
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-3;
+  
+  p {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: v.$color-text;
+  }
+}
+
+.error-message,
+.success-message {
+  padding: v.$space-3 v.$space-4;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  width: 100%;
+}
+
+.error-message {
+  background: #fee;
+  color: #c00;
+  border: 1px solid #fcc;
+}
+
+.success-message {
+  background: #efe;
+  color: #060;
+  border: 1px solid #cfc;
+}
+
+mat-dialog-actions {
+  display: flex;
+  gap: v.$space-3;
+  padding: v.$space-4 v.$space-6;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  justify-content: center;
+  
+  button {
+    display: flex;
+    align-items: center;
+    gap: v.$space-2;
+    padding: 0 v.$space-4;
+    height: 48px;
+    font-weight: 500;
+    
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+    
+    mat-spinner {
+      margin-right: v.$space-1;
+    }
+  }
+}
+
+@include m.md {
+  mat-dialog-content {
+    min-height: 350px;
+  }
+}

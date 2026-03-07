@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { RouterOutlet } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { filter } from 'rxjs/operators';
 import { AuthService } from './core/services/auth.service';
 import { ApiService } from './core/services/api.service';
@@ -49,7 +50,12 @@ export const routeAnimation = trigger('routeAnimation', [
 })
 export class AppComponent implements OnInit {
   hideFooter = false;
-  constructor(private auth: AuthService, private router: Router, private api: ApiService) {}
+  constructor(
+    private auth: AuthService, 
+    private router: Router, 
+    private api: ApiService,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit(): void {
     // Initialize Firebase auth with persistence before restoring session
@@ -63,6 +69,50 @@ export class AppComponent implements OnInit {
     ).subscribe((event) => {
       this.hideFooter = event.url.includes('/messages');
     });
+    
+    // Check if email verification is pending
+    this.checkEmailVerificationPending();
+  }
+
+  private checkEmailVerificationPending(): void {
+    // Wait a bit for auth to be restored
+    setTimeout(() => {
+      const isPending = localStorage.getItem('sb_email_verification_pending');
+      
+      if (isPending === 'true' && this.auth.isLoggedIn) {
+        // Check if user is already verified in backend
+        this.api.checkEmailVerificationStatus().subscribe({
+          next: (result) => {
+            if (!result.email_verified) {
+              // Still not verified, show the dialog
+              import('./features/onboarding/email-verification-dialog/email-verification-dialog.component').then(({ EmailVerificationDialogComponent }) => {
+                this.dialog.open(EmailVerificationDialogComponent, {
+                  width: '500px',
+                  maxWidth: '95vw',
+                  disableClose: true,
+                  panelClass: 'email-verification-dialog'
+                });
+              });
+            } else {
+              // Already verified, clear the flag
+              localStorage.removeItem('sb_email_verification_pending');
+              localStorage.removeItem('sb_email_verification_timer');
+            }
+          },
+          error: () => {
+            // If check fails, assume not verified and show dialog
+            import('./features/onboarding/email-verification-dialog/email-verification-dialog.component').then(({ EmailVerificationDialogComponent }) => {
+              this.dialog.open(EmailVerificationDialogComponent, {
+                width: '500px',
+                maxWidth: '95vw',
+                disableClose: true,
+                panelClass: 'email-verification-dialog'
+              });
+            });
+          }
+        });
+      }
+    }, 1000);
   }
 
   getRouteState(outlet: RouterOutlet): string {

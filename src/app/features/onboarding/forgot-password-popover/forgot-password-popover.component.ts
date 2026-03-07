@@ -48,7 +48,7 @@ export class ForgotPasswordPopoverComponent {
         this.loading = false;
         this.close();
         this.snackBar.open(
-          `✅ Email enviado para ${email}. Verifica a tua caixa de entrada e spam.`,
+          `Email enviado para ${email}. Verifica a tua caixa de entrada e spam.`,
           'OK',
           { duration: 6000, panelClass: ['success-snackbar'] }
         );

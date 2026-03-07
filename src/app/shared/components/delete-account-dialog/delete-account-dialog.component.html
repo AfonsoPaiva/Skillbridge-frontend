@@ -1,0 +1,47 @@
+<div mat-dialog-title class="dialog-header">
+  <h2>Eliminar Conta</h2>
+</div>
+
+<mat-dialog-content>
+  <div class="warning-section">
+    <mat-icon class="warning-icon">warning</mat-icon>
+    <h3>Atenção: Esta ação é irreversível</h3>
+  </div>
+
+  <div class="content">
+    <p>A eliminação da tua conta irá:</p>
+    <ul>
+      <li>Remover permanentemente todos os teus dados pessoais</li>
+      <li>Eliminar todos os projetos que criaste</li>
+      <li>Remover todas as candidaturas e avaliações</li>
+      <li>Apagar todas as mensagens e conversas</li>
+      <li>Eliminar todas as conexões e seguidores</li>
+    </ul>
+
+    <p class="confirmation-instruction">
+      Para confirmar, escreve <strong>ELIMINAR</strong> no campo abaixo:
+    </p>
+
+    <mat-form-field class="full-width">
+      <mat-label>Confirmação</mat-label>
+      <input 
+        matInput 
+        [(ngModel)]="confirmationText"
+        placeholder="Escreve ELIMINAR"
+        autocomplete="off">
+    </mat-form-field>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-stroked-button (click)="cancel()">
+    Cancelar
+  </button>
+  <button 
+    mat-raised-button 
+    color="warn" 
+    (click)="confirm()"
+    [disabled]="!canDelete">
+    Eliminar Conta
+  </button>
+</mat-dialog-actions>
