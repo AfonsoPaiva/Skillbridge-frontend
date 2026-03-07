@@ -1,13 +1,21 @@
-import { Component, OnInit } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import { DOCUMENT } from '@angular/common';
+import { Component, Inject, OnInit } from '@angular/core';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { RouterOutlet } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { filter } from 'rxjs/operators';
 import { AuthService } from './core/services/auth.service';
 import { ApiService } from './core/services/api.service';
+import { Meta, Title } from '@angular/platform-browser';
 import {
   trigger, transition, style, animate, query, group
 } from '@angular/animations';
+
+declare global {
+  interface Window {
+    dataLayer?: Array<Record<string, unknown>>;
+  }
+}
 
 export const routeAnimation = trigger('routeAnimation', [
   transition('* <=> *', [
@@ -49,12 +57,20 @@ export const routeAnimation = trigger('routeAnimation', [
   animations: [routeAnimation]
 })
 export class AppComponent implements OnInit {
+  private readonly siteUrl = 'https://skillbridge.pt';
+  private readonly defaultTitle = 'SkillBridge — Liga Estudantes a Projetos';
+  private readonly defaultDescription = 'Plataforma portuguesa que liga estudantes através da partilha de competências para criar projetos reais e enriquecer portfólios.';
+
   hideFooter = false;
   constructor(
     private auth: AuthService, 
     private router: Router, 
+    private route: ActivatedRoute,
     private api: ApiService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private title: Title,
+    private meta: Meta,
+    @Inject(DOCUMENT) private document: Document
   ) {}
 
   ngOnInit(): void {
@@ -72,6 +88,8 @@ export class AppComponent implements OnInit {
       filter((event): event is NavigationEnd => event instanceof NavigationEnd)
     ).subscribe((event) => {
       this.hideFooter = event.url.includes('/messages');
+      this.applySeo(event.urlAfterRedirects);
+      this.trackPageView(event.urlAfterRedirects);
 
       if (event.urlAfterRedirects.startsWith('/dashboard')) {
         this.forceScrollTop();
@@ -138,6 +156,58 @@ export class AppComponent implements OnInit {
         });
       }
     }, 1000);
+  }
+
+  private applySeo(urlAfterRedirects: string): void {
+    const leafData = this.getLeafRouteData();
+    const title = leafData['title'] || this.defaultTitle;
+    const description = leafData['description'] || this.defaultDescription;
+    const robots = leafData['robots'] || 'index, follow';
+    const cleanPath = urlAfterRedirects.split('?')[0] || '/';
+    const canonicalUrl = `${this.siteUrl}${cleanPath}`;
+
+    this.title.setTitle(title);
+    this.meta.updateTag({ name: 'description', content: description });
+    this.meta.updateTag({ name: 'robots', content: robots });
+    this.meta.updateTag({ property: 'og:title', content: title });
+    this.meta.updateTag({ property: 'og:description', content: description });
+    this.meta.updateTag({ property: 'og:url', content: canonicalUrl });
+    this.meta.updateTag({ name: 'twitter:title', content: title });
+    this.meta.updateTag({ name: 'twitter:description', content: description });
+    this.meta.updateTag({ name: 'twitter:url', content: canonicalUrl });
+    this.updateCanonicalTag(canonicalUrl);
+  }
+
+  private getLeafRouteData(): Record<string, string> {
+    let current = this.route.firstChild;
+    let snapshot = this.route.snapshot;
+
+    while (current) {
+      snapshot = current.snapshot;
+      current = current.firstChild;
+    }
+
+    return snapshot.data as Record<string, string>;
+  }
+
+  private updateCanonicalTag(url: string): void {
+    let link = this.document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+    if (!link) {
+      link = this.document.createElement('link');
+      link.setAttribute('rel', 'canonical');
+      this.document.head.appendChild(link);
+    }
+    link.setAttribute('href', url);
+  }
+
+  private trackPageView(urlAfterRedirects: string): void {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: 'page_view',
+      page_path: urlAfterRedirects,
+      page_location: `${this.siteUrl}${urlAfterRedirects}`,
+      page_title: this.title.getTitle()
+    });
   }
 
   getRouteState(outlet: RouterOutlet): string {
