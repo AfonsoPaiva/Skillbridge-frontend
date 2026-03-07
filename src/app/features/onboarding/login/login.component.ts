@@ -8,6 +8,7 @@ import {
   getAuth,
   signInWithPopup,
   signInWithEmailAndPassword,
+  sendEmailVerification,
   GoogleAuthProvider,
   GithubAuthProvider,
   OAuthProvider,
@@ -128,6 +129,36 @@ export class LoginComponent {
       
       // Sign in with Firebase
       const cred: UserCredential = await signInWithEmailAndPassword(fbAuth, email, password);
+      
+      // Check if email is verified (only for email/password accounts)
+      if (!cred.user.emailVerified) {
+        // Check if this is an OAuth account (they don't need email verification)
+        const providerData = cred.user.providerData;
+        const isOAuthAccount = providerData.some(p => 
+          p.providerId === 'google.com' || 
+          p.providerId === 'github.com' || 
+          p.providerId === 'microsoft.com'
+        );
+        
+        if (!isOAuthAccount) {
+          this.loading = false;
+          this.error = 'Por favor verifica o teu email antes de fazer login. Verifica a caixa de entrada e spam.';
+          
+          // Offer to resend verification email
+          const resend = confirm('Email não verificado.\n\nQueres que reenviemos o email de verificação?');
+          if (resend) {
+            try {
+              await sendEmailVerification(cred.user);
+              alert('✅ Email de verificação enviado!\n\nVerifica a tua caixa de entrada (e spam).');
+            } catch (err) {
+              console.error('Error sending verification email:', err);
+              alert('❌ Erro ao enviar email de verificação.');
+            }
+          }
+          return;
+        }
+      }
+      
       const idToken = await cred.user.getIdToken();
       const tokenResult = await cred.user.getIdTokenResult();
       const expiresAt = new Date(tokenResult.expirationTime).getTime();

@@ -16,6 +16,7 @@ import {
   getAuth,
   signInWithPopup,
   createUserWithEmailAndPassword,
+  sendEmailVerification,
   GoogleAuthProvider,
   GithubAuthProvider,
   OAuthProvider,
@@ -75,6 +76,7 @@ export class OnboardingComponent implements OnInit {
   error = '';
   socialMode = false;
   registrationComplete = false;
+  emailVerificationSent = false;
 
   yearOptions = [
     // Licenciatura / Bacharel
@@ -336,6 +338,11 @@ export class OnboardingComponent implements OnInit {
       
       // Create Firebase account
       const cred: UserCredential = await createUserWithEmailAndPassword(fbAuth, emailVal, passwordVal);
+      
+      // Send email verification
+      await sendEmailVerification(cred.user);
+      this.emailVerificationSent = true;
+      
       const idToken = await cred.user.getIdToken();
       const tokenResult = await cred.user.getIdTokenResult();
       const expiresAt = new Date(tokenResult.expirationTime).getTime();
@@ -571,6 +578,12 @@ export class OnboardingComponent implements OnInit {
     localStorage.removeItem('sb_pending_register');
     localStorage.removeItem('sb_needs_onboarding');
     this.loading = false;
+    
+    // Show verification notice if email was sent
+    if (this.emailVerificationSent) {
+      alert('✅ Conta criada com sucesso!\n\n📧 Enviámos um email de verificação.\nPor favor verifica a tua caixa de entrada (e spam) para ativar a tua conta.\n\nPodes explorar a plataforma, mas precisarás verificar o email para fazer login futuramente.');
+    }
+    
     // Close dialog and navigate to dashboard
     if (this.dialogRef) {
       this.dialogRef.close();
