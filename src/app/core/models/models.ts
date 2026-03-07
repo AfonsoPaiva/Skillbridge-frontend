@@ -162,3 +162,9 @@ export interface RegisterInput {
   area?: string;
   guest_session_token?: string;
 }
+
+export interface UniversitySearchResult {
+  estabelecimento: string;
+  total_cursos: number;
+  cursos?: string[];
+}

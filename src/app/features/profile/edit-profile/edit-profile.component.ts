@@ -5,12 +5,11 @@ import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ContactLinks, User } from '../../../core/models/models';
+import { ContactLinks, User, UniversitySearchResult } from '../../../core/models/models';
 import { DeleteAccountDialogComponent } from '../../../shared/components/delete-account-dialog/delete-account-dialog.component';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Observable, of, BehaviorSubject, combineLatest } from 'rxjs';
-import { startWith, debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
-import { safeAutocomplete } from '../../../core/utils/search.utils';
+import { startWith, debounceTime, distinctUntilChanged, map, switchMap, catchError } from 'rxjs/operators';
 import { getAuth, sendPasswordResetEmail } from 'firebase/auth';
 import { initializeApp, getApps } from 'firebase/app';
 import { environment } from '../../../../environments/environment';
@@ -39,7 +38,7 @@ export class EditProfileComponent implements OnInit {
   // university autocomplete state copied from onboarding
   universities: string[] = [];
   filteredUniversities$ = of<string[]>([]);
-  loadingUniversities = true;
+  loadingUniversities = false;
 
   // courses for selected institution
   courses: string[] = [];
@@ -116,37 +115,31 @@ export class EditProfileComponent implements OnInit {
       }
     });
 
-    // university list from backend
-    this.api.listUniversities().subscribe({
-      next: list => {
-        this.universities = [...list, 'Outra'];
-        this.loadingUniversities = false;
-        const ctrl = this.form.get('university')!;
-        ctrl.setValue(ctrl.value, { emitEvent: true });
-      },
-      error: () => {
-        this.universities = [
-          'Universidade de Lisboa', 'Universidade do Porto', 'Universidade de Coimbra',
-          'Universidade Nova de Lisboa', 'Universidade de Aveiro', 'Universidade do Minho',
-          'ISCTE', 'Universidade Lusófona', 'Instituto Politécnico de Lisboa',
-          'Instituto Politécnico do Porto', 'Outra'
-        ];
-        this.loadingUniversities = false;
-        const ctrl = this.form.get('university')!;
-        ctrl.setValue(ctrl.value, { emitEvent: true });
-      }
-    });
-
+    // Setup reactive university search using backend endpoint
     this.filteredUniversities$ = this.form.get('university')!.valueChanges.pipe(
       startWith(''),
-      debounceTime(200),
+      debounceTime(300),
       distinctUntilChanged(),
-      map((q: string) => safeAutocomplete(this.universities, q || '', 20))
+      switchMap(query => {
+        const q = typeof query === 'string' ? query.trim() : '';
+        if (!q) {
+          // Return initial set with "Outra" option
+          return this.api.searchUniversities('', 20).pipe(
+            map(results => [...results.map(r => r.estabelecimento), 'Outra']),
+            catchError(() => of(this.getFallbackUniversities()))
+          );
+        }
+        // Search on backend
+        return this.api.searchUniversities(q, 20).pipe(
+          map(results => [...results.map(r => r.estabelecimento), 'Outra']),
+          catchError(() => of(this.getFallbackUniversities()))
+        );
+      })
     );
 
     // fetch courses when university changes
     this.form.get('university')!.valueChanges.pipe(distinctUntilChanged()).subscribe(val => {
-      if (typeof val === 'string' && this.universities.includes(val) && val !== 'Outra') {
+      if (typeof val === 'string' && val !== 'Outra' && val.trim() !== '') {
         this.loadingCourses = true;
         this.api.listCourses(val).subscribe({
           next: c => {
@@ -165,11 +158,16 @@ export class EditProfileComponent implements OnInit {
       }
     });
 
+    // Reactive autocomplete for courses
     this.filteredCourses$ = this.form.get('course')!.valueChanges.pipe(
       startWith(''),
       debounceTime(200),
       distinctUntilChanged(),
-      map((q: string) => safeAutocomplete(this.courses, q || '', 20))
+      map((q: string) => {
+        const query = typeof q === 'string' ? q.trim().toLowerCase() : '';
+        if (!query) return this.courses.slice(0, 50);
+        return this.courses.filter(c => c.toLowerCase().includes(query)).slice(0, 50);
+      })
     );
 
     this.api.getMyProfile().subscribe({
@@ -283,8 +281,9 @@ export class EditProfileComponent implements OnInit {
           // Show first 30 when no search query
           return available.slice(0, 30);
         }
-        // Use safeAutocomplete for word-by-word search
-        return safeAutocomplete(available, q, 50);
+        // Search by substring match (case-insensitive)
+        const lower = q.toLowerCase();
+        return available.filter(s => s.toLowerCase().includes(lower)).slice(0, 50);
       })
     );
   }
@@ -339,6 +338,15 @@ export class EditProfileComponent implements OnInit {
         });
       }
     });
+  }
+
+  private getFallbackUniversities(): string[] {
+    return [
+      'Universidade de Lisboa', 'Universidade do Porto', 'Universidade de Coimbra',
+      'Universidade Nova de Lisboa', 'Universidade de Aveiro', 'Universidade do Minho',
+      'ISCTE', 'Universidade Lusófona', 'Instituto Politécnico de Lisboa',
+      'Instituto Politécnico do Porto', 'Outra'
+    ];
   }
 
   private normalizeContactLinks(value?: ContactLinks): ContactLinks {

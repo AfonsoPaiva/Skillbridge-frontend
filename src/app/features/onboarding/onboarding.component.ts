@@ -3,14 +3,14 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, startWith, switchMap, catchError } from 'rxjs/operators';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
-import { RegisterInput } from '../../core/models/models';
+import { RegisterInput, UniversitySearchResult } from '../../core/models/models';
 import { environment } from '../../../environments/environment';
 import { DonationCheckoutComponent } from '../donation/donation-checkout.component';
-import { safeAutocomplete, sanitizeInput } from '../../core/utils/search.utils';
+import { sanitizeInput } from '../../core/utils/search.utils';
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
 import {
   getAuth,
@@ -109,7 +109,7 @@ export class OnboardingComponent implements OnInit {
   ];
 
   universities: string[] = [];
-  loadingUniversities = true;
+  loadingUniversities = false;
   filteredUniversities$!: Observable<string[]>;
 
   // curso autocomplete state
@@ -135,7 +135,11 @@ export class OnboardingComponent implements OnInit {
   get filteredSkills(): string[] {
     const sanitized = sanitizeInput(this.skillSearch);
     const available = this.availableSkills.filter(s => !this.selectedSkills.includes(s));
-    return safeAutocomplete(available, sanitized, 50);
+    if (!sanitized) {
+      return available.slice(0, 50);
+    }
+    const lower = sanitized.toLowerCase();
+    return available.filter(s => s.toLowerCase().includes(lower)).slice(0, 50);
   }
 
   constructor(
@@ -183,33 +187,33 @@ export class OnboardingComponent implements OnInit {
       error: () => {}
     });
 
-    // load universities from own backend instead of external API
-    this.api.listUniversities().subscribe({
-      next: list => {
-        this.universities = [...list, 'Outra'];
-        this.loadingUniversities = false;
-        const ctrl = this.academicForm.get('university')!;
-        ctrl.setValue(ctrl.value, { emitEvent: true });
-      },
-      error: () => {
-        // fallback to small static list if backend fails
-        this.universities = [
-          'Universidade de Lisboa', 'Universidade do Porto', 'Universidade de Coimbra',
-          'Universidade Nova de Lisboa', 'Universidade de Aveiro', 'Universidade do Minho',
-          'ISCTE', 'Universidade Lusófona', 'Instituto Politécnico de Lisboa',
-          'Instituto Politécnico do Porto', 'Outra'
-        ];
-        this.loadingUniversities = false;
-        const ctrl = this.academicForm.get('university')!;
-        ctrl.setValue(ctrl.value, { emitEvent: true });
-      }
-    });
+    // Setup reactive university search using backend endpoint
+    this.filteredUniversities$ = this.academicForm.get('university')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(query => {
+        const q = typeof query === 'string' ? query.trim() : '';
+        if (!q) {
+          // Return initial set with "Outra" option
+          return this.api.searchUniversities('', 20).pipe(
+            map(results => [...results.map(r => r.estabelecimento), 'Outra']),
+            catchError(() => of(this.getFallbackUniversities()))
+          );
+        }
+        // Search on backend
+        return this.api.searchUniversities(q, 20).pipe(
+          map(results => [...results.map(r => r.estabelecimento), 'Outra']),
+          catchError(() => of(this.getFallbackUniversities()))
+        );
+      })
+    );
 
     // when university changes fetch corresponding courses
     this.academicForm.get('university')!.valueChanges.pipe(
       distinctUntilChanged()
     ).subscribe(val => {
-      if (typeof val === 'string' && this.universities.includes(val) && val !== 'Outra') {
+      if (typeof val === 'string' && val !== 'Outra' && val.trim() !== '') {
         this.loadingCourses = true;
         this.api.listCourses(val).subscribe({
           next: c => {
@@ -228,28 +232,26 @@ export class OnboardingComponent implements OnInit {
       }
     });
 
-    // Reactive autocomplete streams
-    this.filteredUniversities$ = this.academicForm.get('university')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(200),
-      distinctUntilChanged(),
-      map((q: string) => safeAutocomplete(this.universities, q || '', 20))
-    );
-
+    // Reactive autocomplete for courses
     this.filteredCourses$ = this.academicForm.get('course')!.valueChanges.pipe(
       startWith(''),
       debounceTime(200),
       distinctUntilChanged(),
-      map((q: string) => safeAutocomplete(this.courses, q || '', 20))
+      map((q: string) => {
+        const query = typeof q === 'string' ? q.trim().toLowerCase() : '';
+        if (!query) return this.courses.slice(0, 50);
+        return this.courses.filter(c => c.toLowerCase().includes(query)).slice(0, 50);
+      })
     );
+  }
 
-    // Reactive autocomplete: filter local list from user input
-    this.filteredUniversities$ = this.academicForm.get('university')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(200),
-      distinctUntilChanged(),
-      map((q: string) => safeAutocomplete(this.universities, q || '', 20))
-    );
+  private getFallbackUniversities(): string[] {
+    return [
+      'Universidade de Lisboa', 'Universidade do Porto', 'Universidade de Coimbra',
+      'Universidade Nova de Lisboa', 'Universidade de Aveiro', 'Universidade do Minho',
+      'ISCTE', 'Universidade Lusófona', 'Instituto Politécnico de Lisboa',
+      'Instituto Politécnico do Porto', 'Outra'
+    ];
   }
 
   get progress(): number {

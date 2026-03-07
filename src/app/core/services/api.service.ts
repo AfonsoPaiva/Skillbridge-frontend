@@ -5,7 +5,8 @@ import { map } from 'rxjs/operators';
 import {
   User, Project, ProjectRole, ProjectMember, Review,
   GuestSession, GuestSessionInput, Conversation, Message,
-  DonationStats, RegisterInput, FollowCounts, FollowList
+  DonationStats, RegisterInput, FollowCounts, FollowList,
+  UniversitySearchResult
 } from '../models/models';
 import { AuthService } from './auth.service';
 import { environment } from '../../../environments/environment';
@@ -89,6 +90,22 @@ export class ApiService {
   // ── Universidades / Cursos ─────────────────────
   listUniversities(): Observable<string[]> {
     return this.http.get<string[]>(`${this.base}/universities`);
+  }
+
+  /**
+   * Pesquisa universidades por query string (optimized for typeahead).
+   * Returns structured results with establishment name and course count.
+   */
+  searchUniversities(query: string, limit: number = 20, includeCourses: boolean = false): Observable<UniversitySearchResult[]> {
+    let params = new HttpParams()
+      .set('q', query)
+      .set('limit', limit.toString());
+    
+    if (includeCourses) {
+      params = params.set('include_courses', 'true');
+    }
+    
+    return this.http.get<UniversitySearchResult[]>(`${this.base}/universities/search`, { params });
   }
 
   /**
