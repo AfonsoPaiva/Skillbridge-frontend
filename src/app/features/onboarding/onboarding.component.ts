@@ -487,10 +487,42 @@ export class OnboardingComponent implements OnInit {
     } catch (err: any) {
       this.loading = false;
       const code: string = err?.code ?? '';
+      
+      // Check if user closed the popup
       if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') {
         this.error = '';
-      } else if (code === 'auth/account-exists-with-different-credential') {
-        this.error = 'Já existe uma conta com este email noutro fornecedor.';
+        return;
+      }
+      
+      // Handle account-exists-with-different-credential error
+      if (code === 'auth/account-exists-with-different-credential') {
+        const email = err?.customData?.email;
+        if (email) {
+          // Try to fetch sign-in methods for this email
+          import('firebase/auth').then(({ fetchSignInMethodsForEmail }) => {
+            const fbAuth = getAuth(this.getFirebaseApp());
+            fetchSignInMethodsForEmail(fbAuth, email).then((methods) => {
+              if (methods.length > 0) {
+                const providerNames: { [key: string]: string } = {
+                  'google.com': 'Google',
+                  'github.com': 'GitHub',
+                  'microsoft.com': 'Microsoft',
+                  'password': 'email e palavra-passe'
+                };
+                const providerName = providerNames[methods[0]] || methods[0];
+                this.error = `Este email já está registado. Inicia sessão com ${providerName}.`;
+              } else {
+                this.error = 'Este email já está registado com outro método de login.';
+              }
+            }).catch(() => {
+              this.error = 'Este email já está registado com outro método de login.';
+            });
+          });
+        } else {
+          this.error = 'Este email já está registado com outro método de login.';
+        }
+      } else if (code === 'auth/credential-already-in-use') {
+        this.error = 'Esta conta já está em uso. Tenta fazer login com outro método.';
       } else {
         this.error = 'Erro ao iniciar sessão. Tenta novamente.';
       }

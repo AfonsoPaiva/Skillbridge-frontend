@@ -70,6 +70,49 @@ export class LoginComponent {
     }, 200);
   }
 
+  async forgotPassword(): Promise<void> {
+    // Get email from form or ask user
+    const emailControl = this.form.get('email');
+    let email = emailControl?.value?.trim() || '';
+
+    // If no email in form, ask user to enter it
+    if (!email || !emailControl?.valid) {
+      const userEmail = prompt('Insere o teu email para recuperar a palavra-passe:');
+      if (!userEmail) return; // User cancelled
+      email = userEmail.trim();
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      alert('Por favor insere um email válido.');
+      return;
+    }
+
+    // Show loading state
+    const originalError = this.error;
+    this.error = '';
+    this.loading = true;
+
+    // Request password reset
+    this.api.requestPasswordReset(email).subscribe({
+      next: () => {
+        this.loading = false;
+        alert(`✅ Email enviado!\n\nEnviámos um link de recuperação para ${email}.\nVerifica a tua caixa de entrada (e spam).`);
+      },
+      error: (err) => {
+        this.loading = false;
+        console.error('Password reset error:', err);
+        if (err.status === 404) {
+          alert('❌ Email não encontrado.\n\nNão existe nenhuma conta registada com esse email.');
+        } else {
+          alert('❌ Erro ao enviar email.\n\nTenta novamente mais tarde.');
+        }
+        this.error = originalError;
+      }
+    });
+  }
+
   async submit(): Promise<void> {
     if (this.form.invalid) return;
     this.loading = true;
@@ -227,7 +270,41 @@ export class LoginComponent {
     } catch (err: any) {
       this.loading = false;
       const code: string = err?.code ?? '';
-      if (code !== 'auth/popup-closed-by-user' && code !== 'auth/cancelled-popup-request') {
+      
+      // Check if user closed the popup
+      if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') {
+        return; // Don't show error if user intentionally closed popup
+      }
+      
+      // Handle account-exists-with-different-credential error
+      if (code === 'auth/account-exists-with-different-credential') {
+        const email = err?.customData?.email;
+        if (email) {
+          // Try to fetch sign-in methods for this email
+          import('firebase/auth').then(({ fetchSignInMethodsForEmail }) => {
+            fetchSignInMethodsForEmail(fbAuth, email).then((methods) => {
+              if (methods.length > 0) {
+                const providerNames: { [key: string]: string } = {
+                  'google.com': 'Google',
+                  'github.com': 'GitHub',
+                  'microsoft.com': 'Microsoft',
+                  'password': 'email e palavra-passe'
+                };
+                const providerName = providerNames[methods[0]] || methods[0];
+                this.error = `Este email já está registado. Inicia sessão com ${providerName}.`;
+              } else {
+                this.error = 'Este email já está registado com outro método de login.';
+              }
+            }).catch(() => {
+              this.error = 'Este email já está registado com outro método de login.';
+            });
+          });
+        } else {
+          this.error = 'Este email já está registado com outro método de login.';
+        }
+      } else if (code === 'auth/credential-already-in-use') {
+        this.error = 'Esta conta já está em uso. Tenta fazer login com outro método.';
+      } else {
         this.error = 'Erro ao iniciar sessão. Tenta novamente.';
       }
     }
