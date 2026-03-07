@@ -11,6 +11,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Observable, of, BehaviorSubject, combineLatest } from 'rxjs';
 import { startWith, debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { safeAutocomplete } from '../../../core/utils/search.utils';
+import { getAuth, sendPasswordResetEmail } from 'firebase/auth';
+import { initializeApp, getApps } from 'firebase/app';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-edit-profile',
@@ -286,16 +289,35 @@ export class EditProfileComponent implements OnInit {
     );
   }
 
-  sendPasswordReset(): void {
+  private getFirebaseApp() {
+    if (getApps().length > 0) return getApps()[0];
+    return initializeApp({
+      apiKey: environment.firebaseApiKey,
+      authDomain: environment.firebaseAuthDomain
+    });
+  }
+
+  async sendPasswordReset(): Promise<void> {
     const email = this.userEmail || this.form.get('email')?.value;
     if (!email) {
       this.snack.open('Email não disponível para redefinição.', 'Fechar', { duration: 3000 });
       return;
     }
-    this.api.requestPasswordReset(email).subscribe({
-      next: () => this.snack.open('Email de redefinição enviado.', 'Fechar', { duration: 3000 }),
-      error: () => this.snack.open('Erro ao enviar email.', 'Fechar', { duration: 3000 })
-    });
+
+    try {
+      const auth = getAuth(this.getFirebaseApp());
+      await sendPasswordResetEmail(auth, email);
+      this.snack.open('Email de redefinição enviado.', 'Fechar', { duration: 3000 });
+    } catch (err: any) {
+      const code = err?.code || '';
+      if (code === 'auth/user-not-found') {
+        this.snack.open('Email não encontrado.', 'Fechar', { duration: 3000 });
+      } else if (code === 'auth/too-many-requests') {
+        this.snack.open('Demasiadas tentativas. Aguarda uns minutos.', 'Fechar', { duration: 3000 });
+      } else {
+        this.snack.open('Erro ao enviar email.', 'Fechar', { duration: 3000 });
+      }
+    }
   }
 
   deleteAccount(): void {
