@@ -2,6 +2,7 @@ import { Component, Optional } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatDialogRef, MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpClient } from '@angular/common/http';
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
 import {
@@ -20,7 +21,6 @@ import { AuthService } from '../../../core/services/auth.service';
 import { ApiService } from '../../../core/services/api.service';
 import { environment } from '../../../../environments/environment';
 import { OnboardingComponent, OnboardingDialogData } from '../onboarding.component';
-import { ForgotPasswordDialogComponent } from './forgot-password-dialog.component';
 import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
@@ -49,6 +49,7 @@ export class LoginComponent {
     private api: ApiService,
     private router: Router,
     private dialog: MatDialog,
+    private snackBar: MatSnackBar,
     @Optional() public dialogRef: MatDialogRef<LoginComponent>
   ) {
     this.form = this.fb.group({
@@ -73,22 +74,42 @@ export class LoginComponent {
   }
 
   async forgotPassword(): Promise<void> {
-    // Open dialog for password reset
-    const dialogRef = this.dialog.open(ForgotPasswordDialogComponent, {
-      width: '500px',
-      maxWidth: '95vw',
-      panelClass: 'forgot-password-dialog',
-      autoFocus: true,
-      restoreFocus: false
-    });
-
-    // Pre-fill email if already entered in login form
     const emailControl = this.form.get('email');
-    if (emailControl?.valid && emailControl.value) {
-      dialogRef.componentInstance.form.patchValue({
-        email: emailControl.value.trim()
-      });
+    let email = emailControl?.value?.trim() || '';
+
+    // If no valid email in form, ask user
+    if (!email || !emailControl?.valid) {
+      const userEmail = prompt('Insere o teu email para recuperar a palavra-passe:');
+      if (!userEmail) return;
+      email = userEmail.trim();
+      
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        this.snackBar.open('Email inválido', 'Fechar', { duration: 4000, panelClass: ['error-snackbar'] });
+        return;
+      }
     }
+
+    this.loading = true;
+    this.api.requestPasswordReset(email).subscribe({
+      next: () => {
+        this.loading = false;
+        this.snackBar.open(
+          `✅ Email enviado para ${email}. Verifica a tua caixa de entrada e spam.`,
+          'OK',
+          { duration: 6000, panelClass: ['success-snackbar'] }
+        );
+      },
+      error: (err) => {
+        this.loading = false;
+        if (err.status === 404) {
+          this.snackBar.open('Email não encontrado', 'Fechar', { duration: 4000, panelClass: ['error-snackbar'] });
+        } else {
+          this.snackBar.open('Erro ao enviar email. Tenta novamente.', 'Fechar', { duration: 4000, panelClass: ['error-snackbar'] });
+        }
+      }
+    });
   }
 
   async submit(): Promise<void> {
