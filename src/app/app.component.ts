@@ -58,6 +58,10 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+
     // Initialize Firebase auth with persistence before restoring session
     this.auth.initializeFirebaseAuth();
     this.auth.restoreSession();
@@ -68,10 +72,31 @@ export class AppComponent implements OnInit {
       filter((event): event is NavigationEnd => event instanceof NavigationEnd)
     ).subscribe((event) => {
       this.hideFooter = event.url.includes('/messages');
+
+      if (event.urlAfterRedirects.startsWith('/dashboard')) {
+        this.forceScrollTop();
+      }
     });
     
     // Check if email verification is pending
     this.checkEmailVerificationPending();
+  }
+
+  private forceScrollTop(): void {
+    const doScroll = () => {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      const main = document.querySelector('main');
+      if (main) {
+        main.scrollTop = 0;
+      }
+    };
+
+    doScroll();
+    requestAnimationFrame(doScroll);
+    setTimeout(doScroll, 0);
+    setTimeout(doScroll, 80);
   }
 
   private checkEmailVerificationPending(): void {
