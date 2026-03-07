@@ -222,6 +222,32 @@ mat-dialog-content {
   @include m.sm { grid-template-columns: 1fr 1fr; }
 }
 
+@media (max-width: 600px) {
+  .role-cards {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: v.$space-3;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: v.$space-2;
+    margin-left: calc(-1 * #{v.$space-1});
+    margin-right: calc(-1 * #{v.$space-1});
+    padding-left: v.$space-1;
+    padding-right: v.$space-1;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+
+    &::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(104, 0, 122, 0.2);
+      border-radius: 999px;
+    }
+  }
+}
+
 .role-card {
   position: relative;
   overflow: hidden;
@@ -278,6 +304,30 @@ mat-dialog-content {
 
     mat-icon { color: v.$color-primary; }
     strong   { color: v.$color-primary; }
+  }
+}
+
+@media (max-width: 600px) {
+  .role-card {
+    flex: 0 0 210px;
+    min-height: 150px;
+    padding: v.$space-4 v.$space-3;
+    scroll-snap-align: start;
+
+    mat-icon {
+      font-size: 30px;
+      width: 30px;
+      height: 30px;
+    }
+
+    strong {
+      font-size: 14px;
+    }
+
+    span {
+      font-size: 11px;
+      line-height: 1.35;
+    }
   }
 }
 
@@ -373,6 +423,7 @@ mat-divider {
   display: flex;
   gap: v.$space-3;
   width: 100%;
+  padding: 10px;
 }
 
 .ob-social-btn {
