@@ -205,9 +205,9 @@
       position: absolute; top: 8px; right: 8px;
       font-size: 12px; padding: 2px 6px; border-radius: v.$radius-sm;
       text-transform: uppercase; font-weight: v.$font-weight-semibold;
-      &.open { background: lighten(v.$color-secondary, 38%); color: darken(v.$color-secondary, 10%); }
-      &.in_progress { background: lighten(v.$color-primary, 40%); color: v.$color-primary; }
-      &.completed { background: v.$color-text-soft; color: #fff; }
+      &[data-status="open"] { background: mix(#fff, lighten(v.$color-secondary, 38%), 35%); color: darken(v.$color-secondary, 10%); }
+      &[data-status="in_progress"] { background: mix(#fff, lighten(v.$color-primary, 40%), 35%); color: v.$color-primary; }
+      &[data-status="completed"] { background: mix(#fff, v.$color-text-soft, 15%); color: #fff; }
     }
   }
 

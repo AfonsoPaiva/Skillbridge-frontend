@@ -76,8 +76,8 @@
     padding: 2px 10px; border-radius: 999px;
     background: rgba(255,255,255,0.92); color: v.$color-text-soft;
 
-    &[data-status="open"] { background: lighten(v.$color-secondary, 38%); color: darken(v.$color-secondary, 10%); }
-    &[data-status="in_progress"] { background: lighten(v.$color-primary, 40%); color: v.$color-primary; }
+    &[data-status="open"] { background: mix(#fff, lighten(v.$color-secondary, 38%), 35%); color: darken(v.$color-secondary, 10%); }
+    &[data-status="in_progress"] { background: mix(#fff, lighten(v.$color-primary, 40%), 35%); color: v.$color-primary; }
   }
 
   &__body {
