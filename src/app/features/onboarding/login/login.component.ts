@@ -11,9 +11,13 @@ import {
   signInWithEmailAndPassword,
   sendEmailVerification,
   fetchSignInMethodsForEmail,
+  linkWithCredential,
   GoogleAuthProvider,
   GithubAuthProvider,
   OAuthProvider,
+  AuthCredential,
+  AuthProvider,
+  Auth,
   UserCredential,
   setPersistence,
   browserLocalPersistence
@@ -275,26 +279,8 @@ export class LoginComponent {
       
       // Handle account-exists-with-different-credential error
       if (code === 'auth/account-exists-with-different-credential') {
-        const email = err?.customData?.email;
-        if (email) {
-          try {
-            const methods = await fetchSignInMethodsForEmail(fbAuth, email);
-            if (methods.length > 0) {
-              const providerNames: { [key: string]: string } = {
-                'google.com': 'Google',
-                'github.com': 'GitHub',
-                'microsoft.com': 'Microsoft',
-                'password': 'email e palavra-passe'
-              };
-              const providerName = providerNames[methods[0]] || methods[0];
-              this.error = `Este email já está registado. Inicia sessão com ${providerName}.`;
-            } else {
-              this.error = 'Este email já está registado com outro método de login.';
-            }
-          } catch {
-            this.error = 'Este email já está registado com outro método de login.';
-          }
-        } else {
+        const resolved = await this.resolveAccountConflict(fbAuth, err, provider);
+        if (!resolved && !this.error) {
           this.error = 'Este email já está registado com outro método de login.';
         }
       } else if (code === 'auth/credential-already-in-use') {
@@ -302,6 +288,140 @@ export class LoginComponent {
       } else {
         this.error = 'Erro ao iniciar sessão. Tenta novamente.';
       }
+    }
+  }
+
+  private providerFromSignInMethod(method: string): AuthProvider | null {
+    switch (method) {
+      case 'google.com':
+        return new GoogleAuthProvider();
+      case 'github.com': {
+        const github = new GithubAuthProvider();
+        github.addScope('user:email');
+        return github;
+      }
+      case 'microsoft.com': {
+        const microsoft = new OAuthProvider('microsoft.com');
+        microsoft.setCustomParameters({ prompt: 'select_account', tenant: 'common' });
+        microsoft.addScope('openid');
+        microsoft.addScope('profile');
+        microsoft.addScope('email');
+        return microsoft;
+      }
+      default:
+        return null;
+    }
+  }
+
+  private pendingCredentialFromError(
+    err: any,
+    requestedProvider: 'google' | 'github' | 'microsoft'
+  ): AuthCredential | null {
+    if (err?.credential) {
+      return err.credential as AuthCredential;
+    }
+
+    if (requestedProvider === 'google') {
+      return GoogleAuthProvider.credentialFromError(err);
+    }
+    if (requestedProvider === 'github') {
+      return GithubAuthProvider.credentialFromError(err);
+    }
+    return OAuthProvider.credentialFromError(err);
+  }
+
+  private providerDisplayName(method: string): string {
+    const providerNames: { [key: string]: string } = {
+      'google.com': 'Google',
+      'github.com': 'GitHub',
+      'microsoft.com': 'Microsoft',
+      'password': 'email e palavra-passe'
+    };
+    return providerNames[method] || method;
+  }
+
+  private async resolveAccountConflict(
+    fbAuth: Auth,
+    err: any,
+    requestedProvider: 'google' | 'github' | 'microsoft'
+  ): Promise<boolean> {
+    const email = err?.customData?.email;
+    if (!email) {
+      this.error = 'Este email já está registado com outro método de login.';
+      return false;
+    }
+
+    let methods: string[] = [];
+    try {
+      methods = await fetchSignInMethodsForEmail(fbAuth, email);
+    } catch {
+      this.error = 'Não foi possível verificar os métodos de login desta conta.';
+      return false;
+    }
+
+    if (!methods.length) {
+      this.error = 'Este email já está registado com outro método de login.';
+      return false;
+    }
+
+    if (methods.includes('password')) {
+      this.error = 'Esta conta usa email e palavra-passe. Inicia sessão com esse método.';
+      return false;
+    }
+
+    const existingProviderMethod = methods[0];
+    const existingProvider = this.providerFromSignInMethod(existingProviderMethod);
+    if (!existingProvider) {
+      this.error = `Esta conta já existe com ${this.providerDisplayName(existingProviderMethod)}.`;
+      return false;
+    }
+
+    try {
+      this.loading = true;
+      const existingCred = await signInWithPopup(fbAuth, existingProvider);
+      const pendingCredential = this.pendingCredentialFromError(err, requestedProvider);
+
+      if (pendingCredential) {
+        const providerIds = existingCred.user.providerData.map(p => p.providerId);
+        if (!providerIds.includes(pendingCredential.providerId)) {
+          await linkWithCredential(existingCred.user, pendingCredential).catch(() => {});
+        }
+      }
+
+      const idToken = await existingCred.user.getIdToken();
+      const tokenResult = await existingCred.user.getIdTokenResult();
+      const expiresAt = new Date(tokenResult.expirationTime).getTime();
+
+      this.auth.setUser({
+        uid: existingCred.user.uid,
+        email: existingCred.user.email,
+        displayName: existingCred.user.displayName,
+        token: idToken,
+        expiresAt
+      });
+
+      this.api.getMyProfile().subscribe({
+        next: () => {
+          this.loading = false;
+          this.close();
+          this.router.navigate(['/dashboard']).then(() => {
+            window.scrollTo(0, 0);
+          });
+        },
+        error: () => {
+          this.loading = false;
+          this.close();
+          this.router.navigate(['/dashboard']).then(() => {
+            window.scrollTo(0, 0);
+          });
+        }
+      });
+
+      return true;
+    } catch {
+      this.loading = false;
+      this.error = `Esta conta já existe com ${this.providerDisplayName(existingProviderMethod)}. Inicia sessão com esse método.`;
+      return false;
     }
   }
 }
