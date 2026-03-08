@@ -265,7 +265,7 @@ export class ProfileComponent implements OnInit {
     const config: Array<{ key: keyof ContactLinks; label: string; iconUrl: string }> = [
       { key: 'website', label: 'Website', iconUrl: 'https://cdn.simpleicons.org/googlechrome/68007a' },
       { key: 'github', label: 'GitHub', iconUrl: 'https://cdn.simpleicons.org/github/68007a' },
-      { key: 'linkedin', label: 'LinkedIn', iconUrl: 'https://cdn.simpleicons.org/linkedin/68007a' },
+      { key: 'linkedin', label: 'LinkedIn', iconUrl: 'https://cdn.simpleicons.org/linkedin/#68007a' },
       { key: 'instagram', label: 'Instagram', iconUrl: 'https://cdn.simpleicons.org/instagram/68007a' },
       { key: 'facebook', label: 'Facebook', iconUrl: 'https://cdn.simpleicons.org/facebook/68007a' },
       { key: 'twitter', label: 'X / Twitter', iconUrl: 'https://cdn.simpleicons.org/x/68007a' },

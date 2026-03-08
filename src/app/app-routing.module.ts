@@ -29,6 +29,7 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     data: {
       preload: true,
+      preloadDelay: 500,
       title: 'Dashboard — SkillBridge',
       description: 'Painel pessoal para gerir o teu perfil e descobrir projetos no SkillBridge.',
       robots: 'noindex, nofollow'
@@ -40,7 +41,7 @@ const routes: Routes = [
     path: 'projects',
     data: {
       preload: true,
-      preloadDelay: 1000,
+      preloadDelay: 2000,
       title: 'Projetos para Estudantes — SkillBridge',
       description: 'Explora projetos colaborativos para estudantes, encontra equipas e desenvolve competências em contexto real.',
       robots: 'index, follow'
@@ -62,7 +63,7 @@ const routes: Routes = [
     path: 'perfil',
     data: {
       preload: true,
-      preloadDelay: 1500,
+      preloadDelay: 3000,
       title: 'Perfis de Estudantes — SkillBridge',
       description: 'Descobre perfis de estudantes, competências e histórico de colaboração na plataforma SkillBridge.',
       robots: 'index, follow'
@@ -75,7 +76,7 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     data: {
       preload: true,
-      preloadDelay: 2000,
+      preloadDelay: 4000,
       title: 'Mensagens — SkillBridge',
       description: 'Conversa com membros da comunidade SkillBridge para coordenar projetos.',
       robots: 'noindex, nofollow'
