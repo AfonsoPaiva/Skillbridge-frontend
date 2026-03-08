@@ -18,8 +18,14 @@ export class SmartFitImgDirective implements AfterViewInit, OnDestroy {
     img.style.objectFit = 'contain';
     img.style.objectPosition = 'center';
 
+    // Try to enable CORS for dominant color extraction if image hasn't loaded yet
+    // This allows us to access pixel data for color analysis
+    if (!img.complete && !img.crossOrigin) {
+      img.crossOrigin = 'anonymous';
+    }
+
     const onLoad = () => this.applyFrameBackground();
-    const onError = () => this.applyFallbackBackground();
+    const onError = () => this.onImageError();
 
     img.addEventListener('load', onLoad);
     img.addEventListener('error', onError);
@@ -29,6 +35,39 @@ export class SmartFitImgDirective implements AfterViewInit, OnDestroy {
 
     if (img.complete && img.naturalWidth > 0) {
       this.applyFrameBackground();
+    }
+  }
+
+  private onImageError(): void {
+    const img = this.el.nativeElement;
+    const src = img.src;
+    
+    // If image failed to load with CORS, retry without it
+    if (img.crossOrigin) {
+      console.warn('[SmartFitImg] CORS load failed, retrying without CORS');
+      img.crossOrigin = '';
+      
+      // Cleanup existing listeners
+      this.removeLoadListener?.();
+      this.removeErrorListener?.();
+      
+      // Reload image without CORS
+      const tempSrc = img.src;
+      img.src = '';
+      img.src = tempSrc;
+      
+      // Re-attach listeners
+      const onLoad = () => this.applyFrameBackground();
+      const onError = () => this.applyFallbackBackground();
+      
+      img.addEventListener('load', onLoad);
+      img.addEventListener('error', onError);
+      
+      this.removeLoadListener = () => img.removeEventListener('load', onLoad);
+      this.removeErrorListener = () => img.removeEventListener('error', onError);
+    } else {
+      // Failed without CORS too, use fallback
+      this.applyFallbackBackground();
     }
   }
 
