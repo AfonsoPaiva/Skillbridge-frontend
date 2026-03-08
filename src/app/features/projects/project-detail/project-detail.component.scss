@@ -22,6 +22,13 @@
   &:hover { text-decoration: underline; }
 }
 
+@media (max-width: 768px) {
+  // Improve touch targets
+  button, a, .mat-mdc-button, .mat-mdc-icon-button {
+    min-height: 0px;
+  }
+}
+
 .detail-main {
   max-width: 860px;
   &__header {
