@@ -3,52 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>Skillbridge</title>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('consent', 'default', {
-      analytics_storage: 'denied',
-      ad_storage: 'denied',
-      ad_user_data: 'denied',
-      ad_personalization: 'denied'
-    });
-  </script>
-  <!-- Google Tag Manager (aggressive mobile defer) -->
-  <script>
-    (function(w,d,s,l,i){
-      w[l]=w[l]||[];
-      w[l].push({'gtm.start': new Date().getTime(), event:'gtm.js'});
-      // Defer GTM loading even more for mobile performance
-      function loadGTM() {
-        var f=d.getElementsByTagName(s)[0],
-            j=d.createElement(s),
-            dl=l!='dataLayer'?'&l='+l:'';
-        j.async=true;
-        j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
-        f.parentNode?.insertBefore(j,f);
-      }
-      // Wait for user interaction or 3s after load
-      var gtmLoaded = false;
-      function tryLoadGTM() {
-        if (!gtmLoaded) {
-          gtmLoaded = true;
-          loadGTM();
-        }
-      }
-      setTimeout(function() {
-        if (d.readyState === 'complete') {
-          setTimeout(tryLoadGTM, 2000);
-        } else {
-          w.addEventListener('load', function() { setTimeout(tryLoadGTM, 2000); });
-        }
-      }, 0);
-      // Also load on first user interaction
-      ['click', 'scroll', 'touchstart', 'keydown'].forEach(function(e) {
-        w.addEventListener(e, tryLoadGTM, {once: true, passive: true});
-      });
-    })(window,document,'script','dataLayer','GTM-KHGQ445F');
-  </script>
-  <!-- End Google Tag Manager -->
+  <script src="assets/bootstrap-head.js"></script>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, shrink-to-fit=no">
   <meta name="description" content="Plataforma portuguesa que liga estudantes através da partilha de competências para criar projetos reais e enriquecer portfólios.">
@@ -57,15 +12,17 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   
-  <!-- Preconnect to ONLY the most critical resources (max 3 for mobile) -->
+  <!-- Preconnect to ONLY the most critical resources (max 4 for mobile) -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://backendskillbridge-742354947031.europe-west1.run.app">
+  <link rel="preconnect" href="https://backendskillbridge-742354947031.europe-west1.run.app" crossorigin>
+  <link rel="preconnect" href="https://skill-bridge-makelinks.firebaseapp.com" crossorigin>
   
   <!-- DNS prefetch for less critical resources -->
   <link rel="dns-prefetch" href="https://www.googletagmanager.com">
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
   <link rel="dns-prefetch" href="https://storage.googleapis.com">
   <link rel="dns-prefetch" href="https://cdn.simpleicons.org">
+  <link rel="dns-prefetch" href="https://js.stripe.com">
   
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
@@ -93,180 +50,9 @@
   <meta name="twitter:description" content="Plataforma portuguesa que liga estudantes através da partilha de competências para criar projetos reais.">
   <meta name="twitter:image" content="/assets/og-image.png">
   
-  <!-- Preload critical fonts -->
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"></noscript>
-  
-  <!-- Material Icons loaded dynamically after page load -->
-  <script>
-    // Load Material Icons after page is interactive
-    setTimeout(function() {
-      if (document.readyState === 'complete' || document.readyState === 'interactive') {
-        var link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = 'https://fonts.googleapis.com/icon?family=Material+Icons&display=block';
-        document.head.appendChild(link);
-      } else {
-        window.addEventListener('DOMContentLoaded', function() {
-          setTimeout(function() {
-            var link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = 'https://fonts.googleapis.com/icon?family=Material+Icons&display=block';
-            document.head.appendChild(link);
-          }, 100);
-        });
-      }
-    }, 0);
-  </script>
-  
-  <!-- Klaro Cookie Consent (self-hosted via CDN to avoid ad blockers) -->
-  <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/klaro@0.7.22/dist/klaro.min.css" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/klaro@0.7.22/dist/klaro.min.css"></noscript>
-  <!-- klaro-custom.css is now included via angular.json styles array -->
-  <script>
-    // Klaro Cookie Consent Configuration for SkillBridge
-    window.klaroConfig = {
-      lang: 'pt',
-      
-      translations: {
-        pt: {
-          consentModal: {
-            title: 'Definições de Cookies',
-            description: 'Aqui podes ver e personalizar as informações que recolhemos sobre ti.',
-          },
-          consentNotice: {
-            changeDescription: 'Houve alterações desde a tua última visita, por favor atualiza o teu consentimento.',
-            description: 'Utilizamos cookies e tecnologias semelhantes para oferecer a melhor experiência no SkillBridge. Clica em "Aceitar todos" para consentir ou "Personalizar" para gerir as tuas preferências.',
-            learnMore: 'Personalizar',
-            title: 'Cookies & Privacidade',
-          },
-          ok: 'Aceitar todos',
-          acceptAll: 'Aceitar todos',
-          acceptSelected: 'Guardar seleção',
-          decline: 'Rejeitar todos',
-          close: 'Fechar',
-          save: 'Guardar',
-          service: {
-            purpose: 'Finalidade',
-            purposes: 'Finalidades',
-            required: {
-              title: 'Sempre necessário',
-              description: 'Este serviço é essencial para o funcionamento do site.'
-            },
-            disableAll: {
-              title: 'Alternar todas as aplicações',
-              description: 'Usa este interruptor para ativar/desativar todas as aplicações.'
-            },
-          },
-          poweredBy: 'Criado por estudantes e para estudantes',
-        },
-      },
-
-      storageMethod: 'localStorage',
-      storageName: 'klaro-sb',
-      cookieExpiresAfterDays: 365,
-      
-      htmlTexts: true,
-      embedded: false,
-      groupByPurpose: true,
-      
-      mustConsent: false,
-      acceptAll: true,
-      hideDeclineAll: false,
-      hideLearnMore: false,
-      noticeAsModal: false,
-      
-      services: [
-        {
-          name: 'essencial',
-          title: 'Cookies Essenciais',
-          description: 'Necessários para autenticação, sessão e preferências.',
-          purposes: ['essencial'],
-          required: true,
-          optOut: false,
-          default: true,
-          cookies: [
-            /^sb_/,
-            'klaro-sb'
-          ]
-        },
-        {
-          name: 'firebase',
-          title: 'Firebase Authentication',
-          description: 'Autenticação segura da tua conta.',
-          purposes: ['essencial', 'funcional'],
-          required: true,
-          optOut: false,
-          default: true,
-          cookies: [
-            /^firebase/,
-            '__session'
-          ]
-        },
-        {
-          name: 'stripe',
-          title: 'Stripe (Doações)',
-          description: 'Processa pagamentos seguros quando fazes uma doação.',
-          purposes: ['pagamentos'],
-          required: false,
-          optOut: true,
-          default: true,
-          cookies: [
-            /^__stripe/,
-            'm'
-          ]
-        },
-        {
-          name: 'analytics',
-          title: 'Análise e Estatísticas',
-          description: 'Ajuda-nos a melhorar a experiência de todos.',
-          purposes: ['analytics'],
-          required: false,
-          optOut: true,
-          default: false,
-        }
-      ],
-      
-      callback: function(consent, service) {
-        var analyticsGranted = !!(consent && consent.analytics);
-        if (typeof window.gtag === 'function') {
-          window.gtag('consent', 'update', {
-            analytics_storage: analyticsGranted ? 'granted' : 'denied'
-          });
-        }
-        window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push({
-          event: 'consent_update',
-          analytics_storage: analyticsGranted ? 'granted' : 'denied',
-          updated_service: service ? service.name : 'all'
-        });
-        console.log('Klaro consent updated:', service ? service.name : 'all services', consent);
-      },
-    };
-  </script>
-  <script>
-    // Load Klaro on first interaction or after significant delay
-    var klaroLoaded = false;
-    function loadKlaro() {
-      if (klaroLoaded) return;
-      klaroLoaded = true;
-      var script = document.createElement('script');
-      script.src = 'https://cdn.jsdelivr.net/npm/klaro@0.7.22/dist/klaro-no-css.min.js';
-      script.async = true;
-      document.head.appendChild(script);
-    }
-    // Load after 3 seconds idle or on first interaction
-    setTimeout(function() {
-      if (document.readyState === 'complete') {
-        setTimeout(loadKlaro, 3000);
-      } else {
-        window.addEventListener('load', function() { setTimeout(loadKlaro, 3000); });
-      }
-    }, 0);
-    ['scroll', 'click', 'touchstart', 'keydown'].forEach(function(e) {
-      window.addEventListener(e, loadKlaro, {once: true, passive: true});
-    });
-  </script>
+  <!-- Preload critical fonts without inline event handlers for CSP compliance -->
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
 </head>
 <body>
   <!-- Google Tag Manager (noscript) -->

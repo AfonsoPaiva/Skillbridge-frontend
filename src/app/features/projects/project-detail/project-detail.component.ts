@@ -5,7 +5,6 @@ import { AuthService } from '../../../core/services/auth.service';
 import { Project, ProjectMember } from '../../../core/models/models';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
-import { OnboardingComponent } from '../../onboarding/onboarding.component';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -65,8 +64,9 @@ export class ProjectDetailComponent implements OnInit {
     });
   }
 
-  apply(roleId: number): void {
+  async apply(roleId: number): Promise<void> {
     if (!this.auth.isLoggedIn) {
+      const { OnboardingComponent } = await import('../../onboarding/onboarding.component');
       this.dialog.open(OnboardingComponent, {
         width: '540px',
         maxWidth: '95vw',

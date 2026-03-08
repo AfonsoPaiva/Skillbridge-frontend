@@ -78,8 +78,7 @@ export class AppComponent implements OnInit {
       history.scrollRestoration = 'manual';
     }
 
-    // Initialize Firebase auth with persistence before restoring session
-    this.auth.initializeFirebaseAuth();
+    // Restore session from localStorage (sync, no Firebase SDK needed)
     this.auth.restoreSession();
     this.auth.prefetchUserProfile(this.api);
     

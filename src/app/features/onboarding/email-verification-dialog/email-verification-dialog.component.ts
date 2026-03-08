@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { interval, Subscription } from 'rxjs';
-import { getAuth } from 'firebase/auth';
 import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -103,6 +102,7 @@ export class EmailVerificationDialogComponent implements OnInit, OnDestroy {
     this.error = '';
 
     try {
+      const { getAuth } = await import('firebase/auth');
       const fbAuth = getAuth();
       const currentUser = fbAuth.currentUser;
       
@@ -148,6 +148,7 @@ export class EmailVerificationDialogComponent implements OnInit, OnDestroy {
     this.error = '';
     
     try {
+      const { getAuth } = await import('firebase/auth');
       const fbAuth = getAuth();
       const currentUser = fbAuth.currentUser;
       

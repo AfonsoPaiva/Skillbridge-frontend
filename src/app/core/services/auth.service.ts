@@ -2,16 +2,11 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { User } from '../models/models';
 import { ApiService } from './api.service';
-import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
-import { 
-  getAuth, 
-  Auth, 
-  setPersistence, 
-  browserLocalPersistence,
-  onAuthStateChanged,
-  User as FirebaseUser
-} from 'firebase/auth';
 import { environment } from '../../../environments/environment';
+
+// Lazy-loaded Firebase types (only used for type hints, not runtime imports)
+type FirebaseApp = import('firebase/app').FirebaseApp;
+type Auth = import('firebase/auth').Auth;
 
 export interface AuthUser {
   uid: string;
@@ -31,6 +26,7 @@ export class AuthService {
 
   private firebaseAuth: Auth | null = null;
   private tokenRefreshTimer: any = null;
+  private firebaseInitPromise: Promise<void> | null = null;
 
   get currentUser(): AuthUser | null {
     return this._currentUser$.getValue();
@@ -40,26 +36,42 @@ export class AuthService {
     return !!this._currentUser$.getValue();
   }
 
-  /** Initialize Firebase Auth with persistence */
-  initializeFirebaseAuth(): void {
-    if (this.firebaseAuth) return;
+  /** Initialize Firebase Auth lazily — only downloads the SDK when called */
+  initializeFirebaseAuth(): Promise<void> {
+    if (this.firebaseAuth) return Promise.resolve();
+    if (this.firebaseInitPromise) return this.firebaseInitPromise;
 
-    const app = this.getFirebaseApp();
+    this.firebaseInitPromise = this._doInitFirebase();
+    return this.firebaseInitPromise;
+  }
+
+  private async _doInitFirebase(): Promise<void> {
+    const [{ initializeApp, getApps }, { getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged }] =
+      await Promise.all([
+        import('firebase/app'),
+        import('firebase/auth')
+      ]);
+
+    const app = getApps().length > 0 ? getApps()[0] : initializeApp({
+      apiKey: environment.firebaseApiKey,
+      authDomain: environment.firebaseAuthDomain
+    });
+
     this.firebaseAuth = getAuth(app);
 
     // Set persistence to keep user logged in across sessions
-    setPersistence(this.firebaseAuth, browserLocalPersistence).catch(err => {
+    await setPersistence(this.firebaseAuth, browserLocalPersistence).catch(err => {
       console.error('Failed to set auth persistence:', err);
     });
 
     // Listen to auth state changes and refresh token automatically
-    onAuthStateChanged(this.firebaseAuth, async (firebaseUser: FirebaseUser | null) => {
+    onAuthStateChanged(this.firebaseAuth, async (firebaseUser) => {
       if (firebaseUser) {
         try {
-          const token = await firebaseUser.getIdToken(false); // false = use cached token
+          const token = await firebaseUser.getIdToken(false);
           const tokenResult = await firebaseUser.getIdTokenResult();
           const expiresAt = new Date(tokenResult.expirationTime).getTime();
-          
+
           this.setUser({
             uid: firebaseUser.uid,
             email: firebaseUser.email,
@@ -68,51 +80,43 @@ export class AuthService {
             expiresAt
           });
 
-          // Schedule token refresh before expiration (5 minutes before)
           this.scheduleTokenRefresh(expiresAt);
         } catch (err) {
           console.error('Failed to get token:', err);
         }
       } else {
-        this.clearSession();
+        // Only clear if we didn't just restore from localStorage
+        if (!this._currentUser$.getValue()) {
+          this.clearSession();
+        }
       }
-    });
-  }
-
-  private getFirebaseApp(): FirebaseApp {
-    if (getApps().length > 0) return getApps()[0];
-    return initializeApp({
-      apiKey: environment.firebaseApiKey,
-      authDomain: environment.firebaseAuthDomain
     });
   }
 
   /** Schedule automatic token refresh */
   private scheduleTokenRefresh(expiresAt: number): void {
-    // Clear existing timer
     if (this.tokenRefreshTimer) {
       clearTimeout(this.tokenRefreshTimer);
     }
 
-    // Refresh 5 minutes before expiration
     const refreshTime = expiresAt - Date.now() - (5 * 60 * 1000);
-    
+
     if (refreshTime > 0) {
       this.tokenRefreshTimer = setTimeout(async () => {
         await this.refreshToken();
       }, refreshTime);
     } else {
-      // Token already expired or about to expire, refresh immediately
       this.refreshToken();
     }
   }
 
-  /** Manually refresh the Firebase token */
+  /** Manually refresh the Firebase token (lazy-loads Firebase if needed) */
   async refreshToken(): Promise<void> {
+    await this.initializeFirebaseAuth();
     if (!this.firebaseAuth?.currentUser) return;
 
     try {
-      const token = await this.firebaseAuth.currentUser.getIdToken(true); // true = force refresh
+      const token = await this.firebaseAuth.currentUser.getIdToken(true);
       const tokenResult = await this.firebaseAuth.currentUser.getIdTokenResult();
       const expiresAt = new Date(tokenResult.expirationTime).getTime();
 
@@ -134,21 +138,20 @@ export class AuthService {
     this._currentUser$.next(user);
   }
 
-  /** Restore session from localStorage */
+  /** Restore session from localStorage (sync — no Firebase needed for cached sessions) */
   restoreSession(): void {
     const raw = localStorage.getItem('sb_user');
     if (raw) {
       try {
         const user: AuthUser = JSON.parse(raw);
-        
-        // Check if token is expired or about to expire
+
         if (user.expiresAt && user.expiresAt < Date.now()) {
-          // Token expired, try to refresh via Firebase
-          this.initializeFirebaseAuth();
+          // Token expired — lazy-load Firebase to refresh
+          this._currentUser$.next(user);          // show stale user immediately
+          this.refreshToken();                     // refresh in background
         } else {
           this._currentUser$.next(user);
-          
-          // Schedule refresh if we have expiration time
+
           if (user.expiresAt) {
             this.scheduleTokenRefresh(user.expiresAt);
           }
@@ -156,10 +159,8 @@ export class AuthService {
       } catch {
         this.clearSession();
       }
-    } else {
-      // Try to restore from Firebase auth state
-      this.initializeFirebaseAuth();
     }
+    // No localStorage user → anonymous visitor, skip Firebase initialisation
   }
 
   /** Prefetch and cache user profile */
@@ -182,14 +183,14 @@ export class AuthService {
       clearTimeout(this.tokenRefreshTimer);
       this.tokenRefreshTimer = null;
     }
-    
-    // Sign out from Firebase to clear auth state
+
+    // Sign out from Firebase to clear auth state (lazy)
     if (this.firebaseAuth) {
       import('firebase/auth').then(({ signOut }) => {
         signOut(this.firebaseAuth!).catch(() => {});
       });
     }
-    
+
     localStorage.removeItem('sb_token');
     localStorage.removeItem('sb_user');
     localStorage.removeItem('sb_onboarded');
@@ -201,10 +202,9 @@ export class AuthService {
     return localStorage.getItem('sb_token');
   }
 
-  getFirebaseAuth(): Auth | null {
-    if (!this.firebaseAuth) {
-      this.initializeFirebaseAuth();
-    }
+  /** Get or lazy-init Firebase Auth instance */
+  async getFirebaseAuth(): Promise<Auth | null> {
+    await this.initializeFirebaseAuth();
     return this.firebaseAuth;
   }
 }

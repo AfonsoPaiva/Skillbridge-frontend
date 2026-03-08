@@ -5,9 +5,6 @@ import { filter } from 'rxjs/operators';
 import { interval, Subscription } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { ApiService } from '../../../core/services/api.service';
-import { OnboardingComponent } from '../../../features/onboarding/onboarding.component';
-import { LoginComponent } from '../../../features/onboarding/login/login.component';
-import { DonationCheckoutComponent } from '../../../features/donation/donation-checkout.component';
 
 const DIALOG_CONFIG = {
   width: '540px',
@@ -109,16 +106,19 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.router.navigate(['/landing']);
   }
 
-  openOnboarding(): void {
+  async openOnboarding(): Promise<void> {
+    const { OnboardingComponent } = await import('../../../features/onboarding/onboarding.component');
     this.dialog.open(OnboardingComponent, DIALOG_CONFIG);
   }
 
-  openLogin(): void {
+  async openLogin(): Promise<void> {
+    const { LoginComponent } = await import('../../../features/onboarding/login/login.component');
     this.dialog.open(LoginComponent, { ...DIALOG_CONFIG, width: '420px' });
   }
 
-  openDonation(): void {
+  async openDonation(): Promise<void> {
     this.menuOpen = false;
+    const { DonationCheckoutComponent } = await import('../../../features/donation/donation-checkout.component');
     this.dialog.open(DonationCheckoutComponent, {
       width: '650px',
       maxWidth: '95vw',

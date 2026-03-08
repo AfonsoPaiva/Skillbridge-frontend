@@ -10,8 +10,8 @@ import { AppComponent } from './app.component';
 import { MaterialModule } from './shared/material.module';
 import { NavbarComponent } from './shared/components/navbar/navbar.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
-import { OnboardingModule } from './features/onboarding/onboarding.module';
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
+import { OnboardingModule } from './features/onboarding/onboarding.module';
 
 @NgModule({
   declarations: [

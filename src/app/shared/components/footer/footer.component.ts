@@ -1,8 +1,5 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { OnboardingComponent } from '../../../features/onboarding/onboarding.component';
-import { LoginComponent } from '../../../features/onboarding/login/login.component';
-import { DonationCheckoutComponent } from '../../../features/donation/donation-checkout.component';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
@@ -15,7 +12,8 @@ export class FooterComponent {
 
   constructor(private dialog: MatDialog, public auth: AuthService) {}
 
-  openOnboarding(): void {
+  async openOnboarding(): Promise<void> {
+    const { OnboardingComponent } = await import('../../../features/onboarding/onboarding.component');
     this.dialog.open(OnboardingComponent, {
       width: '540px',
       maxWidth: '95vw',
@@ -24,7 +22,8 @@ export class FooterComponent {
     });
   }
 
-  openLogin(): void {
+  async openLogin(): Promise<void> {
+    const { LoginComponent } = await import('../../../features/onboarding/login/login.component');
     this.dialog.open(LoginComponent, {
       width: '420px',
       maxWidth: '95vw',
@@ -33,7 +32,8 @@ export class FooterComponent {
     });
   }
 
-  openDonation(): void {
+  async openDonation(): Promise<void> {
+    const { DonationCheckoutComponent } = await import('../../../features/donation/donation-checkout.component');
     this.dialog.open(DonationCheckoutComponent, {
       width: '650px',
       maxWidth: '95vw',

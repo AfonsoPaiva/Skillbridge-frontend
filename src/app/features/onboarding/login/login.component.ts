@@ -4,28 +4,12 @@ import { Router } from '@angular/router';
 import { MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpClient } from '@angular/common/http';
-import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
-import {
-  getAuth,
-  signInWithPopup,
-  signInWithEmailAndPassword,
-  sendEmailVerification,
-  fetchSignInMethodsForEmail,
-  linkWithCredential,
-  GoogleAuthProvider,
-  GithubAuthProvider,
-  OAuthProvider,
-  AuthCredential,
-  AuthProvider,
-  Auth,
-  UserCredential,
-  setPersistence,
-  browserLocalPersistence
-} from 'firebase/auth';
+import type { FirebaseApp } from 'firebase/app';
+import type { Auth, UserCredential } from 'firebase/auth';
 import { AuthService } from '../../../core/services/auth.service';
 import { ApiService } from '../../../core/services/api.service';
 import { environment } from '../../../../environments/environment';
-import { OnboardingComponent, OnboardingDialogData } from '../onboarding.component';
+import { OnboardingDialogData } from '../onboarding.component';
 import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
@@ -68,9 +52,10 @@ export class LoginComponent {
     else this.router.navigate(['/landing']);
   }
 
-  openRegister(): void {
+  async openRegister(): Promise<void> {
     this.close();
-    setTimeout(() => {
+    setTimeout(async () => {
+      const { OnboardingComponent } = await import('../onboarding.component');
       this.dialog.open(OnboardingComponent, {
         width: '540px', maxWidth: '95vw', maxHeight: '90vh',
         panelClass: 'onboarding-dialog', autoFocus: false, restoreFocus: false
@@ -86,13 +71,14 @@ export class LoginComponent {
     const { email, password } = this.form.value;
 
     try {
-      const fbAuth = getAuth(this.getFirebaseApp());
+      const { auth: authMod } = await this.loadFirebase();
+      const fbAuth = authMod.getAuth(await this.getFirebaseApp());
       
       // Set persistence to keep user logged in
-      await setPersistence(fbAuth, browserLocalPersistence);
+      await authMod.setPersistence(fbAuth, authMod.browserLocalPersistence);
       
       // Sign in with Firebase
-      const cred: UserCredential = await signInWithEmailAndPassword(fbAuth, email, password);
+      const cred: UserCredential = await authMod.signInWithEmailAndPassword(fbAuth, email, password);
       
       // Check if email is verified (only for email/password accounts)
       if (!cred.user.emailVerified) {
@@ -112,7 +98,7 @@ export class LoginComponent {
           const resend = confirm('Email não verificado.\n\nQueres que reenviemos o email de verificação?');
           if (resend) {
             try {
-              await sendEmailVerification(cred.user);
+              await authMod.sendEmailVerification(cred.user);
               alert('✅ Email de verificação enviado!\n\nVerifica a tua caixa de entrada (e spam).');
             } catch (err) {
               console.error('Error sending verification email:', err);
@@ -149,7 +135,8 @@ export class LoginComponent {
           // User exists in Firebase but not in our DB — force onboarding
           this.loading = false;
           this.close();
-          setTimeout(() => {
+          setTimeout(async () => {
+            const { OnboardingComponent } = await import('../onboarding.component');
             this.dialog.open(OnboardingComponent, {
               width: '540px',
               maxWidth: '95vw',
@@ -182,29 +169,43 @@ export class LoginComponent {
     }
   }
 
-  private getFirebaseApp(): FirebaseApp {
-    if (getApps().length > 0) return getApps()[0];
-    return initializeApp({ apiKey: environment.firebaseApiKey, authDomain: environment.firebaseAuthDomain });
+  private _fb: { app: any; auth: any } | null = null;
+  private async loadFirebase() {
+    if (!this._fb) {
+      const [app, auth] = await Promise.all([
+        import('firebase/app'),
+        import('firebase/auth')
+      ]);
+      this._fb = { app, auth };
+    }
+    return this._fb;
+  }
+
+  private async getFirebaseApp(): Promise<FirebaseApp> {
+    const { app } = await this.loadFirebase();
+    if (app.getApps().length > 0) return app.getApps()[0];
+    return app.initializeApp({ apiKey: environment.firebaseApiKey, authDomain: environment.firebaseAuthDomain });
   }
 
   async signInWithProvider(provider: 'google' | 'github' | 'microsoft'): Promise<void> {
     this.loading = true;
     this.error = '';
-    const fbAuth = getAuth(this.getFirebaseApp());
+    const { auth: authMod } = await this.loadFirebase();
+    const fbAuth = authMod.getAuth(await this.getFirebaseApp());
 
     // Set persistence before sign-in
-    await setPersistence(fbAuth, browserLocalPersistence).catch(() => {});
+    await authMod.setPersistence(fbAuth, authMod.browserLocalPersistence).catch(() => {});
 
-    let authProvider: GoogleAuthProvider | GithubAuthProvider | OAuthProvider;
+    let authProvider: any;
     if (provider === 'google') {
-      authProvider = new GoogleAuthProvider();
+      authProvider = new authMod.GoogleAuthProvider();
     } else if (provider === 'github') {
       // GitHub provider with email scope
-      authProvider = new GithubAuthProvider();
+      authProvider = new authMod.GithubAuthProvider();
       authProvider.addScope('user:email'); // Request access to user's email
     } else {
       // Microsoft OAuth provider with proper configuration
-      authProvider = new OAuthProvider('microsoft.com');
+      authProvider = new authMod.OAuthProvider('microsoft.com');
       authProvider.setCustomParameters({
         prompt: 'select_account',
         tenant: 'common' // Allows both personal and work/school accounts
@@ -216,7 +217,7 @@ export class LoginComponent {
     }
 
     try {
-      const cred: UserCredential = await signInWithPopup(fbAuth, authProvider);
+      const cred: UserCredential = await authMod.signInWithPopup(fbAuth, authProvider);
       const idToken = await cred.user.getIdToken();
       const tokenResult = await cred.user.getIdTokenResult();
       const expiresAt = new Date(tokenResult.expirationTime).getTime();
@@ -243,7 +244,8 @@ export class LoginComponent {
             this.loading = false;
             const name = cred.user.displayName || cred.user.email?.split('@')[0] || '';
             this.close();
-            setTimeout(() => {
+            setTimeout(async () => {
+              const { OnboardingComponent } = await import('../onboarding.component');
               this.dialog.open(OnboardingComponent, {
                 width: '540px',
                 maxWidth: '95vw',
@@ -291,17 +293,18 @@ export class LoginComponent {
     }
   }
 
-  private providerFromSignInMethod(method: string): AuthProvider | null {
+  private providerFromSignInMethod(method: string): any {
+    const authMod = this._fb!.auth;
     switch (method) {
       case 'google.com':
-        return new GoogleAuthProvider();
+        return new authMod.GoogleAuthProvider();
       case 'github.com': {
-        const github = new GithubAuthProvider();
+        const github = new authMod.GithubAuthProvider();
         github.addScope('user:email');
         return github;
       }
       case 'microsoft.com': {
-        const microsoft = new OAuthProvider('microsoft.com');
+        const microsoft = new authMod.OAuthProvider('microsoft.com');
         microsoft.setCustomParameters({ prompt: 'select_account', tenant: 'common' });
         microsoft.addScope('openid');
         microsoft.addScope('profile');
@@ -316,18 +319,18 @@ export class LoginComponent {
   private pendingCredentialFromError(
     err: any,
     requestedProvider: 'google' | 'github' | 'microsoft'
-  ): AuthCredential | null {
+  ): any {
     if (err?.credential) {
-      return err.credential as AuthCredential;
+      return err.credential;
     }
-
+    const authMod = this._fb!.auth;
     if (requestedProvider === 'google') {
-      return GoogleAuthProvider.credentialFromError(err);
+      return authMod.GoogleAuthProvider.credentialFromError(err);
     }
     if (requestedProvider === 'github') {
-      return GithubAuthProvider.credentialFromError(err);
+      return authMod.GithubAuthProvider.credentialFromError(err);
     }
-    return OAuthProvider.credentialFromError(err);
+    return authMod.OAuthProvider.credentialFromError(err);
   }
 
   private providerDisplayName(method: string): string {
@@ -353,7 +356,8 @@ export class LoginComponent {
 
     let methods: string[] = [];
     try {
-      methods = await fetchSignInMethodsForEmail(fbAuth, email);
+      const authMod = this._fb!.auth;
+      methods = await authMod.fetchSignInMethodsForEmail(fbAuth, email);
     } catch {
       this.error = 'Não foi possível verificar os métodos de login desta conta.';
       return false;
@@ -378,13 +382,14 @@ export class LoginComponent {
 
     try {
       this.loading = true;
-      const existingCred = await signInWithPopup(fbAuth, existingProvider);
+      const authMod2 = this._fb!.auth;
+      const existingCred = await authMod2.signInWithPopup(fbAuth, existingProvider);
       const pendingCredential = this.pendingCredentialFromError(err, requestedProvider);
 
       if (pendingCredential) {
-        const providerIds = existingCred.user.providerData.map(p => p.providerId);
+        const providerIds = existingCred.user.providerData.map((p: any) => p.providerId);
         if (!providerIds.includes(pendingCredential.providerId)) {
-          await linkWithCredential(existingCred.user, pendingCredential).catch(() => {});
+          await authMod2.linkWithCredential(existingCred.user, pendingCredential).catch(() => {});
         }
       }
 

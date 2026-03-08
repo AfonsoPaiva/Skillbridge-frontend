@@ -4,8 +4,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Project } from '../../core/models/models';
-import { OnboardingComponent } from '../onboarding/onboarding.component';
-import { DonationCheckoutComponent } from '../donation/donation-checkout.component';
 import {
   trigger, transition, style, animate, stagger, query
 } from '@angular/animations';
@@ -89,10 +87,11 @@ export class LandingComponent implements OnInit {
     });
   }
 
-  openOnboarding(): void {
+  async openOnboarding(): Promise<void> {
     if (this.auth.isLoggedIn) {
       this.router.navigate(['/dashboard']);
     } else {
+      const { OnboardingComponent } = await import('../onboarding/onboarding.component');
       this.dialog.open(OnboardingComponent, {
         width: '540px',
         maxWidth: '95vw',
@@ -104,7 +103,8 @@ export class LandingComponent implements OnInit {
     }
   }
 
-  openDonationDialog(): void {
+  async openDonationDialog(): Promise<void> {
+    const { DonationCheckoutComponent } = await import('../donation/donation-checkout.component');
     this.dialog.open(DonationCheckoutComponent, {
       width: '650px',
       maxWidth: '95vw',

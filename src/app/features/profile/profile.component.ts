@@ -8,7 +8,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { RateUserDialogComponent } from './rate-user-dialog/rate-user-dialog.component';
 import { FollowListDialogComponent } from './follow-list-dialog/follow-list-dialog.component';
-import { OnboardingComponent } from '../onboarding/onboarding.component';
 
 @Component({
   selector: 'app-profile',
@@ -121,15 +120,10 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  toggleFollow(): void {
+  async toggleFollow(): Promise<void> {
     if (!this.user || this.followLoading) return;
     if (!this.auth.isLoggedIn) {
-      this.dialog.open(OnboardingComponent, {
-        width: '540px',
-        maxWidth: '95vw',
-        maxHeight: '90vh',
-        panelClass: 'onboarding-dialog'
-      });
+      await this.openOnboardingDialog();
       return;
     }
     this.followLoading = true;
@@ -149,15 +143,10 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  sendMessage(): void {
+  async sendMessage(): Promise<void> {
     if (!this.user) return;
     if (!this.auth.isLoggedIn) {
-      this.dialog.open(OnboardingComponent, {
-        width: '540px',
-        maxWidth: '95vw',
-        maxHeight: '90vh',
-        panelClass: 'onboarding-dialog'
-      });
+      await this.openOnboardingDialog();
       return;
     }
     this.api.startConversation(this.user.id).subscribe({
@@ -202,7 +191,8 @@ export class ProfileComponent implements OnInit {
     return map[status] ?? status;
   }
 
-  openOnboardingDialog(): void {
+  async openOnboardingDialog(): Promise<void> {
+    const { OnboardingComponent } = await import('../onboarding/onboarding.component');
     this.dialog.open(OnboardingComponent, {
       width: '540px',
       maxWidth: '95vw',

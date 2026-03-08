@@ -9,21 +9,9 @@ import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { RegisterInput, SkillSection, SkillsListResponse } from '../../core/models/models';
 import { environment } from '../../../environments/environment';
-import { DonationCheckoutComponent } from '../donation/donation-checkout.component';
 import { rankedAutocomplete, sanitizeInput } from '../../core/utils/search.utils';
-import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
-import {
-  getAuth,
-  signInWithPopup,
-  createUserWithEmailAndPassword,
-  sendEmailVerification,
-  GoogleAuthProvider,
-  GithubAuthProvider,
-  OAuthProvider,
-  UserCredential,
-  setPersistence,
-  browserLocalPersistence
-} from 'firebase/auth';
+import type { FirebaseApp } from 'firebase/app';
+import type { UserCredential } from 'firebase/auth';
 import {
   trigger, transition, style, animate, query, group
 } from '@angular/animations';
@@ -403,16 +391,17 @@ export class OnboardingComponent implements OnInit {
     const passwordVal: string = this.accountForm.get('password')!.value;
 
     try {
-      const fbAuth = getAuth(this.getFirebaseApp());
+      const { auth } = await this.loadFirebase();
+      const fbAuth = auth.getAuth(await this.getFirebaseApp());
       
       // Set persistence before creating account
-      await setPersistence(fbAuth, browserLocalPersistence);
+      await auth.setPersistence(fbAuth, auth.browserLocalPersistence);
       
       // Create Firebase account
-      const cred: UserCredential = await createUserWithEmailAndPassword(fbAuth, emailVal, passwordVal);
+      const cred: UserCredential = await auth.createUserWithEmailAndPassword(fbAuth, emailVal, passwordVal);
       
       // Send email verification
-      await sendEmailVerification(cred.user);
+      await auth.sendEmailVerification(cred.user);
       this.emailVerificationSent = true;
       
       const idToken = await cred.user.getIdToken();
@@ -482,9 +471,22 @@ export class OnboardingComponent implements OnInit {
 
   // ── Social login ────────────────────────────────────────────────────────────
 
-  private getFirebaseApp(): FirebaseApp {
-    if (getApps().length > 0) return getApps()[0];
-    return initializeApp({
+  private _fb: { app: any; auth: any } | null = null;
+  private async loadFirebase() {
+    if (!this._fb) {
+      const [app, auth] = await Promise.all([
+        import('firebase/app'),
+        import('firebase/auth')
+      ]);
+      this._fb = { app, auth };
+    }
+    return this._fb;
+  }
+
+  private async getFirebaseApp(): Promise<FirebaseApp> {
+    const { app } = await this.loadFirebase();
+    if (app.getApps().length > 0) return app.getApps()[0];
+    return app.initializeApp({
       apiKey: environment.firebaseApiKey,
       authDomain: environment.firebaseAuthDomain
     });
@@ -495,21 +497,22 @@ export class OnboardingComponent implements OnInit {
     this.loading = true;
     this.error = '';
 
-    const app = this.getFirebaseApp();
-    const fbAuth = getAuth(app);
+    const { auth: authMod } = await this.loadFirebase();
+    const app = await this.getFirebaseApp();
+    const fbAuth = authMod.getAuth(app);
 // Set persistence before sign-in
-    await setPersistence(fbAuth, browserLocalPersistence).catch(() => {});
+    await authMod.setPersistence(fbAuth, authMod.browserLocalPersistence).catch(() => {});
 
-    let authProvider: GoogleAuthProvider | GithubAuthProvider | OAuthProvider;
+    let authProvider: any;
     if (provider === 'google') {
-      authProvider = new GoogleAuthProvider();
+      authProvider = new authMod.GoogleAuthProvider();
     } else if (provider === 'github') {
       // GitHub provider with email scope
-      authProvider = new GithubAuthProvider();
+      authProvider = new authMod.GithubAuthProvider();
       authProvider.addScope('user:email'); // Request access to user's email
     } else {
       // Microsoft OAuth provider with proper configuration
-      authProvider = new OAuthProvider('microsoft.com');
+      authProvider = new authMod.OAuthProvider('microsoft.com');
       authProvider.setCustomParameters({
         prompt: 'select_account',
         tenant: 'common' // Allows both personal and work/school accounts
@@ -521,7 +524,7 @@ export class OnboardingComponent implements OnInit {
     }
 
     try {
-      const credential: UserCredential = await signInWithPopup(fbAuth, authProvider);
+      const credential: UserCredential = await authMod.signInWithPopup(fbAuth, authProvider);
       const idToken = await credential.user.getIdToken();
       const tokenResult = await credential.user.getIdTokenResult();
       const expiresAt = new Date(tokenResult.expirationTime).getTime();
@@ -579,9 +582,9 @@ export class OnboardingComponent implements OnInit {
         const email = err?.customData?.email;
         if (email) {
           // Try to fetch sign-in methods for this email
-          import('firebase/auth').then(({ fetchSignInMethodsForEmail }) => {
-            const fbAuth = getAuth(this.getFirebaseApp());
-            fetchSignInMethodsForEmail(fbAuth, email).then((methods) => {
+          const cachedAuth = this._fb!.auth;
+          const fbAuth2 = cachedAuth.getAuth(this._fb!.app.getApps()[0]);
+          cachedAuth.fetchSignInMethodsForEmail(fbAuth2, email).then((methods: string[]) => {
               if (methods.length > 0) {
                 const providerNames: { [key: string]: string } = {
                   'google.com': 'Google',
@@ -597,7 +600,6 @@ export class OnboardingComponent implements OnInit {
             }).catch(() => {
               this.error = 'Este email já está registado com outro método de login.';
             });
-          });
         } else {
           this.error = 'Este email já está registado com outro método de login.';
         }
@@ -676,7 +678,8 @@ export class OnboardingComponent implements OnInit {
     });
   }
 
-  openDonationDialog(): void {
+  async openDonationDialog(): Promise<void> {
+    const { DonationCheckoutComponent } = await import('../donation/donation-checkout.component');
     this.dialog.open(DonationCheckoutComponent, {
       width: '650px',
       maxWidth: '95vw',

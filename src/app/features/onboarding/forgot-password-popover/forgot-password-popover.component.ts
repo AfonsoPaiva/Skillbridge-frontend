@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { getAuth, sendPasswordResetEmail } from 'firebase/auth';
-import { initializeApp, getApps } from 'firebase/app';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -38,7 +36,8 @@ export class ForgotPasswordPopoverComponent {
     this.loading = false;
   }
 
-  private getFirebaseApp() {
+  private async getFirebaseApp() {
+    const { getApps, initializeApp } = await import('firebase/app');
     if (getApps().length > 0) return getApps()[0];
     return initializeApp({
       apiKey: environment.firebaseApiKey,
@@ -53,7 +52,8 @@ export class ForgotPasswordPopoverComponent {
     this.loading = true;
 
     try {
-      const auth = getAuth(this.getFirebaseApp());
+      const { getAuth, sendPasswordResetEmail } = await import('firebase/auth');
+      const auth = getAuth(await this.getFirebaseApp());
       await sendPasswordResetEmail(auth, email);
       
       this.loading = false;
