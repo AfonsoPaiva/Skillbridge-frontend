@@ -199,8 +199,24 @@
 
   .pcard__img {
     position: relative;
-    width: 100%; height: 160px;
-    img { width: 100%; height: 100%; object-fit: cover; }
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    @media (max-width: v.$bp-md) {
+      img {
+        object-fit: contain;
+        background: rgba(v.$color-primary, 0.03);
+      }
+    }
+
     .pcard__badge {
       position: absolute; top: 8px; right: 8px;
       font-size: 12px; padding: 2px 6px; border-radius: v.$radius-sm;

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, HostListener } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../../core/services/api.service';
@@ -15,6 +15,8 @@ import { safeAutocomplete } from '../../../core/utils/search.utils';
   styleUrls: ['./project-form.component.scss']
 })
 export class ProjectFormComponent implements OnInit {
+  @ViewChild('editorFrame') editorFrame?: ElementRef<HTMLDivElement>;
+
   form!: FormGroup;
   loading = false;
   submitting = false;
@@ -23,6 +25,20 @@ export class ProjectFormComponent implements OnInit {
   availableSkills: string[] = [];
   imagePreview: string | null = null;
   uploadingImage = false;
+  rawImageSrc: string | null = null;
+  showImageEditor = false;
+  selectedImageFile: File | null = null;
+
+  readonly imageFrameWidth = 800;
+  readonly imageFrameHeight = 500;
+  editorZoom = 1;
+  editorPosX = 50;
+  editorPosY = 50;
+  draggingEditor = false;
+  private dragStartX = 0;
+  private dragStartY = 0;
+  private startPosX = 50;
+  private startPosY = 50;
   
   // Map to store filtered skills observables for each role
   private roleSkillFilters = new Map<number, Observable<string[]>>();
@@ -109,15 +125,103 @@ export class ProjectFormComponent implements OnInit {
   onImageChange(event: Event): void {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      this.snack.open('Seleciona um ficheiro de imagem válido.', 'Fechar', { duration: 3000 });
+      return;
+    }
+
+    this.selectedImageFile = file;
+    this.editorZoom = 1;
+    this.editorPosX = 50;
+    this.editorPosY = 50;
+    this.showImageEditor = true;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.rawImageSrc = String(reader.result || '');
+    };
+    reader.readAsDataURL(file);
+  }
+
+  removeImage(): void {
+    this.form.patchValue({ image_url: '' });
+    this.imagePreview = null;
+    this.rawImageSrc = null;
+    this.showImageEditor = false;
+    this.selectedImageFile = null;
+  }
+
+  resetEditor(): void {
+    this.editorZoom = 1;
+    this.editorPosX = 50;
+    this.editorPosY = 50;
+  }
+
+  startEditorDrag(event: MouseEvent | TouchEvent): void {
+    if (!this.rawImageSrc) return;
+
+    const point = this.getPoint(event);
+    this.draggingEditor = true;
+    this.dragStartX = point.x;
+    this.dragStartY = point.y;
+    this.startPosX = this.editorPosX;
+    this.startPosY = this.editorPosY;
+    event.preventDefault();
+  }
+
+  @HostListener('document:mousemove', ['$event'])
+  onEditorMouseMove(event: MouseEvent): void {
+    this.updateEditorDrag(event.clientX, event.clientY);
+  }
+
+  @HostListener('document:touchmove', ['$event'])
+  onEditorTouchMove(event: TouchEvent): void {
+    if (!this.draggingEditor || event.touches.length === 0) return;
+    const t = event.touches[0];
+    this.updateEditorDrag(t.clientX, t.clientY);
+    event.preventDefault();
+  }
+
+  @HostListener('document:mouseup')
+  @HostListener('document:touchend')
+  stopEditorDrag(): void {
+    this.draggingEditor = false;
+  }
+
+  async applyImageEdit(): Promise<void> {
+    if (!this.rawImageSrc || !this.selectedImageFile) return;
+
     this.uploadingImage = true;
-    this.api.uploadImage(file, 'project').subscribe({
-      next: (res: { url: string }) => {
-        this.form.patchValue({ image_url: res.url });
-        this.imagePreview = res.url;
-        this.uploadingImage = false;
-      },
-      error: () => { this.uploadingImage = false; }
-    });
+    try {
+      const blob = await this.renderEditedImageBlob();
+      const baseName = this.selectedImageFile.name.replace(/\.[^/.]+$/, '');
+      const editedFile = new File([blob], `${baseName}-framed.jpg`, { type: 'image/jpeg' });
+
+      this.api.uploadImage(editedFile, 'project').subscribe({
+        next: (res: { url: string }) => {
+          this.form.patchValue({ image_url: res.url });
+          this.imagePreview = res.url;
+          this.showImageEditor = false;
+          this.rawImageSrc = null;
+          this.selectedImageFile = null;
+          this.uploadingImage = false;
+        },
+        error: () => {
+          this.uploadingImage = false;
+          this.snack.open('Não foi possível enviar a imagem.', 'Fechar', { duration: 3500 });
+        }
+      });
+    } catch {
+      this.uploadingImage = false;
+      this.snack.open('Não foi possível processar a imagem.', 'Fechar', { duration: 3500 });
+    }
+  }
+
+  get editorImageStyles(): Record<string, string> {
+    return {
+      transform: `scale(${this.editorZoom})`,
+      objectPosition: `${this.editorPosX}% ${this.editorPosY}%`
+    };
   }
 
   submit(): void {
@@ -191,5 +295,77 @@ export class ProjectFormComponent implements OnInit {
   }
   getFilteredSkills(index: number): Observable<string[]> {
     return this.roleSkillFilters.get(index) || of(this.availableSkills);
+  }
+
+  private updateEditorDrag(clientX: number, clientY: number): void {
+    if (!this.draggingEditor || !this.editorFrame?.nativeElement) return;
+
+    const rect = this.editorFrame.nativeElement.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+
+    const dxPercent = ((clientX - this.dragStartX) / rect.width) * 100;
+    const dyPercent = ((clientY - this.dragStartY) / rect.height) * 100;
+
+    this.editorPosX = this.clamp(this.startPosX + dxPercent, 0, 100);
+    this.editorPosY = this.clamp(this.startPosY + dyPercent, 0, 100);
+  }
+
+  private getPoint(event: MouseEvent | TouchEvent): { x: number; y: number } {
+    if ('touches' in event && event.touches.length > 0) {
+      return { x: event.touches[0].clientX, y: event.touches[0].clientY };
+    }
+
+    const mouse = event as MouseEvent;
+    return { x: mouse.clientX, y: mouse.clientY };
+  }
+
+  private clamp(value: number, min: number, max: number): number {
+    return Math.min(max, Math.max(min, value));
+  }
+
+  private async renderEditedImageBlob(): Promise<Blob> {
+    const img = await this.loadImage(this.rawImageSrc!);
+    const canvas = document.createElement('canvas');
+    canvas.width = this.imageFrameWidth;
+    canvas.height = this.imageFrameHeight;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      throw new Error('Canvas context not available');
+    }
+
+    const baseScale = Math.max(
+      this.imageFrameWidth / img.width,
+      this.imageFrameHeight / img.height
+    );
+    const finalScale = baseScale * this.editorZoom;
+
+    const drawWidth = img.width * finalScale;
+    const drawHeight = img.height * finalScale;
+    const drawX = (this.imageFrameWidth - drawWidth) * (this.editorPosX / 100);
+    const drawY = (this.imageFrameHeight - drawHeight) * (this.editorPosY / 100);
+
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+
+    return new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          reject(new Error('Failed to render blob'));
+          return;
+        }
+        resolve(blob);
+      }, 'image/jpeg', 0.92);
+    });
+  }
+
+  private loadImage(src: string): Promise<HTMLImageElement> {
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = () => reject(new Error('Failed to load image'));
+      image.src = src;
+    });
   }
 }
