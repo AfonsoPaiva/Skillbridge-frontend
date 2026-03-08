@@ -62,6 +62,12 @@
         height: 20px;
       }
 
+      .social-icon {
+        width: 20px;
+        height: 20px;
+        object-fit: contain;
+      }
+
       &:hover {
         background: rgba(255, 255, 255, 0.2);
         transform: translateY(-2px);

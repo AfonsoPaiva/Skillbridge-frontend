@@ -150,7 +150,11 @@
   .social-link__icon {
     width: 16px;
     height: 16px;
+    min-width: 16px;
+    min-height: 16px;
     flex-shrink: 0;
+    object-fit: contain;
+    display: block;
   }
 
   &:hover {
