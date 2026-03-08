@@ -47,17 +47,23 @@
   
   &__image {
     width: 100%;
-    max-width: 100%;
+    max-width: 720px;
     aspect-ratio: 16 / 10;
-    max-height: 440px;
+    max-height: 450px;
     border-radius: v.$radius-md;
     overflow: hidden;
     background: rgba(v.$color-primary, 0.06);
     border: 1px solid v.$color-border;
-    margin-bottom: v.$space-6;
+    margin: 0 auto v.$space-6;
+    display: block;
 
     @media (max-width: v.$bp-md) {
-      max-height: 300px;
+      max-width: 100%;
+      max-height: 320px;
+    }
+    
+    @media (max-width: v.$bp-sm) {
+      max-height: 240px;
     }
     
     img {

@@ -41,26 +41,10 @@ export class SmartFitImgDirective implements AfterViewInit, OnDestroy {
     const frame = img.parentElement as HTMLElement | null;
     if (!frame) return;
 
-    // Smart sizing: if image is close to frame size (within 20px), fill it
-    const frameWidth = frame.clientWidth;
-    const frameHeight = frame.clientHeight;
-    const imgWidth = img.naturalWidth;
-    const imgHeight = img.naturalHeight;
-
-    const widthDiff = Math.abs(imgWidth - frameWidth);
-    const heightDiff = Math.abs(imgHeight - frameHeight);
-
-    if (widthDiff <= 20 && heightDiff <= 20) {
-      // Image is close to frame size, use cover to fill
-      img.style.objectFit = 'cover';
-      img.style.objectPosition = 'center';
-      frame.style.backgroundColor = '';
-    } else {
-      // Image needs contain with background fill
-      img.style.objectFit = 'contain';
-      img.style.objectPosition = 'center';
-      this.applyFrameBackground();
-    }
+    // Always use contain for consistency and apply dominant color background
+    img.style.objectFit = 'contain';
+    img.style.objectPosition = 'center';
+    this.applyFrameBackground();
   }
 
   private onImageError(): void {
