@@ -72,12 +72,7 @@ export class DonationCheckoutComponent implements OnInit, AfterViewInit, OnDestr
           }
 
           this.embeddedCheckout = await stripe.initEmbeddedCheckout({
-            clientSecret: response.clientSecret,
-            onComplete: () => {
-              this.paid = true;
-              this.loading = false;
-              setTimeout(() => this.dialogRef?.close(), 2000);
-            }
+            clientSecret: response.clientSecret
           });
 
           this.embeddedCheckout.mount(this.checkoutContainer.nativeElement);
