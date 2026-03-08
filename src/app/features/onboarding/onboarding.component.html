@@ -41,7 +41,9 @@
       <div class="role-cards">
         <div class="role-card" [class.selected]="roleForm.get('role')?.value === 'needs_help'"
              (click)="setRole('needs_help')"
+             (touchend)="setRole('needs_help')"
              matRipple
+             [matRippleDisabled]="isiPhone"
              [matRippleCentered]="true"
              [matRippleRadius]="90"
              [matRippleAnimation]="{ enterDuration: 220, exitDuration: 220 }">
@@ -51,7 +53,9 @@
         </div>
         <div class="role-card" [class.selected]="roleForm.get('role')?.value === 'helper'"
              (click)="setRole('helper')"
+             (touchend)="setRole('helper')"
              matRipple
+             [matRippleDisabled]="isiPhone"
              [matRippleCentered]="true"
              [matRippleRadius]="90"
              [matRippleAnimation]="{ enterDuration: 220, exitDuration: 220 }">
@@ -61,7 +65,9 @@
         </div>
         <div class="role-card" [class.selected]="roleForm.get('role')?.value === 'both'"
              (click)="setRole('both')"
+             (touchend)="setRole('both')"
              matRipple
+             [matRippleDisabled]="isiPhone"
              [matRippleCentered]="true"
              [matRippleRadius]="90"
              [matRippleAnimation]="{ enterDuration: 220, exitDuration: 220 }">

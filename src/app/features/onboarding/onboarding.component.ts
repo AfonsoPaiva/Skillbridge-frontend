@@ -134,7 +134,7 @@ export class OnboardingComponent implements OnInit, OnDestroy {
   private readonly initialSkillsPerSection = 12;
   private readonly searchSkillsPerSection = 40;
   private readonly expandedSkillSections = new Set<string>();
-  private readonly isiPhone = typeof navigator !== 'undefined' && /iPhone|iPod/i.test(navigator.userAgent);
+  readonly isiPhone = typeof navigator !== 'undefined' && /iPhone|iPod/i.test(navigator.userAgent);
   readonly disableStepAnimation = this.isiPhone;
   private visualViewportResizeHandler?: () => void;
 
@@ -342,7 +342,11 @@ export class OnboardingComponent implements OnInit, OnDestroy {
     return v === 'needs_help' || v === 'both';
   }
 
-  setRole(role: string): void {
+  setRole(role: string, event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
     this.roleForm.patchValue({ role });
   }
 

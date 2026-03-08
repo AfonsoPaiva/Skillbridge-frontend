@@ -328,6 +328,7 @@ mat-dialog-content {
       border-radius: 50%;
       background: rgba(104, 0, 122, 0.12);
       transition: transform v.$transition-base, background-color v.$transition-base, box-shadow v.$transition-base;
+      pointer-events: none;
     }
 
     &.selected::after {
@@ -341,21 +342,40 @@ mat-dialog-content {
       width: 28px;
       height: 28px;
       margin-bottom: 2px;
+      pointer-events: none;
     }
 
     strong {
       font-size: 15px;
       line-height: 1.3;
+      pointer-events: none;
     }
 
     span {
       font-size: 12px;
       line-height: 1.45;
       max-width: calc(100% - 20px);
+      pointer-events: none;
     }
 
     &:active {
       transform: scale(0.992);
+    }
+  }
+}
+
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 768px) {
+    .role-card {
+      -webkit-tap-highlight-color: rgba(104, 0, 122, 0.1);
+      
+      * {
+        pointer-events: none;
+      }
+
+      .mat-ripple-element {
+        display: none !important;
+      }
     }
   }
 }
