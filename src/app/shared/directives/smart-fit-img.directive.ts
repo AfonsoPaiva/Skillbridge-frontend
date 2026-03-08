@@ -83,6 +83,21 @@ export class SmartFitImgDirective implements AfterViewInit, OnDestroy {
       displayWidth = frameHeight * imgAspect;
     }
 
+    // Check if image is close to frame size (within 20px on both dimensions)
+    const widthDiff = Math.abs(displayWidth - frameWidth);
+    const heightDiff = Math.abs(displayHeight - frameHeight);
+
+    if (widthDiff <= 20 && heightDiff <= 20) {
+      // Image is very close to frame size - use cover to fill perfectly
+      img.style.width = `${frameWidth}px`;
+      img.style.height = `${frameHeight}px`;
+      img.style.objectFit = 'cover';
+      img.style.objectPosition = 'center';
+      img.style.display = 'block';
+      img.style.margin = '0 auto';
+      return;
+    }
+
     // Ensure we never exceed frame bounds (safety check)
     if (displayWidth > frameWidth) {
       displayWidth = frameWidth;
@@ -93,7 +108,7 @@ export class SmartFitImgDirective implements AfterViewInit, OnDestroy {
       displayWidth = frameHeight * imgAspect;
     }
 
-    // Apply calculated dimensions
+    // Apply calculated dimensions with contain
     img.style.width = `${displayWidth}px`;
     img.style.height = `${displayHeight}px`;
     img.style.objectFit = 'contain';
