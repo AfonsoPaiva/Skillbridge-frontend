@@ -21,8 +21,10 @@
       <a routerLink="/projects" routerLinkActive="active" mat-button>Projetos</a>
       <ng-container *ngIf="isLoggedIn">
         <a routerLink="/dashboard" routerLinkActive="active" mat-button>Dashboard</a>
-        <a routerLink="/messages" mat-icon-button matTooltip="Mensagens" [matBadge]="unreadCount" [matBadgeHidden]="unreadCount === 0" matBadgeColor="warn" matBadgeSize="small">
-          <mat-icon>chat</mat-icon>
+        <a routerLink="/messages" mat-icon-button matTooltip="Mensagens" class="messages-btn">
+          <span class="messages-icon-badge" [matBadge]="unreadCount" [matBadgeHidden]="unreadCount === 0" matBadgeColor="warn" matBadgeSize="small">
+            <mat-icon>chat</mat-icon>
+          </span>
         </a>
         <button mat-icon-button [matMenuTriggerFor]="userMenu" class="avatar-btn">
           <mat-icon>account_circle</mat-icon>

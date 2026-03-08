@@ -99,12 +99,22 @@
     }
 
     // Messages icon with badge
-    a[matBadge] {
+    .messages-btn {
+      ::ng-deep .mat-mdc-button-touch-target {
+        height: 100%;
+        width: 100%;
+      }
+    }
+
+    .messages-icon-badge {
       position: relative;
-      
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
       ::ng-deep .mat-badge-content {
-        top: 8px !important;
-        right: 8px !important;
+        top: -2px !important;
+        right: -6px !important;
         background-color: #f44336 !important;
         font-size: 10px !important;
         font-weight: v.$font-weight-bold !important;
@@ -115,11 +125,6 @@
         align-items: center;
         justify-content: center;
         padding: 0 4px;
-      }
-      
-      ::ng-deep .mat-mdc-button-touch-target {
-        height: 100%;
-        width: 100%;
       }
     }
 
