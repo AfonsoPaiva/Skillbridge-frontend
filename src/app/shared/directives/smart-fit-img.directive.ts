@@ -1,10 +1,15 @@
-import { Directive, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
+import { Directive, ElementRef, AfterViewInit, OnDestroy, HostBinding } from '@angular/core';
 
 @Directive({
   selector: 'img[appSmartFitImg]',
   standalone: true
 })
 export class SmartFitImgDirective implements AfterViewInit, OnDestroy {
+  @HostBinding('attr.crossorigin') crossOrigin = 'anonymous';
+  @HostBinding('attr.referrerpolicy') referrerPolicy = 'no-referrer';
+
+  private static colorCache = new Map<string, { r: number; g: number; b: number }>();
+
   private removeLoadListener?: () => void;
   private removeErrorListener?: () => void;
 
@@ -40,10 +45,23 @@ export class SmartFitImgDirective implements AfterViewInit, OnDestroy {
     const frame = img.parentElement as HTMLElement | null;
     if (!frame) return;
 
+    const src = img.currentSrc || img.src || '';
+    if (src) {
+      const cached = SmartFitImgDirective.colorCache.get(src);
+      if (cached) {
+        frame.style.backgroundColor = `rgba(${cached.r}, ${cached.g}, ${cached.b}, 0.18)`;
+        return;
+      }
+    }
+
     const dominant = this.getDominantColor(img);
     if (!dominant) {
       this.applyFallbackBackground();
       return;
+    }
+
+    if (src) {
+      SmartFitImgDirective.colorCache.set(src, dominant);
     }
 
     frame.style.backgroundColor = `rgba(${dominant.r}, ${dominant.g}, ${dominant.b}, 0.18)`;
@@ -63,7 +81,7 @@ export class SmartFitImgDirective implements AfterViewInit, OnDestroy {
       const ctx = canvas.getContext('2d', { willReadFrequently: true });
       if (!ctx) return null;
 
-      const sampleSize = 24;
+      const sampleSize = 32;
       canvas.width = sampleSize;
       canvas.height = sampleSize;
       ctx.drawImage(img, 0, 0, sampleSize, sampleSize);
@@ -84,12 +102,15 @@ export class SmartFitImgDirective implements AfterViewInit, OnDestroy {
 
         const max = Math.max(r, g, b);
         const min = Math.min(r, g, b);
-        const saturationWeight = Math.max(0.35, (max - min) / 255);
+        const saturationWeight = Math.max(0.2, (max - min) / 255);
+        const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+        const luminanceWeight = 1 - Math.abs(luminance - 0.5);
+        const pixelWeight = saturationWeight * (0.6 + luminanceWeight);
 
-        red += r * saturationWeight;
-        green += g * saturationWeight;
-        blue += b * saturationWeight;
-        weightTotal += saturationWeight;
+        red += r * pixelWeight;
+        green += g * pixelWeight;
+        blue += b * pixelWeight;
+        weightTotal += pixelWeight;
       }
 
       if (!weightTotal) return null;
