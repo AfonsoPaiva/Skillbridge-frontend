@@ -6,6 +6,7 @@ import { Directive, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 })
 export class SmartFitImgDirective implements AfterViewInit, OnDestroy {
   private static colorCache = new Map<string, { r: number; g: number; b: number }>();
+  private corsAttempted = false;
 
   private removeLoadListener?: () => void;
   private removeErrorListener?: () => void;
@@ -15,16 +16,13 @@ export class SmartFitImgDirective implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     const img = this.el.nativeElement;
 
-    img.style.objectFit = 'contain';
-    img.style.objectPosition = 'center';
-
-    // Try to enable CORS for dominant color extraction if image hasn't loaded yet
-    // This allows us to access pixel data for color analysis
+    // Try CORS first for color extraction
     if (!img.complete && !img.crossOrigin) {
       img.crossOrigin = 'anonymous';
+      this.corsAttempted = true;
     }
 
-    const onLoad = () => this.applyFrameBackground();
+    const onLoad = () => this.onImageLoad();
     const onError = () => this.onImageError();
 
     img.addEventListener('load', onLoad);
@@ -34,41 +32,81 @@ export class SmartFitImgDirective implements AfterViewInit, OnDestroy {
     this.removeErrorListener = () => img.removeEventListener('error', onError);
 
     if (img.complete && img.naturalWidth > 0) {
+      this.onImageLoad();
+    }
+  }
+
+  private onImageLoad(): void {
+    const img = this.el.nativeElement;
+    const frame = img.parentElement as HTMLElement | null;
+    if (!frame) return;
+
+    // Smart sizing: if image is close to frame size (within 20px), fill it
+    const frameWidth = frame.clientWidth;
+    const frameHeight = frame.clientHeight;
+    const imgWidth = img.naturalWidth;
+    const imgHeight = img.naturalHeight;
+
+    const widthDiff = Math.abs(imgWidth - frameWidth);
+    const heightDiff = Math.abs(imgHeight - frameHeight);
+
+    if (widthDiff <= 20 && heightDiff <= 20) {
+      // Image is close to frame size, use cover to fill
+      img.style.objectFit = 'cover';
+      img.style.objectPosition = 'center';
+      frame.style.backgroundColor = '';
+    } else {
+      // Image needs contain with background fill
+      img.style.objectFit = 'contain';
+      img.style.objectPosition = 'center';
       this.applyFrameBackground();
     }
   }
 
   private onImageError(): void {
     const img = this.el.nativeElement;
-    const src = img.src;
     
-    // If image failed to load with CORS, retry without it
-    if (img.crossOrigin) {
-      console.warn('[SmartFitImg] CORS load failed, retrying without CORS');
-      img.crossOrigin = '';
+    // If CORS failed and we haven't retried yet, try without CORS
+    if (this.corsAttempted && img.crossOrigin) {
+      this.corsAttempted = false;
       
       // Cleanup existing listeners
       this.removeLoadListener?.();
       this.removeErrorListener?.();
       
-      // Reload image without CORS
-      const tempSrc = img.src;
+      // Remove CORS and force reload
+      img.removeAttribute('crossorigin');
+      const originalSrc = img.src;
       img.src = '';
-      img.src = tempSrc;
       
-      // Re-attach listeners
-      const onLoad = () => this.applyFrameBackground();
-      const onError = () => this.applyFallbackBackground();
-      
-      img.addEventListener('load', onLoad);
-      img.addEventListener('error', onError);
-      
-      this.removeLoadListener = () => img.removeEventListener('load', onLoad);
-      this.removeErrorListener = () => img.removeEventListener('error', onError);
+      // Small delay to ensure browser registers the change
+      setTimeout(() => {
+        img.src = originalSrc;
+        
+        // Re-attach listeners
+        const onLoad = () => this.onImageLoad();
+        const onError = () => this.applyFallbackStyles();
+        
+        img.addEventListener('load', onLoad);
+        img.addEventListener('error', onError);
+        
+        this.removeLoadListener = () => img.removeEventListener('load', onLoad);
+        this.removeErrorListener = () => img.removeEventListener('error', onError);
+      }, 10);
     } else {
-      // Failed without CORS too, use fallback
-      this.applyFallbackBackground();
+      // No more retries, apply fallback
+      this.applyFallbackStyles();
     }
+  }
+
+  private applyFallbackStyles(): void {
+    const img = this.el.nativeElement;
+    const frame = img.parentElement as HTMLElement | null;
+    if (!frame) return;
+
+    img.style.objectFit = 'contain';
+    img.style.objectPosition = 'center';
+    frame.style.backgroundColor = 'rgba(104, 0, 122, 0.06)';
   }
 
   ngOnDestroy(): void {
@@ -92,7 +130,7 @@ export class SmartFitImgDirective implements AfterViewInit, OnDestroy {
 
     const dominant = this.getDominantColor(img);
     if (!dominant) {
-      this.applyFallbackBackground();
+      frame.style.backgroundColor = 'rgba(104, 0, 122, 0.06)';
       return;
     }
 
@@ -101,14 +139,6 @@ export class SmartFitImgDirective implements AfterViewInit, OnDestroy {
     }
 
     frame.style.backgroundColor = `rgba(${dominant.r}, ${dominant.g}, ${dominant.b}, 0.18)`;
-  }
-
-  private applyFallbackBackground(): void {
-    const img = this.el.nativeElement;
-    const frame = img.parentElement as HTMLElement | null;
-    if (!frame) return;
-
-    frame.style.backgroundColor = 'rgba(104, 0, 122, 0.06)';
   }
 
   private getDominantColor(img: HTMLImageElement): { r: number; g: number; b: number } | null {
