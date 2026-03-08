@@ -1266,6 +1266,105 @@ body {
       .mat-mdc-text-field-wrapper {
         touch-action: manipulation;
       }
+
+      // Force proper z-index stacking on iOS
+      .mdc-dialog__surface {
+        transform: none !important;
+        will-change: auto !important;
+        -webkit-transform: none !important;
+      }
+
+      mat-dialog-content {
+        transform: none !important;
+        will-change: auto !important;
+        -webkit-transform: none !important;
+      }
+
+      .onboarding__steps {
+        transform: none !important;
+        will-change: auto !important;
+        -webkit-transform: none !important;
+      }
+
+      .ob-step {
+        position: static !important;
+        transform: none !important;
+        will-change: auto !important;
+        -webkit-transform: none !important;
+      }
+
+      // Fix Material form field layering on iOS
+      .mat-mdc-text-field-wrapper {
+        position: relative;
+        z-index: 1;
+        transform: none !important;
+        will-change: auto !important;
+        -webkit-transform: none !important;
+
+        .mdc-notched-outline {
+          z-index: 0 !important;
+          pointer-events: none !important;
+
+          .mdc-notched-outline__leading,
+          .mdc-notched-outline__notch,
+          .mdc-notched-outline__trailing {
+            pointer-events: none !important;
+          }
+        }
+
+        .mat-mdc-form-field-infix {
+          z-index: 2 !important;
+          position: relative;
+        }
+      }
+
+      .mat-mdc-input-element,
+      .mat-mdc-select-trigger {
+        position: relative !important;
+        z-index: 3 !important;
+        -webkit-user-select: text !important;
+        user-select: text !important;
+        touch-action: manipulation !important;
+        pointer-events: auto !important;
+      }
+
+      textarea.mat-mdc-input-element {
+        position: relative !important;
+        z-index: 3 !important;
+        pointer-events: auto !important;
+      }
+
+      // Fix floating label blocking clicks
+      .mat-mdc-floating-label {
+        pointer-events: none !important;
+        z-index: 1 !important;
+      }
+
+      // Fix suffix/prefix icons
+      .mat-mdc-form-field-icon-suffix,
+      .mat-mdc-form-field-icon-prefix {
+        pointer-events: auto !important;
+        z-index: 3 !important;
+      }
+
+      // Fix autocomplete panel
+      .mat-mdc-autocomplete-panel {
+        z-index: 9999 !important;
+      }
+
+      // Remove transforms from role cards on mobile
+      .role-card {
+        transform: none !important;
+        will-change: auto !important;
+        -webkit-transform: none !important;
+
+        &:hover,
+        &:active,
+        &.selected {
+          transform: none !important;
+          -webkit-transform: none !important;
+        }
+      }
     }
   }
 }
