@@ -1,13 +1,10 @@
-import { Directive, ElementRef, AfterViewInit, OnDestroy, HostBinding } from '@angular/core';
+import { Directive, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 
 @Directive({
   selector: 'img[appSmartFitImg]',
   standalone: true
 })
 export class SmartFitImgDirective implements AfterViewInit, OnDestroy {
-  @HostBinding('attr.crossorigin') crossOrigin = 'anonymous';
-  @HostBinding('attr.referrerpolicy') referrerPolicy = 'no-referrer';
-
   private static colorCache = new Map<string, { r: number; g: number; b: number }>();
 
   private removeLoadListener?: () => void;

@@ -164,9 +164,16 @@ export class AuthService {
 
   /** Prefetch and cache user profile */
   prefetchUserProfile(api: ApiService): void {
+    if (!this.getToken()) {
+      this._user$.next(null);
+      return;
+    }
+
     api.getMyProfile().subscribe({
       next: (u) => this._user$.next(u),
-      error: () => this._user$.next(null)
+      error: () => {
+        this._user$.next(null);
+      }
     });
   }
 
