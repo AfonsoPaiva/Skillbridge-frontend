@@ -70,10 +70,10 @@
                 <p>{{ r.description }}</p>
                 <button mat-raised-button color="primary"
                         *ngIf="!isOwner"
-                        [disabled]="applyLoading || r.filled >= r.spots"
+                        [disabled]="applyingRoleId === r.id || r.filled >= r.spots"
                         (click)="apply(r.id)">
-                  <mat-spinner *ngIf="applyLoading" diameter="16"></mat-spinner>
-                  <span *ngIf="!applyLoading">
+                  <mat-spinner *ngIf="applyingRoleId === r.id" diameter="16"></mat-spinner>
+                  <span *ngIf="applyingRoleId !== r.id">
                     {{ r.filled >= r.spots ? 'Vagas esgotadas' : 'Candidatar-me' }}
                   </span>
                 </button>

@@ -26,7 +26,7 @@ export class ProjectDetailComponent implements OnInit {
   project: Project | null = null;
   members: ProjectMember[] = [];
   loading = true;
-  applyLoading = false;
+  applyingRoleId: number | null = null; // Track which specific role is being applied to
   deleteLoading = false;
 
   get isOwner(): boolean {
@@ -75,15 +75,15 @@ export class ProjectDetailComponent implements OnInit {
       });
       return;
     }
-    this.applyLoading = true;
+    this.applyingRoleId = roleId;
     this.api.applyToProject(this.project!.slug, roleId).subscribe({
       next: () => {
         this.snack.open('Candidatura enviada!', 'Fechar', { duration: 3000 });
-        this.applyLoading = false;
+        this.applyingRoleId = null;
       },
       error: (e: HttpErrorResponse) => {
         this.snack.open(e?.error?.error || 'Erro ao candidatar-se.', 'Fechar', { duration: 4000 });
-        this.applyLoading = false;
+        this.applyingRoleId = null;
       }
     });
   }

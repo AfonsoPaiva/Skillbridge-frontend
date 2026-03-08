@@ -7,6 +7,7 @@ import { Directive, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 export class SmartFitImgDirective implements AfterViewInit, OnDestroy {
   private static colorCache = new Map<string, { r: number; g: number; b: number }>();
   private corsAttempted = false;
+  private resizeObserver?: ResizeObserver;
 
   private removeLoadListener?: () => void;
   private removeErrorListener?: () => void;
@@ -34,17 +35,71 @@ export class SmartFitImgDirective implements AfterViewInit, OnDestroy {
     if (img.complete && img.naturalWidth > 0) {
       this.onImageLoad();
     }
+
+    // Watch for frame resize and recalculate
+    const frame = img.parentElement;
+    if (frame && 'ResizeObserver' in window) {
+      this.resizeObserver = new ResizeObserver(() => {
+        if (img.complete && img.naturalWidth > 0) {
+          this.fitImageToFrame();
+        }
+      });
+      this.resizeObserver.observe(frame);
+    }
   }
 
   private onImageLoad(): void {
+    this.fitImageToFrame();
+    this.applyFrameBackground();
+  }
+
+  private fitImageToFrame(): void {
     const img = this.el.nativeElement;
     const frame = img.parentElement as HTMLElement | null;
     if (!frame) return;
 
-    // Always use contain for consistency and apply dominant color background
+    const frameWidth = frame.clientWidth;
+    const frameHeight = frame.clientHeight;
+    const imgWidth = img.naturalWidth;
+    const imgHeight = img.naturalHeight;
+
+    if (!frameWidth || !frameHeight || !imgWidth || !imgHeight) return;
+
+    // Calculate aspect ratios
+    const frameAspect = frameWidth / frameHeight;
+    const imgAspect = imgWidth / imgHeight;
+
+    let displayWidth: number;
+    let displayHeight: number;
+
+    // Intelligent contain behavior: fit image inside frame preserving aspect ratio
+    if (imgAspect > frameAspect) {
+      // Image is wider than frame - fit by width
+      displayWidth = frameWidth;
+      displayHeight = frameWidth / imgAspect;
+    } else {
+      // Image is taller than frame - fit by height
+      displayHeight = frameHeight;
+      displayWidth = frameHeight * imgAspect;
+    }
+
+    // Ensure we never exceed frame bounds (safety check)
+    if (displayWidth > frameWidth) {
+      displayWidth = frameWidth;
+      displayHeight = frameWidth / imgAspect;
+    }
+    if (displayHeight > frameHeight) {
+      displayHeight = frameHeight;
+      displayWidth = frameHeight * imgAspect;
+    }
+
+    // Apply calculated dimensions
+    img.style.width = `${displayWidth}px`;
+    img.style.height = `${displayHeight}px`;
     img.style.objectFit = 'contain';
     img.style.objectPosition = 'center';
-    this.applyFrameBackground();
+    img.style.display = 'block';
+    img.style.margin = '0 auto';
   }
 
   private onImageError(): void {
@@ -96,6 +151,7 @@ export class SmartFitImgDirective implements AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.removeLoadListener?.();
     this.removeErrorListener?.();
+    this.resizeObserver?.disconnect();
   }
 
   private applyFrameBackground(): void {
