@@ -31,6 +31,12 @@
   if (window.trustedTypes && typeof window.trustedTypes.createPolicy === 'function') {
     try {
       window.trustedTypes.createPolicy('default', {
+        createHTML: function (value) {
+          return String(value);
+        },
+        createScript: function (value) {
+          return String(value);
+        },
         createScriptURL: function (value) {
           return toTrustedScriptURL(value);
         }
