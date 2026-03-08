@@ -84,10 +84,10 @@ export class SmartFitImgDirective implements AfterViewInit, OnDestroy {
       ctx.drawImage(img, 0, 0, sampleSize, sampleSize);
 
       const imageData = ctx.getImageData(0, 0, sampleSize, sampleSize).data;
-      let red = 0;
-      let green = 0;
-      let blue = 0;
-      let weightTotal = 0;
+
+      const binSize = 24;
+      type ColorBucket = { count: number; sumR: number; sumG: number; sumB: number };
+      const bins = new Map<string, ColorBucket>();
 
       for (let index = 0; index < imageData.length; index += 4) {
         const alpha = imageData[index + 3];
@@ -97,25 +97,37 @@ export class SmartFitImgDirective implements AfterViewInit, OnDestroy {
         const g = imageData[index + 1];
         const b = imageData[index + 2];
 
-        const max = Math.max(r, g, b);
-        const min = Math.min(r, g, b);
-        const saturationWeight = Math.max(0.2, (max - min) / 255);
-        const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
-        const luminanceWeight = 1 - Math.abs(luminance - 0.5);
-        const pixelWeight = saturationWeight * (0.6 + luminanceWeight);
+        const keyR = Math.floor(r / binSize) * binSize;
+        const keyG = Math.floor(g / binSize) * binSize;
+        const keyB = Math.floor(b / binSize) * binSize;
+        const key = `${keyR}-${keyG}-${keyB}`;
 
-        red += r * pixelWeight;
-        green += g * pixelWeight;
-        blue += b * pixelWeight;
-        weightTotal += pixelWeight;
+        const current: ColorBucket = bins.get(key) || { count: 0, sumR: 0, sumG: 0, sumB: 0 };
+        current.count += 1;
+        current.sumR += r;
+        current.sumG += g;
+        current.sumB += b;
+        bins.set(key, current);
       }
 
-      if (!weightTotal) return null;
+      if (!bins.size) return null;
+
+      const bucketValues: ColorBucket[] = Array.from(bins.values());
+      if (!bucketValues.length) return null;
+
+      let dominantBucket: ColorBucket = bucketValues[0];
+      for (const bucket of bucketValues) {
+        if (bucket.count > dominantBucket.count) {
+          dominantBucket = bucket;
+        }
+      }
+
+      if (dominantBucket.count === 0) return null;
 
       return {
-        r: Math.round(red / weightTotal),
-        g: Math.round(green / weightTotal),
-        b: Math.round(blue / weightTotal)
+        r: Math.round(dominantBucket.sumR / dominantBucket.count),
+        g: Math.round(dominantBucket.sumG / dominantBucket.count),
+        b: Math.round(dominantBucket.sumB / dominantBucket.count)
       };
     } catch {
       return null;
