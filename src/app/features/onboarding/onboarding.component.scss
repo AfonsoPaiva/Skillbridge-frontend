@@ -164,6 +164,10 @@ mat-dialog-content {
   }
 }
 
+.mat-icon{
+  overflow: visible;
+}
+
 
 // ── Individual step ───────────────────────────────
 .ob-step {
@@ -345,6 +349,13 @@ mat-dialog-content {
   margin-bottom: v.$space-4;
 }
 
+.skills-search-note {
+  margin: -(v.$space-2) 0 v.$space-3;
+  color: v.$color-text-soft;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
 .skills-grid {
   display: flex;
   flex-wrap: wrap;
@@ -358,14 +369,18 @@ mat-dialog-content {
   padding: 4px 14px !important;
   height: 32px !important;
   border-radius: 999px !important;
+  text-transform: none !important;
+  white-space: nowrap;
 }
 
 // ── Info box ──────────────────────────────────────
 
 .skills-sections {
-  max-height: 280px;
+  max-height: 320px;
   overflow-y: auto;
   padding-right: v.$space-1;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 .skills-section {
@@ -376,6 +391,14 @@ mat-dialog-content {
     font-size: 0.95rem;
     font-weight: v.$font-weight-semibold;
     color: v.$color-primary;
+  }
+
+  &__more,
+  .skills-section__more {
+    margin-top: v.$space-1;
+    padding-left: 0 !important;
+    min-width: auto;
+    font-size: 13px;
   }
 }
 

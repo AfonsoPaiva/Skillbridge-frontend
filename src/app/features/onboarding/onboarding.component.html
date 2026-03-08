@@ -152,22 +152,37 @@
         </div>
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Pesquisar competência</mat-label>
-          <input matInput [(ngModel)]="skillSearch" placeholder="Ex: Python, Figma...">
-          <mat-icon matSuffix>search</mat-icon>
+          <input matInput [formControl]="skillSearchControl" placeholder="Ex: Python, Figma..." autocomplete="off" inputmode="search">
+          <button *ngIf="skillSearchControl.value" mat-icon-button matSuffix type="button" (click)="clearSkillSearch()" aria-label="Limpar pesquisa">
+            <mat-icon>close</mat-icon>
+          </button>
+          <mat-icon matSuffix *ngIf="!skillSearchControl.value">search</mat-icon>
         </mat-form-field>
 
+        <p class="skills-search-note" *ngIf="!hasActiveSkillSearch">
+          Mostramos primeiro as competências principais de cada área para manter a experiência rápida no telemóvel. Usa a pesquisa para encontrar qualquer competência.
+        </p>
+
         <div class="skills-sections" *ngIf="filteredSkillSections.length > 0; else noSkillsFound">
-          <div class="skills-section" *ngFor="let section of filteredSkillSections">
+          <div class="skills-section" *ngFor="let section of filteredSkillSections; trackBy: trackBySectionId">
             <h3>{{ section.label }}</h3>
             <div class="skills-grid">
-              <button *ngFor="let s of section.skills"
+              <button *ngFor="let s of section.skills; trackBy: trackBySkill"
                       mat-stroked-button
+                      [disableRipple]="true"
                       [color]="isSkillSelected(s) ? 'primary' : ''"
                       (click)="toggleSkill(s)"
                       class="skill-btn">
                 {{ s }}
               </button>
             </div>
+            <button *ngIf="section.hiddenSkillsCount > 0 && !hasActiveSkillSearch"
+                    mat-button
+                    type="button"
+                    class="skills-section__more"
+                    (click)="showAllSkillsInSection(section.id)">
+              Mostrar mais {{ section.hiddenSkillsCount }} competência{{ section.hiddenSkillsCount !== 1 ? 's' : '' }}
+            </button>
           </div>
         </div>
 

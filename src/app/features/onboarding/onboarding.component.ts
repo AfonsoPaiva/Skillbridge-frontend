@@ -1,5 +1,5 @@
 import { Component, OnInit, Optional, Inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
@@ -49,6 +49,11 @@ export interface OnboardingDialogData {
   socialMode?: boolean;
   name?: string;
   email?: string;
+}
+
+interface DisplaySkillSection extends SkillSection {
+  totalSkills: number;
+  hiddenSkillsCount: number;
 }
 
 @Component({
@@ -120,30 +125,13 @@ export class OnboardingComponent implements OnInit {
   availableSkills: string[] = [];
   availableSkillSections: SkillSection[] = [];
   selectedSkills: string[] = [];
-  skillSearch = '';
+  skillSearchControl = new FormControl('', { nonNullable: true });
+  filteredSkillSections: DisplaySkillSection[] = [];
+  hasActiveSkillSearch = false;
 
-  get filteredSkills(): string[] {
-    const sanitized = sanitizeInput(this.skillSearch);
-    const available = this.availableSkills;
-    if (!sanitized) {
-      return available.slice(0, 50);
-    }
-    const lower = sanitized.toLowerCase();
-    return available.filter(s => s.toLowerCase().includes(lower)).slice(0, 50);
-  }
-
-  get filteredSkillSections(): SkillSection[] {
-    const sanitized = sanitizeInput(this.skillSearch).toLowerCase();
-    return this.availableSkillSections
-      .map(section => ({
-        ...section,
-        skills: section.skills.filter(skill => {
-          if (!sanitized) return true;
-          return skill.toLowerCase().includes(sanitized);
-        })
-      }))
-      .filter(section => section.skills.length > 0);
-  }
+  private readonly initialSkillsPerSection = 12;
+  private readonly searchSkillsPerSection = 40;
+  private readonly expandedSkillSections = new Set<string>();
 
   constructor(
     private fb: FormBuilder,
@@ -174,6 +162,14 @@ export class OnboardingComponent implements OnInit {
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
 
+    this.skillSearchControl.valueChanges.pipe(
+      startWith(this.skillSearchControl.value),
+      debounceTime(150),
+      distinctUntilChanged()
+    ).subscribe(query => {
+      this.updateFilteredSkillSections(query);
+    });
+
     // Social mode: user already authenticated via provider, skip account step
     if (this.data?.socialMode) {
       this.socialMode = true;
@@ -189,8 +185,13 @@ export class OnboardingComponent implements OnInit {
       next: (res: SkillsListResponse) => {
         this.availableSkillSections = res.sections || [];
         this.availableSkills = res.skills || [];
+        this.updateFilteredSkillSections(this.skillSearchControl.value);
       },
-      error: () => {}
+      error: () => {
+        this.availableSkillSections = [];
+        this.availableSkills = [];
+        this.updateFilteredSkillSections(this.skillSearchControl.value);
+      }
     });
 
     // Setup reactive local university search (fast, no per-keystroke API requests)
@@ -339,6 +340,10 @@ export class OnboardingComponent implements OnInit {
     if (this.step > 0) this.step--;
   }
 
+  clearSkillSearch(): void {
+    this.skillSearchControl.setValue('');
+  }
+
   toggleSkill(skill: string): void {
     const idx = this.selectedSkills.indexOf(skill);
     if (idx === -1) {
@@ -350,6 +355,58 @@ export class OnboardingComponent implements OnInit {
 
   isSkillSelected(skill: string): boolean {
     return this.selectedSkills.includes(skill);
+  }
+
+  showAllSkillsInSection(sectionId: string): void {
+    if (this.expandedSkillSections.has(sectionId)) {
+      return;
+    }
+
+    this.expandedSkillSections.add(sectionId);
+    this.updateFilteredSkillSections(this.skillSearchControl.value);
+  }
+
+  trackBySectionId(_: number, section: SkillSection): string {
+    return section.id;
+  }
+
+  trackBySkill(_: number, skill: string): string {
+    return skill;
+  }
+
+  private updateFilteredSkillSections(rawQuery: string): void {
+    const query = sanitizeInput((rawQuery || '').toString());
+    this.hasActiveSkillSearch = query.length > 0;
+
+    if (this.availableSkillSections.length === 0) {
+      this.filteredSkillSections = [];
+      return;
+    }
+
+    this.filteredSkillSections = this.availableSkillSections
+      .map(section => {
+        const sectionSkills = this.hasActiveSkillSearch
+          ? rankedAutocomplete(section.skills, query, this.searchSkillsPerSection)
+          : section.skills;
+
+        if (sectionSkills.length === 0) {
+          return null;
+        }
+
+        const visibleCount = this.hasActiveSkillSearch || this.expandedSkillSections.has(section.id)
+          ? sectionSkills.length
+          : this.initialSkillsPerSection;
+
+        const visibleSkills = sectionSkills.slice(0, visibleCount);
+
+        return {
+          ...section,
+          skills: visibleSkills,
+          totalSkills: sectionSkills.length,
+          hiddenSkillsCount: Math.max(sectionSkills.length - visibleSkills.length, 0)
+        };
+      })
+      .filter((section): section is DisplaySkillSection => section !== null);
   }
 
   close(): void {
