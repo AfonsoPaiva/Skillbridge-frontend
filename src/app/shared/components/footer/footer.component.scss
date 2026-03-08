@@ -22,7 +22,7 @@
     flex: 1 1 auto; // Allow to grow and push bottom to the end
 
     @include m.md {
-      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
     }
   }
 
@@ -37,6 +37,35 @@
     p {
       font-size: 14px;
       line-height: 1.7;
+    }
+  }
+
+  &__socials {
+    display: flex;
+    gap: v.$space-3;
+    margin-top: v.$space-3;
+
+    a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      transition: all v.$transition-fast;
+
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+      }
     }
   }
 

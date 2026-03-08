@@ -136,8 +136,17 @@
       <h2>12. Contactos</h2>
       <p>
         Para questões sobre privacidade, proteção de dados ou exercício de direitos,
-        contacte o seguinte endereço email em caso de dúvidas ou solicitações relacionadas com esta política: <mat-chip color="primary"> skillbridge.portfolio&#64;gmail.com </mat-chip>
+        contacte o seguinte endereço email em caso de dúvidas ou solicitações relacionadas com esta política:
       </p>
+      <div class="contact-actions">
+        <a href="mailto:skillbridge.portfolio@gmail.com" class="email-link">
+          <mat-icon>mail</mat-icon>
+          skillbridge.portfolio@gmail.com
+        </a>
+        <button mat-icon-button (click)="copyEmail()" matTooltip="Copiar email para a área de transferência" class="copy-btn">
+          <mat-icon>content_copy</mat-icon>
+        </button>
+      </div>
     </section>
   </div>
 </div>
