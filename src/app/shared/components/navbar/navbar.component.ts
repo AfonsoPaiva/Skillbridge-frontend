@@ -38,7 +38,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
   onScroll(): void {
     this.scrolled = window.scrollY > 20;
     if (this.isLandingPage) {
-      this.heroScrolled = window.scrollY > window.innerHeight * 0.8;
+      // On mobile, show header sooner (40% of viewport height)
+      // On desktop, keep original behavior (80% of viewport height)
+      const isMobile = window.innerWidth <= 768;
+      const threshold = isMobile ? 0.4 : 0.8;
+      this.heroScrolled = window.scrollY > window.innerHeight * threshold;
     }
   }
 
