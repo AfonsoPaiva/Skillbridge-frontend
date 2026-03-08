@@ -1223,13 +1223,14 @@ body {
       border-radius: 18px !important;
       width: calc(100vw - 16px) !important;
       max-width: 540px !important;
-      max-height: calc(100vh - 16px) !important;
+      max-height: calc(var(--sb-visual-viewport-height, 100vh) - 16px) !important;
       padding: calc(20px + env(safe-area-inset-top, 0px)) 18px calc(18px + env(safe-area-inset-bottom, 0px)) !important;
       overflow: hidden !important;
+      touch-action: manipulation;
     }
 
     mat-dialog-content {
-      max-height: calc(100vh - 210px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
+      max-height: calc(var(--sb-visual-viewport-height, 100vh) - 210px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
       padding-bottom: 8px !important;
     }
   }
@@ -1244,6 +1245,26 @@ body {
 
       mat-dialog-content {
         max-height: calc(100dvh - 210px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
+      }
+    }
+  }
+}
+
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 768px) {
+    .cdk-overlay-dark-backdrop {
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    .onboarding-dialog {
+      .mdc-dialog__surface,
+      mat-dialog-content,
+      .onboarding__steps,
+      .ob-step,
+      .mat-mdc-form-field,
+      .mat-mdc-text-field-wrapper {
+        touch-action: manipulation;
       }
     }
   }

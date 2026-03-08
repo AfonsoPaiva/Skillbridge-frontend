@@ -1,4 +1,4 @@
-import { Component, OnInit, Optional, Inject, HostListener, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, Optional, Inject, HostListener, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatDialogContent } from '@angular/material/dialog';
@@ -62,7 +62,7 @@ interface DisplaySkillSection extends SkillSection {
   styleUrls: ['./onboarding.component.scss'],
   animations: [stepAnim]
 })
-export class OnboardingComponent implements OnInit {
+export class OnboardingComponent implements OnInit, OnDestroy {
   @ViewChild(MatDialogContent, { read: ElementRef }) private dialogContent?: ElementRef<HTMLElement>;
 
   step = 0;
@@ -135,6 +135,8 @@ export class OnboardingComponent implements OnInit {
   private readonly searchSkillsPerSection = 40;
   private readonly expandedSkillSections = new Set<string>();
   private readonly isiPhone = typeof navigator !== 'undefined' && /iPhone|iPod/i.test(navigator.userAgent);
+  readonly disableStepAnimation = this.isiPhone;
+  private visualViewportResizeHandler?: () => void;
 
   constructor(
     private fb: FormBuilder,
@@ -273,6 +275,15 @@ export class OnboardingComponent implements OnInit {
         return rankedAutocomplete(this.courses, query, 50);
       })
     );
+
+    this.setupIPhoneViewportFix();
+  }
+
+  ngOnDestroy(): void {
+    if (this.visualViewportResizeHandler && window.visualViewport) {
+      window.visualViewport.removeEventListener('resize', this.visualViewportResizeHandler);
+      window.visualViewport.removeEventListener('scroll', this.visualViewportResizeHandler);
+    }
   }
 
   private getFallbackUniversities(): string[] {
@@ -436,6 +447,25 @@ export class OnboardingComponent implements OnInit {
         };
       })
       .filter((section): section is DisplaySkillSection => section !== null);
+  }
+
+  private setupIPhoneViewportFix(): void {
+    if (!this.isiPhone || typeof window === 'undefined' || typeof document === 'undefined') {
+      return;
+    }
+
+    const updateViewportHeight = () => {
+      const height = window.visualViewport?.height ?? window.innerHeight;
+      document.documentElement.style.setProperty('--sb-visual-viewport-height', `${Math.round(height)}px`);
+    };
+
+    updateViewportHeight();
+    this.visualViewportResizeHandler = updateViewportHeight;
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', updateViewportHeight);
+      window.visualViewport.addEventListener('scroll', updateViewportHeight);
+    }
   }
 
   private resetDialogScroll(): void {

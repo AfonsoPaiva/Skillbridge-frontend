@@ -32,7 +32,7 @@
 
 <!-- ── Scrollable content ── -->
 <mat-dialog-content>
-  <div class="onboarding__steps" [@step]="step">
+  <div class="onboarding__steps" [@step]="step" [@.disabled]="disableStepAnimation">
 
     <!-- ── STEP 0: Role ── -->
     <div *ngIf="step === 0" class="ob-step">
