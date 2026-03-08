@@ -7,6 +7,7 @@ import { SkeletonComponent, CardSkeletonComponent } from './components/skeleton/
 import { UniversityCarouselComponent } from './components/university-carousel/university-carousel.component';
 import { DeleteAccountDialogComponent } from './components/delete-account-dialog/delete-account-dialog.component';
 import { LazyImgDirective } from './directives/lazy-img.directive';
+import { SmartFitImgDirective } from './directives/smart-fit-img.directive';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { LazyImgDirective } from './directives/lazy-img.directive';
     MaterialModule, 
     ReactiveFormsModule, 
     FormsModule,
-    LazyImgDirective
+    LazyImgDirective,
+    SmartFitImgDirective
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -33,7 +35,8 @@ import { LazyImgDirective } from './directives/lazy-img.directive';
     SkeletonComponent,
     CardSkeletonComponent,
     UniversityCarouselComponent,
-    LazyImgDirective
+    LazyImgDirective,
+    SmartFitImgDirective
   ]
 })
 export class SharedModule {}

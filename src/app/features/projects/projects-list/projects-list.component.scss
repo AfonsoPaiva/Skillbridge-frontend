@@ -59,25 +59,14 @@
     width: 100%;
     aspect-ratio: 16 / 10;
     overflow: hidden;
-    background: v.$color-surface;
+    background: rgba(v.$color-primary, 0.06);
     
     img { 
       width: 100%; 
       height: 100%; 
-      object-fit: cover; 
+      object-fit: contain;
       object-position: center;
-      transition: transform v.$transition-slow;
-    }
-
-    @media (max-width: v.$bp-md) {
-      img {
-        object-fit: contain;
-        background: rgba(v.$color-primary, 0.03);
-      }
-    }
-
-    @media (hover: hover) and (pointer: fine) {
-      &:hover img { transform: scale(1.05); }
+      transition: opacity v.$transition-fast;
     }
   }
 

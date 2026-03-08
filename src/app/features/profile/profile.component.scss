@@ -202,19 +202,13 @@
     width: 100%;
     aspect-ratio: 16 / 10;
     overflow: hidden;
+    background: rgba(v.$color-primary, 0.06);
 
     img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
       object-position: center;
-    }
-
-    @media (max-width: v.$bp-md) {
-      img {
-        object-fit: contain;
-        background: rgba(v.$color-primary, 0.03);
-      }
     }
 
     .pcard__badge {

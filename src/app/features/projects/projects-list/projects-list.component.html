@@ -45,6 +45,7 @@
       <mat-card class="pcard" *ngFor="let p of filtered" matRipple [routerLink]="['/projects', p.slug]">
         <div class="pcard__img">
           <img 
+            appSmartFitImg
             [src]="p.image_url || 'assets/project-placeholder.svg'" 
             [alt]="p.title"
             loading="lazy"

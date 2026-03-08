@@ -127,6 +127,7 @@
                 [routerLink]="['/projects', p.slug]">
         <div class="project-card__img">
           <img 
+            appSmartFitImg
             [src]="p.image_url || 'assets/project-placeholder.svg'" 
             [alt]="p.title"
             loading="lazy"

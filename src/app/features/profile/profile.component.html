@@ -159,7 +159,7 @@
             <div class="projects-grid" *ngIf="!loadingProjects && userProjects.length > 0" [@list]="userProjects.length">
               <mat-card class="pcard" *ngFor="let p of userProjects" matRipple [routerLink]="['/projects', p.slug]">
                 <div class="pcard__img">
-                  <img [src]="p.image_url || 'assets/project-placeholder.svg'" [alt]="p.title">
+                  <img appSmartFitImg [src]="p.image_url || 'assets/project-placeholder.svg'" [alt]="p.title">
                   <span class="pcard__badge" [attr.data-status]="p.status">{{ getStatusLabel(p.status) }}</span>
                 </div>
                 <mat-card-content class="pcard__body">
