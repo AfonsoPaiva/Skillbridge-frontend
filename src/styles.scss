@@ -380,7 +380,7 @@ body {
 .mat-mdc-input-element {
   color: v.$color-text !important;
   caret-color: v.$color-primary !important;
-  font-size: 15px !important;
+  font-size: 16px !important;
   
   &::placeholder {
     color: v.$color-text-soft !important;
@@ -1181,6 +1181,7 @@ body {
     border-radius: 20px !important;
     padding: 28px 32px 24px !important;
     overflow: visible !important;
+    max-height: 90vh !important;
     box-shadow: 0 24px 80px rgba(96, 53, 132, 0.22), 0 4px 16px rgba(0,0,0,0.12) !important;
   }
 
@@ -1195,6 +1196,8 @@ body {
     max-height: 52vh !important;
     overflow-y: auto;
     overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
 
     // Custom scrollbar inside dialog
     &::-webkit-scrollbar { width: 4px; }
@@ -1207,6 +1210,42 @@ body {
   mat-dialog-actions {
     padding: 0 !important;
     min-height: unset !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .onboarding-dialog {
+    .mat-mdc-dialog-container {
+      border-radius: 18px !important;
+    }
+
+    .mdc-dialog__surface {
+      border-radius: 18px !important;
+      width: calc(100vw - 16px) !important;
+      max-width: 540px !important;
+      max-height: calc(100vh - 16px) !important;
+      padding: calc(20px + env(safe-area-inset-top, 0px)) 18px calc(18px + env(safe-area-inset-bottom, 0px)) !important;
+      overflow: hidden !important;
+    }
+
+    mat-dialog-content {
+      max-height: calc(100vh - 210px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
+      padding-bottom: 8px !important;
+    }
+  }
+}
+
+@supports (height: 100dvh) {
+  @media (max-width: 768px) {
+    .onboarding-dialog {
+      .mdc-dialog__surface {
+        max-height: calc(100dvh - 16px) !important;
+      }
+
+      mat-dialog-content {
+        max-height: calc(100dvh - 210px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
+      }
+    }
   }
 }
 

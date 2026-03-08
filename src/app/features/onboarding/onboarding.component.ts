@@ -1,7 +1,7 @@
-import { Component, OnInit, Optional, Inject } from '@angular/core';
+import { Component, OnInit, Optional, Inject, HostListener, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatDialogContent } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operators';
@@ -63,6 +63,8 @@ interface DisplaySkillSection extends SkillSection {
   animations: [stepAnim]
 })
 export class OnboardingComponent implements OnInit {
+  @ViewChild(MatDialogContent, { read: ElementRef }) private dialogContent?: ElementRef<HTMLElement>;
+
   step = 0;
   totalSteps = 6; // role, personal, academic, skills, donation, account
   loading = false;
@@ -132,6 +134,7 @@ export class OnboardingComponent implements OnInit {
   private readonly initialSkillsPerSection = 12;
   private readonly searchSkillsPerSection = 40;
   private readonly expandedSkillSections = new Set<string>();
+  private readonly isiPhone = typeof navigator !== 'undefined' && /iPhone|iPod/i.test(navigator.userAgent);
 
   constructor(
     private fb: FormBuilder,
@@ -333,11 +336,37 @@ export class OnboardingComponent implements OnInit {
   }
 
   next(): void {
-    if (this.step < this.totalSteps - 1) this.step++;
+    if (this.step < this.totalSteps - 1) {
+      this.blurActiveElement();
+      this.step++;
+      this.resetDialogScroll();
+    }
   }
 
   back(): void {
-    if (this.step > 0) this.step--;
+    if (this.step > 0) {
+      this.blurActiveElement();
+      this.step--;
+      this.resetDialogScroll();
+    }
+  }
+
+  @HostListener('focusin', ['$event'])
+  onFocusIn(event: FocusEvent): void {
+    if (!this.isiPhone) {
+      return;
+    }
+
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) {
+      return;
+    }
+
+    if (!target.matches('input, textarea, .mat-mdc-select-trigger, [contenteditable="true"]')) {
+      return;
+    }
+
+    this.scrollFocusedFieldIntoView(target);
   }
 
   clearSkillSearch(): void {
@@ -407,6 +436,37 @@ export class OnboardingComponent implements OnInit {
         };
       })
       .filter((section): section is DisplaySkillSection => section !== null);
+  }
+
+  private resetDialogScroll(): void {
+    requestAnimationFrame(() => {
+      const container = this.dialogContent?.nativeElement;
+      if (container) {
+        container.scrollTo({ top: 0, behavior: 'auto' });
+      }
+    });
+  }
+
+  private scrollFocusedFieldIntoView(target: HTMLElement): void {
+    const reveal = () => {
+      target.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'smooth' });
+
+      const container = this.dialogContent?.nativeElement;
+      if (!container) {
+        return;
+      }
+
+      const targetRect = target.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      const offset = targetRect.top - containerRect.top - (container.clientHeight * 0.28);
+
+      if (Math.abs(offset) > 8) {
+        container.scrollTop += offset;
+      }
+    };
+
+    window.setTimeout(reveal, 180);
+    window.setTimeout(reveal, 420);
   }
 
   close(): void {

@@ -10,7 +10,9 @@ const DIALOG_CONFIG = {
   width: '540px',
   maxWidth: '95vw',
   maxHeight: '90vh',
-  panelClass: 'onboarding-dialog'
+  panelClass: 'onboarding-dialog',
+  autoFocus: false,
+  restoreFocus: false
 };
 
 @Component({
