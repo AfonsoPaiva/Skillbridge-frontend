@@ -91,7 +91,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
     if (!this.isLoggedIn) return;
     this.api.getUnreadMessageCount().subscribe({
       next: (result) => {
-        this.unreadCount = result.unread_count;
+        const count = Number(result?.unread_count ?? 0);
+        this.unreadCount = Number.isFinite(count) ? Math.max(0, count) : 0;
       },
       error: () => {
         // Silently fail
