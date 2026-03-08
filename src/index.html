@@ -13,12 +13,12 @@
       ad_personalization: 'denied'
     });
   </script>
-  <!-- Google Tag Manager (optimized with defer) -->
+  <!-- Google Tag Manager (aggressive mobile defer) -->
   <script>
     (function(w,d,s,l,i){
       w[l]=w[l]||[];
       w[l].push({'gtm.start': new Date().getTime(), event:'gtm.js'});
-      // Defer GTM loading after page has loaded
+      // Defer GTM loading even more for mobile performance
       function loadGTM() {
         var f=d.getElementsByTagName(s)[0],
             j=d.createElement(s),
@@ -27,11 +27,25 @@
         j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
         f.parentNode?.insertBefore(j,f);
       }
-      if (d.readyState === 'complete') {
-        setTimeout(loadGTM, 1000);
-      } else {
-        w.addEventListener('load', function() { setTimeout(loadGTM, 1000); });
+      // Wait for user interaction or 3s after load
+      var gtmLoaded = false;
+      function tryLoadGTM() {
+        if (!gtmLoaded) {
+          gtmLoaded = true;
+          loadGTM();
+        }
       }
+      setTimeout(function() {
+        if (d.readyState === 'complete') {
+          setTimeout(tryLoadGTM, 2000);
+        } else {
+          w.addEventListener('load', function() { setTimeout(tryLoadGTM, 2000); });
+        }
+      }, 0);
+      // Also load on first user interaction
+      ['click', 'scroll', 'touchstart', 'keydown'].forEach(function(e) {
+        w.addEventListener(e, tryLoadGTM, {once: true, passive: true});
+      });
     })(window,document,'script','dataLayer','GTM-KHGQ445F');
   </script>
   <!-- End Google Tag Manager -->
@@ -43,16 +57,14 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   
-  <!-- Preconnect to critical external resources -->
+  <!-- Preconnect to ONLY the most critical resources (max 3 for mobile) -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://backendskillbridge-742354947031.europe-west1.run.app">
-  <link rel="preconnect" href="https://www.googletagmanager.com">
-  <link rel="preconnect" href="https://cdn.jsdelivr.net">
-  <link rel="preconnect" href="https://js.stripe.com">
+  
+  <!-- DNS prefetch for less critical resources -->
+  <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
   <link rel="dns-prefetch" href="https://storage.googleapis.com">
-  <link rel="dns-prefetch" href="https://portal.ipl.pt">
-  <link rel="dns-prefetch" href="https://maismagazine.pt">
-  <link rel="dns-prefetch" href="https://pages.uc.pt">
   <link rel="dns-prefetch" href="https://cdn.simpleicons.org">
   
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
@@ -85,14 +97,32 @@
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"></noscript>
   
-  <!-- Load Material Icons with low priority -->
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/icon?family=Material+Icons&display=block" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons&display=block"></noscript>
+  <!-- Material Icons loaded dynamically after page load -->
+  <script>
+    // Load Material Icons after page is interactive
+    setTimeout(function() {
+      if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://fonts.googleapis.com/icon?family=Material+Icons&display=block';
+        document.head.appendChild(link);
+      } else {
+        window.addEventListener('DOMContentLoaded', function() {
+          setTimeout(function() {
+            var link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = 'https://fonts.googleapis.com/icon?family=Material+Icons&display=block';
+            document.head.appendChild(link);
+          }, 100);
+        });
+      }
+    }, 0);
+  </script>
   
   <!-- Klaro Cookie Consent (self-hosted via CDN to avoid ad blockers) -->
   <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/klaro@0.7.22/dist/klaro.min.css" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/klaro@0.7.22/dist/klaro.min.css"></noscript>
-  <link rel="stylesheet" href="assets/klaro-custom.css">
+  <!-- klaro-custom.css is now included via angular.json styles array -->
   <script>
     // Klaro Cookie Consent Configuration for SkillBridge
     window.klaroConfig = {
@@ -215,20 +245,27 @@
     };
   </script>
   <script>
-    // Load Klaro after page has loaded for better performance
-    if (document.readyState === 'complete') {
-      loadKlaro();
-    } else {
-      window.addEventListener('load', loadKlaro);
-    }
+    // Load Klaro on first interaction or after significant delay
+    var klaroLoaded = false;
     function loadKlaro() {
-      setTimeout(function() {
-        var script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/klaro@0.7.22/dist/klaro-no-css.min.js';
-        script.async = true;
-        document.head.appendChild(script);
-      }, 500);
+      if (klaroLoaded) return;
+      klaroLoaded = true;
+      var script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/klaro@0.7.22/dist/klaro-no-css.min.js';
+      script.async = true;
+      document.head.appendChild(script);
     }
+    // Load after 3 seconds idle or on first interaction
+    setTimeout(function() {
+      if (document.readyState === 'complete') {
+        setTimeout(loadKlaro, 3000);
+      } else {
+        window.addEventListener('load', function() { setTimeout(loadKlaro, 3000); });
+      }
+    }, 0);
+    ['scroll', 'click', 'touchstart', 'keydown'].forEach(function(e) {
+      window.addEventListener(e, loadKlaro, {once: true, passive: true});
+    });
   </script>
 </head>
 <body>

@@ -1,16 +1,19 @@
 # This file is used by build tools to determine which browsers to support
-# Targeting modern browsers only to reduce bundle size and polyfills
+# Optimized for mobile-first modern browsers to minimize polyfills
 
-# Modern browsers with good ES2022 support (reduce polyfill size)
+# Mobile-first: Modern iOS and Android browsers
 last 2 Chrome versions
+last 2 ChromeAndroid versions
 last 2 Firefox versions
+last 2 FirefoxAndroid versions
 last 2 Safari versions
+last 2 iOS versions
 last 2 Edge versions
 
-# No IE11 support (significantly reduces polyfill requirements)
-not IE 11
-not IE_Mob 11
-
-# Exclude older browsers that require heavy polyfills
+# Desktop support (modern only)
 > 0.5%
 not dead
+not IE 11
+not IE_Mob 11
+not op_mini all
+
