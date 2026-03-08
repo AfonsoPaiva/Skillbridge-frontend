@@ -97,6 +97,13 @@ export class NavbarComponent implements OnInit, OnDestroy {
     });
   }
 
+  private blurActiveElement(): void {
+    const activeElement = document.activeElement;
+    if (activeElement instanceof HTMLElement) {
+      activeElement.blur();
+    }
+  }
+
   get isVisible(): boolean {
     return !this.isLandingPage || this.heroScrolled;
   }
@@ -107,17 +114,20 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   async openOnboarding(): Promise<void> {
+    this.blurActiveElement();
     const { OnboardingComponent } = await import('../../../features/onboarding/onboarding.component');
     this.dialog.open(OnboardingComponent, DIALOG_CONFIG);
   }
 
   async openLogin(): Promise<void> {
+    this.blurActiveElement();
     const { LoginComponent } = await import('../../../features/onboarding/login/login.component');
     this.dialog.open(LoginComponent, { ...DIALOG_CONFIG, width: '420px' });
   }
 
   async openDonation(): Promise<void> {
     this.menuOpen = false;
+    this.blurActiveElement();
     const { DonationCheckoutComponent } = await import('../../../features/donation/donation-checkout.component');
     this.dialog.open(DonationCheckoutComponent, {
       width: '650px',

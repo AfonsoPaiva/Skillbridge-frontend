@@ -3,7 +3,8 @@
 
   var trustedScriptUrlPatterns = [
     /^https:\/\/www\.googletagmanager\.com\/gtm\.js\?id=GTM-KHGQ445F(?:&l=dataLayer)?$/,
-    /^https:\/\/cdn\.jsdelivr\.net\/npm\/klaro@0\.7\.22\/dist\/klaro-no-css\.min\.js$/
+    /^https:\/\/cdn\.jsdelivr\.net\/npm\/klaro@0\.7\.22\/dist\/klaro-no-css\.min\.js$/,
+    /^https:\/\/js\.stripe\.com\/(?:v3|clover\/stripe\.js)(?:\/)?(?:\?.*)?$/
   ];
 
   var trustedPolicy = window.trustedTypes && typeof window.trustedTypes.createPolicy === 'function'
@@ -26,6 +27,20 @@
   function toTrustedScriptURL(value) {
     return trustedPolicy ? trustedPolicy.createScriptURL(value) : value;
   }
+
+  if (window.trustedTypes && typeof window.trustedTypes.createPolicy === 'function') {
+    try {
+      window.trustedTypes.createPolicy('default', {
+        createScriptURL: function (value) {
+          return toTrustedScriptURL(value);
+        }
+      });
+    } catch (error) {
+      // Ignore if a default policy already exists.
+    }
+  }
+
+  window.__skillbridgeTrustedScriptURL = toTrustedScriptURL;
 
   window.dataLayer = window.dataLayer || [];
   window.gtag = function gtag() {

@@ -12,7 +12,15 @@ export class FooterComponent {
 
   constructor(private dialog: MatDialog, public auth: AuthService) {}
 
+  private blurActiveElement(): void {
+    const activeElement = document.activeElement;
+    if (activeElement instanceof HTMLElement) {
+      activeElement.blur();
+    }
+  }
+
   async openOnboarding(): Promise<void> {
+    this.blurActiveElement();
     const { OnboardingComponent } = await import('../../../features/onboarding/onboarding.component');
     this.dialog.open(OnboardingComponent, {
       width: '540px',
@@ -23,6 +31,7 @@ export class FooterComponent {
   }
 
   async openLogin(): Promise<void> {
+    this.blurActiveElement();
     const { LoginComponent } = await import('../../../features/onboarding/login/login.component');
     this.dialog.open(LoginComponent, {
       width: '420px',
@@ -33,6 +42,7 @@ export class FooterComponent {
   }
 
   async openDonation(): Promise<void> {
+    this.blurActiveElement();
     const { DonationCheckoutComponent } = await import('../../../features/donation/donation-checkout.component');
     this.dialog.open(DonationCheckoutComponent, {
       width: '650px',

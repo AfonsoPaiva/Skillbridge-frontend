@@ -678,7 +678,15 @@ export class OnboardingComponent implements OnInit {
     });
   }
 
+  private blurActiveElement(): void {
+    const activeElement = document.activeElement;
+    if (activeElement instanceof HTMLElement) {
+      activeElement.blur();
+    }
+  }
+
   async openDonationDialog(): Promise<void> {
+    this.blurActiveElement();
     const { DonationCheckoutComponent } = await import('../donation/donation-checkout.component');
     this.dialog.open(DonationCheckoutComponent, {
       width: '650px',

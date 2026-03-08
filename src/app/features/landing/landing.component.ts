@@ -87,10 +87,18 @@ export class LandingComponent implements OnInit {
     });
   }
 
+  private blurActiveElement(): void {
+    const activeElement = document.activeElement;
+    if (activeElement instanceof HTMLElement) {
+      activeElement.blur();
+    }
+  }
+
   async openOnboarding(): Promise<void> {
     if (this.auth.isLoggedIn) {
       this.router.navigate(['/dashboard']);
     } else {
+      this.blurActiveElement();
       const { OnboardingComponent } = await import('../onboarding/onboarding.component');
       this.dialog.open(OnboardingComponent, {
         width: '540px',
@@ -104,6 +112,7 @@ export class LandingComponent implements OnInit {
   }
 
   async openDonationDialog(): Promise<void> {
+    this.blurActiveElement();
     const { DonationCheckoutComponent } = await import('../donation/donation-checkout.component');
     this.dialog.open(DonationCheckoutComponent, {
       width: '650px',
