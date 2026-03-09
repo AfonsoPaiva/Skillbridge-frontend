@@ -7,6 +7,8 @@ import { filter } from 'rxjs/operators';
 import { AuthService } from './core/services/auth.service';
 import { ApiService } from './core/services/api.service';
 import { Meta, Title } from '@angular/platform-browser';
+import { environment } from '../environments/environment';
+import { getFirebaseAuthDomain } from './core/utils/firebase-auth-domain.utils';
 import {
   trigger, transition, style, animate, query, group
 } from '@angular/animations';
@@ -81,6 +83,9 @@ export class AppComponent implements OnInit {
     // Restore session from localStorage (sync, no Firebase SDK needed)
     this.auth.restoreSession();
     this.auth.prefetchUserProfile(this.api);
+
+    // Handle pending OAuth redirect (embedded browsers or popup-blocked fallback)
+    this.handlePendingAuthRedirect();
     
     // Hide footer on messages routes
     this.router.events.pipe(
@@ -97,6 +102,81 @@ export class AppComponent implements OnInit {
     
     // Check if email verification is pending
     this.checkEmailVerificationPending();
+  }
+
+  /**
+   * Handle OAuth redirect result on app startup.
+   * When redirect-based sign-in is used (embedded browsers or popup-blocked fallback),
+   * the page reloads and we need to consume the redirect result here at the app level
+   * since the login dialog is no longer open.
+   */
+  private async handlePendingAuthRedirect(): Promise<void> {
+    const pending = localStorage.getItem('sb_auth_redirect_pending');
+    if (!pending) return;
+
+    localStorage.removeItem('sb_auth_redirect_pending');
+
+    try {
+      const [{ initializeApp, getApps }, { getAuth, getRedirectResult }] = await Promise.all([
+        import('firebase/app'),
+        import('firebase/auth')
+      ]);
+
+      const app = getApps().length > 0 ? getApps()[0] : initializeApp({
+        apiKey: environment.firebaseApiKey,
+        authDomain: getFirebaseAuthDomain()
+      });
+
+      const fbAuth = getAuth(app);
+      const result = await getRedirectResult(fbAuth);
+
+      if (!result || !result.user) return;
+
+      const idToken = await result.user.getIdToken();
+      const tokenResult = await result.user.getIdTokenResult();
+      const expiresAt = new Date(tokenResult.expirationTime).getTime();
+
+      this.auth.setUser({
+        uid: result.user.uid,
+        email: result.user.email,
+        displayName: result.user.displayName,
+        token: idToken,
+        expiresAt
+      });
+
+      this.api.getMyProfile().subscribe({
+        next: () => {
+          this.router.navigate(['/dashboard']).then(() => window.scrollTo(0, 0));
+        },
+        error: (err) => {
+          if (err.status === 404) {
+            // First social login — open onboarding to complete profile
+            const name = result.user.displayName || result.user.email?.split('@')[0] || '';
+            setTimeout(async () => {
+              const { OnboardingComponent } = await import('./features/onboarding/onboarding.component');
+              this.dialog.open(OnboardingComponent, {
+                width: '540px',
+                maxWidth: '95vw',
+                maxHeight: '90vh',
+                panelClass: 'onboarding-dialog',
+                autoFocus: false,
+                restoreFocus: false,
+                disableClose: true,
+                data: {
+                  socialMode: true,
+                  name,
+                  email: result.user.email
+                }
+              });
+            }, 200);
+          } else {
+            this.router.navigate(['/dashboard']).then(() => window.scrollTo(0, 0));
+          }
+        }
+      });
+    } catch (err) {
+      console.error('Failed to handle auth redirect:', err);
+    }
   }
 
   private forceScrollTop(): void {

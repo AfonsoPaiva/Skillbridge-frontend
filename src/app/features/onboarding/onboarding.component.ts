@@ -739,15 +739,8 @@ export class OnboardingComponent implements OnInit, OnDestroy {
     return /(FBAN|FBAV|Instagram|Line|LinkedInApp|TikTok|WebView|; wv\))/i.test(ua);
   }
 
-  private isBraveMobile(): boolean {
-    const ua = navigator.userAgent || '';
-    const isMobile = /Android|iPhone|iPad|iPod/i.test(ua);
-    const isBrave = (navigator as any).brave && typeof (navigator as any).brave.isBrave === 'function';
-    return isMobile && isBrave;
-  }
-
   private shouldUseRedirect(): boolean {
-    return this.isEmbeddedBrowser() || this.isBraveMobile();
+    return this.isEmbeddedBrowser();
   }
 
   async signInWithProvider(provider: 'google' | 'github' | 'microsoft'): Promise<void> {
@@ -768,11 +761,22 @@ export class OnboardingComponent implements OnInit, OnDestroy {
 
     try {
       if (this.shouldUseRedirect()) {
+        localStorage.setItem('sb_auth_redirect_pending', '1');
         await authMod.signInWithRedirect(fbAuth, authProvider);
         return;
       }
 
-      const credential: UserCredential = await authMod.signInWithPopup(fbAuth, authProvider);
+      let credential: UserCredential;
+      try {
+        credential = await authMod.signInWithPopup(fbAuth, authProvider);
+      } catch (popupErr: any) {
+        if (popupErr?.code === 'auth/popup-blocked') {
+          localStorage.setItem('sb_auth_redirect_pending', '1');
+          await authMod.signInWithRedirect(fbAuth, authProvider);
+          return;
+        }
+        throw popupErr;
+      }
       const idToken = await credential.user.getIdToken();
       const tokenResult = await credential.user.getIdTokenResult();
       const expiresAt = new Date(tokenResult.expirationTime).getTime();
