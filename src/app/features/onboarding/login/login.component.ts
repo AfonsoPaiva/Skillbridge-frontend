@@ -50,8 +50,79 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.warmUpSocialAuth();
+    await this.handleRedirectResult();
+  }
+
+  private async handleRedirectResult(): Promise<void> {
+    if (!this.shouldUseRedirect()) return;
+
+    try {
+      const { auth: authMod } = await this.loadFirebase();
+      const fbAuth = authMod.getAuth(await this.getFirebaseApp());
+      const result = await authMod.getRedirectResult(fbAuth);
+      
+      if (result && result.user) {
+        this.loading = true;
+        const idToken = await result.user.getIdToken();
+        const tokenResult = await result.user.getIdTokenResult();
+        const expiresAt = new Date(tokenResult.expirationTime).getTime();
+        
+        this.auth.setUser({ 
+          uid: result.user.uid, 
+          email: result.user.email, 
+          displayName: result.user.displayName, 
+          token: idToken,
+          expiresAt
+        });
+
+        this.api.getMyProfile().subscribe({
+          next: () => {
+            this.loading = false;
+            this.close();
+            this.router.navigate(['/dashboard']).then(() => {
+              window.scrollTo(0, 0);
+            });
+          },
+          error: (err) => {
+            if (err.status === 404) {
+              this.loading = false;
+              const name = result.user.displayName || result.user.email?.split('@')[0] || '';
+              this.close();
+              setTimeout(async () => {
+                const { OnboardingComponent } = await import('../onboarding.component');
+                this.dialog.open(OnboardingComponent, {
+                  width: '540px',
+                  maxWidth: '95vw',
+                  maxHeight: '90vh',
+                  panelClass: 'onboarding-dialog',
+                  autoFocus: false,
+                  restoreFocus: false,
+                  disableClose: true,
+                  data: {
+                    socialMode: true,
+                    name,
+                    email: result.user.email
+                  } as OnboardingDialogData
+                });
+              }, 200);
+            } else {
+              this.loading = false;
+              this.close();
+              this.router.navigate(['/dashboard']).then(() => {
+                window.scrollTo(0, 0);
+              });
+            }
+          }
+        });
+      }
+    } catch (err: any) {
+      const code: string = err?.code ?? '';
+      if (code && code !== 'auth/popup-closed-by-user' && code !== 'auth/cancelled-popup-request') {
+        this.error = 'Erro ao iniciar sessão. Tenta novamente.';
+      }
+    }
   }
 
   warmUpSocialAuth(): void {
@@ -246,6 +317,17 @@ export class LoginComponent implements OnInit {
     return /(FBAN|FBAV|Instagram|Line|LinkedInApp|TikTok|WebView|; wv\))/i.test(ua);
   }
 
+  private isBraveMobile(): boolean {
+    const ua = navigator.userAgent || '';
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(ua);
+    const isBrave = (navigator as any).brave && typeof (navigator as any).brave.isBrave === 'function';
+    return isMobile && isBrave;
+  }
+
+  private shouldUseRedirect(): boolean {
+    return this.isEmbeddedBrowser() || this.isBraveMobile();
+  }
+
   async signInWithProvider(provider: 'google' | 'github' | 'microsoft'): Promise<void> {
     this.loading = true;
     this.error = '';
@@ -263,7 +345,14 @@ export class LoginComponent implements OnInit {
     const authProvider = this.buildAuthProvider(authMod, provider);
 
     try {
-      const cred: UserCredential = await authMod.signInWithPopup(fbAuth, authProvider);
+      let cred: UserCredential;
+
+      if (this.shouldUseRedirect()) {
+        await authMod.signInWithRedirect(fbAuth, authProvider);
+        return;
+      }
+
+      cred = await authMod.signInWithPopup(fbAuth, authProvider);
       
       const idToken = await cred.user.getIdToken();
       const tokenResult = await cred.user.getIdTokenResult();

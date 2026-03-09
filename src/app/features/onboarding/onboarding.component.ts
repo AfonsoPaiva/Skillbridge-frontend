@@ -151,8 +151,9 @@ export class OnboardingComponent implements OnInit, OnDestroy {
     @Optional() public dialogRef: MatDialogRef<OnboardingComponent>,
     @Optional() @Inject(MAT_DIALOG_DATA) public data: OnboardingDialogData | null
   ) {}
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.warmUpSocialAuth();
+    await this.handleRedirectResult();
     this.roleForm = this.fb.group({
       // single string value: 'needs_help' | 'helper' | 'both'
       role: ['', Validators.required]
@@ -670,6 +671,67 @@ export class OnboardingComponent implements OnInit, OnDestroy {
     return this.firebaseReadyPromise;
   }
 
+  private async handleRedirectResult(): Promise<void> {
+    if (!this.shouldUseRedirect()) return;
+
+    try {
+      const { auth: authMod } = await this.loadFirebase();
+      const fbAuth = authMod.getAuth(await this.getFirebaseApp());
+      const result = await authMod.getRedirectResult(fbAuth);
+      
+      if (result && result.user) {
+        this.loading = true;
+        const idToken = await result.user.getIdToken();
+        const tokenResult = await result.user.getIdTokenResult();
+        const expiresAt = new Date(tokenResult.expirationTime).getTime();
+        const name = result.user.displayName || result.user.email?.split('@')[0] || '';
+
+        this.auth.setUser({
+          uid: result.user.uid,
+          email: result.user.email,
+          displayName: name,
+          token: idToken,
+          expiresAt
+        });
+
+        const guestToken = localStorage.getItem('sb_guest_token') || undefined;
+        const payload: RegisterInput = {
+          name,
+          university: this.academicForm.get('university')!.value,
+          course: this.academicForm.get('course')!.value,
+          year: this.academicForm.get('year')!.value,
+          bio: '',
+          role: this.roleForm.get('role')!.value,
+          guest_session_token: guestToken
+        };
+
+        this.api.registerUser(payload).subscribe({
+          next: () => {
+            if (this.isHelper && this.selectedSkills.length > 0) {
+              let idx = 0;
+              const addNext = () => {
+                if (idx >= this.selectedSkills.length) { this.finishRegistration(); return; }
+                this.api.addSkill(this.selectedSkills[idx++]).subscribe({ next: addNext, error: addNext });
+              };
+              addNext();
+            } else {
+              this.finishRegistration();
+            }
+          },
+          error: (err) => {
+            this.loading = false;
+            this.error = err?.error?.error ?? 'Erro ao criar perfil. Tenta novamente.';
+          }
+        });
+      }
+    } catch (err: any) {
+      const code: string = err?.code ?? '';
+      if (code && code !== 'auth/popup-closed-by-user' && code !== 'auth/cancelled-popup-request') {
+        this.error = 'Erro ao iniciar sessão. Tenta novamente.';
+      }
+    }
+  }
+
   private buildAuthProvider(authMod: any, provider: 'google' | 'github' | 'microsoft'): any {
     if (provider === 'google') {
       return new authMod.GoogleAuthProvider();
@@ -697,6 +759,17 @@ export class OnboardingComponent implements OnInit, OnDestroy {
     return /(FBAN|FBAV|Instagram|Line|LinkedInApp|TikTok|WebView|; wv\))/i.test(ua);
   }
 
+  private isBraveMobile(): boolean {
+    const ua = navigator.userAgent || '';
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(ua);
+    const isBrave = (navigator as any).brave && typeof (navigator as any).brave.isBrave === 'function';
+    return isMobile && isBrave;
+  }
+
+  private shouldUseRedirect(): boolean {
+    return this.isEmbeddedBrowser() || this.isBraveMobile();
+  }
+
   async signInWithProvider(provider: 'google' | 'github' | 'microsoft'): Promise<void> {
     if (!this.validateAcademicSelection()) return;
     this.loading = true;
@@ -714,6 +787,11 @@ export class OnboardingComponent implements OnInit, OnDestroy {
     const authProvider = this.buildAuthProvider(authMod, provider);
 
     try {
+      if (this.shouldUseRedirect()) {
+        await authMod.signInWithRedirect(fbAuth, authProvider);
+        return;
+      }
+
       const credential: UserCredential = await authMod.signInWithPopup(fbAuth, authProvider);
       const idToken = await credential.user.getIdToken();
       const tokenResult = await credential.user.getIdTokenResult();
