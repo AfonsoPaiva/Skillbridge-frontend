@@ -7,7 +7,10 @@
     /^https:\/\/js\.stripe\.com\/(?:v3(?:\/.*)?|clover\/stripe\.js(?:\/.*)?)(?:\?.*)?$/,
     /^https:\/\/apis\.google\.com\/.*/,
     /^https:\/\/accounts\.google\.com\/.*/,
+    /^https:\/\/www\.google\.com\/.*/,
+    /^https:\/\/recaptcha\.google\.com\/.*/,
     /^https:\/\/www\.gstatic\.com\/.*/,
+    /^https:\/\/ssl\.gstatic\.com\/.*/,
     /^https:\/\/www\.googleapis\.com\/.*/
   ];
 

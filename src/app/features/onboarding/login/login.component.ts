@@ -30,6 +30,8 @@ export class LoginComponent implements OnInit {
   loading = false;
   error = '';
   showPassword = false;
+  private firebaseReadyPromise: Promise<void> | null = null;
+  private firebaseAuthInstance: Auth | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -47,78 +49,12 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  async ngOnInit(): Promise<void> {
-    // Check for redirect result (mobile OAuth flow)
-    await this.handleRedirectResult();
+  ngOnInit(): void {
+    this.warmUpSocialAuth();
   }
 
-  private async handleRedirectResult(): Promise<void> {
-    try {
-      const { auth: authMod } = await this.loadFirebase();
-      const fbAuth = authMod.getAuth(await this.getFirebaseApp());
-      const result = await authMod.getRedirectResult(fbAuth);
-      
-      if (result && result.user) {
-        this.loading = true;
-        const idToken = await result.user.getIdToken();
-        const tokenResult = await result.user.getIdTokenResult();
-        const expiresAt = new Date(tokenResult.expirationTime).getTime();
-        
-        this.auth.setUser({ 
-          uid: result.user.uid, 
-          email: result.user.email, 
-          displayName: result.user.displayName, 
-          token: idToken,
-          expiresAt
-        });
-
-        this.api.getMyProfile().subscribe({
-          next: () => {
-            this.loading = false;
-            this.close();
-            this.router.navigate(['/dashboard']).then(() => {
-              window.scrollTo(0, 0);
-            });
-          },
-          error: (err) => {
-            if (err.status === 404) {
-              // First social login — open onboarding
-              this.loading = false;
-              const name = result.user.displayName || result.user.email?.split('@')[0] || '';
-              this.close();
-              setTimeout(async () => {
-                const { OnboardingComponent } = await import('../onboarding.component');
-                this.dialog.open(OnboardingComponent, {
-                  width: '540px',
-                  maxWidth: '95vw',
-                  maxHeight: '90vh',
-                  panelClass: 'onboarding-dialog',
-                  autoFocus: false,
-                  restoreFocus: false,
-                  disableClose: true,
-                  data: {
-                    socialMode: true,
-                    name,
-                    email: result.user.email
-                  } as OnboardingDialogData
-                });
-              }, 200);
-            } else {
-              this.loading = false;
-              this.close();
-              this.router.navigate(['/dashboard']).then(() => {
-                window.scrollTo(0, 0);
-              });
-            }
-          }
-        });
-      }
-    } catch (err: any) {
-      const code: string = err?.code ?? '';
-      if (code && code !== 'auth/popup-closed-by-user' && code !== 'auth/cancelled-popup-request') {
-        this.error = 'Erro ao iniciar sessão. Tenta novamente.';
-      }
-    }
+  warmUpSocialAuth(): void {
+    void this.preloadFirebaseAuth();
   }
 
   close(): void {
@@ -263,50 +199,70 @@ export class LoginComponent implements OnInit {
     return app.initializeApp({ apiKey: environment.firebaseApiKey, authDomain: environment.firebaseAuthDomain });
   }
 
+  private preloadFirebaseAuth(): Promise<void> {
+    if (this.firebaseReadyPromise) {
+      return this.firebaseReadyPromise;
+    }
+
+    this.firebaseReadyPromise = (async () => {
+      const { auth: authMod } = await this.loadFirebase();
+      const fbAuth = authMod.getAuth(await this.getFirebaseApp());
+      this.firebaseAuthInstance = fbAuth;
+      await authMod.setPersistence(fbAuth, authMod.browserLocalPersistence).catch(() => {});
+    })().catch((err) => {
+      this.firebaseReadyPromise = null;
+      this.firebaseAuthInstance = null;
+      throw err;
+    });
+
+    return this.firebaseReadyPromise;
+  }
+
+  private buildAuthProvider(authMod: any, provider: 'google' | 'github' | 'microsoft'): any {
+    if (provider === 'google') {
+      return new authMod.GoogleAuthProvider();
+    }
+
+    if (provider === 'github') {
+      const github = new authMod.GithubAuthProvider();
+      github.addScope('user:email');
+      return github;
+    }
+
+    const microsoft = new authMod.OAuthProvider('microsoft.com');
+    microsoft.setCustomParameters({
+      prompt: 'select_account',
+      tenant: 'common'
+    });
+    microsoft.addScope('openid');
+    microsoft.addScope('profile');
+    microsoft.addScope('email');
+    return microsoft;
+  }
+
+  private isEmbeddedBrowser(): boolean {
+    const ua = navigator.userAgent || '';
+    return /(FBAN|FBAV|Instagram|Line|LinkedInApp|TikTok|WebView|; wv\))/i.test(ua);
+  }
+
   async signInWithProvider(provider: 'google' | 'github' | 'microsoft'): Promise<void> {
     this.loading = true;
     this.error = '';
-    const { auth: authMod } = await this.loadFirebase();
-    const fbAuth = authMod.getAuth(await this.getFirebaseApp());
 
-    // Set persistence before sign-in
-    await authMod.setPersistence(fbAuth, authMod.browserLocalPersistence).catch(() => {});
+    const authMod = this._fb?.auth;
+    const fbAuth = this.firebaseAuthInstance;
 
-    let authProvider: any;
-    if (provider === 'google') {
-      authProvider = new authMod.GoogleAuthProvider();
-    } else if (provider === 'github') {
-      // GitHub provider with email scope
-      authProvider = new authMod.GithubAuthProvider();
-      authProvider.addScope('user:email'); // Request access to user's email
-    } else {
-      // Microsoft OAuth provider with proper configuration
-      authProvider = new authMod.OAuthProvider('microsoft.com');
-      authProvider.setCustomParameters({
-        prompt: 'select_account',
-        tenant: 'common' // Allows both personal and work/school accounts
-      });
-      // Request basic profile scopes
-      authProvider.addScope('openid');
-      authProvider.addScope('profile');
-      authProvider.addScope('email');
+    if (!authMod || !fbAuth) {
+      this.loading = false;
+      this.error = 'A preparar o login social. Toca novamente dentro de um instante.';
+      this.warmUpSocialAuth();
+      return;
     }
 
-    // Detect mobile devices - use redirect instead of popup
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) 
-                     || window.innerWidth <= 768;
+    const authProvider = this.buildAuthProvider(authMod, provider);
 
     try {
-      let cred: UserCredential;
-      
-      if (isMobile) {
-        // On mobile, use redirect flow
-        await authMod.signInWithRedirect(fbAuth, authProvider);
-        return; // Flow will continue after redirect
-      } else {
-        // On desktop, use popup
-        cred = await authMod.signInWithPopup(fbAuth, authProvider);
-      }
+      const cred: UserCredential = await authMod.signInWithPopup(fbAuth, authProvider);
       
       const idToken = await cred.user.getIdToken();
       const tokenResult = await cred.user.getIdTokenResult();
@@ -367,6 +323,18 @@ export class LoginComponent implements OnInit {
       // Check if user closed the popup
       if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') {
         return; // Don't show error if user intentionally closed popup
+      }
+
+      if (code === 'auth/popup-blocked') {
+        this.error = this.isEmbeddedBrowser()
+          ? 'O login social foi bloqueado pelo navegador incorporado. Abre o SkillBridge no Chrome ou Safari e tenta novamente.'
+          : 'O navegador bloqueou a janela de autenticação. Permite popups e tenta novamente.';
+        return;
+      }
+
+      if (code === 'auth/web-storage-unsupported') {
+        this.error = 'Este navegador móvel está a bloquear o armazenamento necessário para o login. Tenta no Chrome ou Safari normal.';
+        return;
       }
       
       // Handle account-exists-with-different-credential error

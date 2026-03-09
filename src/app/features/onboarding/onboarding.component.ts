@@ -72,6 +72,8 @@ export class OnboardingComponent implements OnInit, OnDestroy {
   socialMode = false;
   registrationComplete = false;
   emailVerificationSent = false;
+  private firebaseReadyPromise: Promise<void> | null = null;
+  private firebaseAuthInstance: any | null = null;
 
   yearOptions = [
     // Licenciatura / Bacharel
@@ -149,6 +151,7 @@ export class OnboardingComponent implements OnInit, OnDestroy {
     @Optional() @Inject(MAT_DIALOG_DATA) public data: OnboardingDialogData | null
   ) {}
   ngOnInit(): void {
+    this.warmUpSocialAuth();
     this.roleForm = this.fb.group({
       // single string value: 'needs_help' | 'helper' | 'both'
       role: ['', Validators.required]
@@ -643,36 +646,71 @@ export class OnboardingComponent implements OnInit, OnDestroy {
     });
   }
 
+  warmUpSocialAuth(): void {
+    void this.preloadFirebaseAuth();
+  }
+
+  private preloadFirebaseAuth(): Promise<void> {
+    if (this.firebaseReadyPromise) {
+      return this.firebaseReadyPromise;
+    }
+
+    this.firebaseReadyPromise = (async () => {
+      const { auth: authMod } = await this.loadFirebase();
+      const fbAuth = authMod.getAuth(await this.getFirebaseApp());
+      this.firebaseAuthInstance = fbAuth;
+      await authMod.setPersistence(fbAuth, authMod.browserLocalPersistence).catch(() => {});
+    })().catch((err) => {
+      this.firebaseReadyPromise = null;
+      this.firebaseAuthInstance = null;
+      throw err;
+    });
+
+    return this.firebaseReadyPromise;
+  }
+
+  private buildAuthProvider(authMod: any, provider: 'google' | 'github' | 'microsoft'): any {
+    if (provider === 'google') {
+      return new authMod.GoogleAuthProvider();
+    }
+
+    if (provider === 'github') {
+      const github = new authMod.GithubAuthProvider();
+      github.addScope('user:email');
+      return github;
+    }
+
+    const microsoft = new authMod.OAuthProvider('microsoft.com');
+    microsoft.setCustomParameters({
+      prompt: 'select_account',
+      tenant: 'common'
+    });
+    microsoft.addScope('openid');
+    microsoft.addScope('profile');
+    microsoft.addScope('email');
+    return microsoft;
+  }
+
+  private isEmbeddedBrowser(): boolean {
+    const ua = navigator.userAgent || '';
+    return /(FBAN|FBAV|Instagram|Line|LinkedInApp|TikTok|WebView|; wv\))/i.test(ua);
+  }
+
   async signInWithProvider(provider: 'google' | 'github' | 'microsoft'): Promise<void> {
     if (!this.validateAcademicSelection()) return;
     this.loading = true;
     this.error = '';
 
-    const { auth: authMod } = await this.loadFirebase();
-    const app = await this.getFirebaseApp();
-    const fbAuth = authMod.getAuth(app);
-// Set persistence before sign-in
-    await authMod.setPersistence(fbAuth, authMod.browserLocalPersistence).catch(() => {});
-
-    let authProvider: any;
-    if (provider === 'google') {
-      authProvider = new authMod.GoogleAuthProvider();
-    } else if (provider === 'github') {
-      // GitHub provider with email scope
-      authProvider = new authMod.GithubAuthProvider();
-      authProvider.addScope('user:email'); // Request access to user's email
-    } else {
-      // Microsoft OAuth provider with proper configuration
-      authProvider = new authMod.OAuthProvider('microsoft.com');
-      authProvider.setCustomParameters({
-        prompt: 'select_account',
-        tenant: 'common' // Allows both personal and work/school accounts
-      });
-      // Request basic profile scopes
-      authProvider.addScope('openid');
-      authProvider.addScope('profile');
-      authProvider.addScope('email');
+    const authMod = this._fb?.auth;
+    const fbAuth = this.firebaseAuthInstance;
+    if (!authMod || !fbAuth) {
+      this.loading = false;
+      this.error = 'A preparar o login social. Toca novamente dentro de um instante.';
+      this.warmUpSocialAuth();
+      return;
     }
+
+    const authProvider = this.buildAuthProvider(authMod, provider);
 
     try {
       const credential: UserCredential = await authMod.signInWithPopup(fbAuth, authProvider);
@@ -725,6 +763,18 @@ export class OnboardingComponent implements OnInit, OnDestroy {
       // Check if user closed the popup
       if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') {
         this.error = '';
+        return;
+      }
+
+      if (code === 'auth/popup-blocked') {
+        this.error = this.isEmbeddedBrowser()
+          ? 'O login social foi bloqueado pelo navegador incorporado. Abre o SkillBridge no Chrome ou Safari e tenta novamente.'
+          : 'O navegador bloqueou a janela de autenticação. Permite popups e tenta novamente.';
+        return;
+      }
+
+      if (code === 'auth/web-storage-unsupported') {
+        this.error = 'Este navegador móvel está a bloquear o armazenamento necessário para o login. Tenta no Chrome ou Safari normal.';
         return;
       }
       
