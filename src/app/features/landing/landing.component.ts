@@ -73,7 +73,11 @@ export class LandingComponent implements OnInit {
   ngOnInit(): void {
     // Fetch platform statistics
     this.api.getPlatformStats().subscribe({
-      next: (stats) => { this.platformStats = stats; },
+      next: (stats) => {
+        this.platformStats = stats;
+        // Expose stats for animation script
+        (window as any).angularComponent = { platformStats: stats };
+      },
       error: () => { /* stats optional, fail silently */ }
     });
 
