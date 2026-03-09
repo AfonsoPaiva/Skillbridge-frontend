@@ -4,7 +4,11 @@
   var trustedScriptUrlPatterns = [
     /^https:\/\/www\.googletagmanager\.com\/gtm\.js\?id=GTM-KHGQ445F(?:&l=dataLayer)?$/,
     /^https:\/\/cdn\.jsdelivr\.net\/npm\/klaro@0\.7\.22\/dist\/klaro-no-css\.min\.js$/,
-    /^https:\/\/js\.stripe\.com\/(?:v3(?:\/.*)?|clover\/stripe\.js(?:\/.*)?)(?:\?.*)?$/
+    /^https:\/\/js\.stripe\.com\/(?:v3(?:\/.*)?|clover\/stripe\.js(?:\/.*)?)(?:\?.*)?$/,
+    /^https:\/\/apis\.google\.com\/js\/api\.js(?:\?.*)?$/,
+    /^https:\/\/accounts\.google\.com\/gsi\/.*/,
+    /^https:\/\/www\.gstatic\.com\/firebasejs\/.*/,
+    /^https:\/\/www\.googleapis\.com\/.*/
   ];
 
   var trustedPolicy = window.trustedTypes && typeof window.trustedTypes.createPolicy === 'function'
