@@ -45,6 +45,16 @@ export class LoginComponent {
       email:    ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
+    
+    // Debug: Log form status changes
+    this.form.statusChanges.subscribe(status => {
+      console.log('📋 Form status changed:', status, 'Valid:', this.form.valid);
+    });
+    
+    console.log('🔧 LoginComponent initialized', {
+      hasDialogRef: !!this.dialogRef,
+      formValid: this.form.valid
+    });
   }
 
   close(): void {
@@ -64,6 +74,9 @@ export class LoginComponent {
   }
 
   async submit(): Promise<void> {
+    console.log('🚀 Submit called, form valid:', this.form.valid);
+    console.log('Form values:', { email: this.form.value.email, password: '***' });
+    
     if (this.form.invalid) return;
     this.loading = true;
     this.error = '';
@@ -71,14 +84,20 @@ export class LoginComponent {
     const { email, password } = this.form.value;
 
     try {
+      console.log('🔐 Starting Firebase login for:', email);
       const { auth: authMod } = await this.loadFirebase();
+      console.log('✅ Firebase modules loaded');
+      
       const fbAuth = authMod.getAuth(await this.getFirebaseApp());
+      console.log('✅ Firebase Auth instance obtained');
       
       // Set persistence to keep user logged in
       await authMod.setPersistence(fbAuth, authMod.browserLocalPersistence);
+      console.log('✅ Persistence set');
       
       // Sign in with Firebase
       const cred: UserCredential = await authMod.signInWithEmailAndPassword(fbAuth, email, password);
+      console.log('✅ Firebase sign-in successful');
       
       // Check if email is verified (only for email/password accounts)
       if (!cred.user.emailVerified) {
@@ -99,10 +118,10 @@ export class LoginComponent {
           if (resend) {
             try {
               await authMod.sendEmailVerification(cred.user);
-              alert('✅ Email de verificação enviado!\n\nVerifica a tua caixa de entrada (e spam).');
+              alert(' Email de verificação enviado!\n\nVerifica a tua caixa de entrada (e spam).');
             } catch (err) {
               console.error('Error sending verification email:', err);
-              alert('❌ Erro ao enviar email de verificação.');
+              alert(' Erro ao enviar email de verificação.');
             }
           }
           return;
@@ -124,6 +143,7 @@ export class LoginComponent {
       // Fetch backend profile
       this.api.getMyProfile().subscribe({
         next: () => {
+          console.log('✅ Backend profile fetched successfully');
           this.loading = false;
           localStorage.setItem('sb_onboarded', '1');
           this.close();
@@ -132,6 +152,7 @@ export class LoginComponent {
           });
         },
         error: (profileErr) => {
+          console.log('⚠️ Profile not found in backend, opening onboarding');
           // User exists in Firebase but not in our DB — force onboarding
           this.loading = false;
           this.close();
@@ -155,6 +176,11 @@ export class LoginComponent {
         }
       });
     } catch (err: any) {
+      console.error('❌ Firebase login error:', err);
+      console.error('Error code:', err?.code);
+      console.error('Error message:', err?.message);
+      console.error('Full error object:', err);
+      
       this.loading = false;
       const code: string = err?.code ?? '';
       if (code.includes('auth/invalid-credential') || code.includes('auth/wrong-password') || code.includes('auth/user-not-found')) {
@@ -166,6 +192,7 @@ export class LoginComponent {
       } else {
         this.error = 'Erro ao iniciar sessão. Tenta novamente.';
       }
+      console.error('Displaying error to user:', this.error);
     }
   }
 
@@ -182,16 +209,25 @@ export class LoginComponent {
   }
 
   private async getFirebaseApp(): Promise<FirebaseApp> {
+    console.log('🔥 Getting Firebase app...');
     const { app } = await this.loadFirebase();
-    if (app.getApps().length > 0) return app.getApps()[0];
+    if (app.getApps().length > 0) {
+      console.log('✅ Using existing Firebase app');
+      return app.getApps()[0];
+    }
+    console.log('🔥 Initializing new Firebase app');
+    console.log('Firebase config:', { apiKey: environment.firebaseApiKey?.substring(0, 10) + '...', authDomain: environment.firebaseAuthDomain });
     return app.initializeApp({ apiKey: environment.firebaseApiKey, authDomain: environment.firebaseAuthDomain });
   }
 
   async signInWithProvider(provider: 'google' | 'github' | 'microsoft'): Promise<void> {
+    console.log('🔐 Starting OAuth login with provider:', provider);
     this.loading = true;
     this.error = '';
     const { auth: authMod } = await this.loadFirebase();
+    console.log('✅ Firebase modules loaded for OAuth');
     const fbAuth = authMod.getAuth(await this.getFirebaseApp());
+    console.log('✅ Firebase Auth instance obtained for OAuth');
 
     // Set persistence before sign-in
     await authMod.setPersistence(fbAuth, authMod.browserLocalPersistence).catch(() => {});
@@ -217,8 +253,11 @@ export class LoginComponent {
     }
 
     try {
+      console.log('🔐 Opening OAuth popup...');
       const cred: UserCredential = await authMod.signInWithPopup(fbAuth, authProvider);
+      console.log('✅ OAuth popup successful');
       const idToken = await cred.user.getIdToken();
+      console.log('✅ ID token obtained');
       const tokenResult = await cred.user.getIdTokenResult();
       const expiresAt = new Date(tokenResult.expirationTime).getTime();
       
@@ -271,11 +310,17 @@ export class LoginComponent {
         }
       });
     } catch (err: any) {
+      console.error('❌ OAuth login error:', err);
+      console.error('Error code:', err?.code);
+      console.error('Error message:', err?.message);
+      console.error('Full error object:', err);
+      
       this.loading = false;
       const code: string = err?.code ?? '';
       
       // Check if user closed the popup
       if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') {
+        console.log('ℹ️ User closed OAuth popup');
         return; // Don't show error if user intentionally closed popup
       }
       
