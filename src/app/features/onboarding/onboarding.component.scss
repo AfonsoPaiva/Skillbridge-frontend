@@ -36,6 +36,13 @@ mat-dialog-content {
   z-index: 2;
 }
 
+@media (max-width: 600px) {
+  .ob-close--corner {
+    top: -18px;
+    right: -10px;
+  }
+}
+
 // ── Actions row ───────────────────────────────────
 .ob-actions {
   display: flex !important;
