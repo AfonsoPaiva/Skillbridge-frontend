@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { getFirebaseAuthDomain } from '../../../core/utils/firebase-auth-domain.utils';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -41,7 +42,7 @@ export class ForgotPasswordPopoverComponent {
     if (getApps().length > 0) return getApps()[0];
     return initializeApp({
       apiKey: environment.firebaseApiKey,
-      authDomain: environment.firebaseAuthDomain
+      authDomain: getFirebaseAuthDomain()
     });
   }
 

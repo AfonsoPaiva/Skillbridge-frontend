@@ -5,6 +5,9 @@
   "installCommand": "npm install --legacy-peer-deps",
   "framework": null,
   "rewrites": [
+    { "source": "/__/auth", "destination": "https://skill-bridge-makelinks.firebaseapp.com/__/auth" },
+    { "source": "/__/auth/(.*)", "destination": "https://skill-bridge-makelinks.firebaseapp.com/__/auth/$1" },
+    { "source": "/__/firebase/(.*)", "destination": "https://skill-bridge-makelinks.firebaseapp.com/__/firebase/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [

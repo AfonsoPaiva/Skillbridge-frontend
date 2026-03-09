@@ -14,6 +14,7 @@ import { rankedAutocomplete, sanitizeInput } from '../../../core/utils/search.ut
 import { getAuth, sendPasswordResetEmail } from 'firebase/auth';
 import { initializeApp, getApps } from 'firebase/app';
 import { environment } from '../../../../environments/environment';
+import { getFirebaseAuthDomain } from '../../../core/utils/firebase-auth-domain.utils';
 
 @Component({
   selector: 'app-edit-profile',
@@ -348,7 +349,7 @@ export class EditProfileComponent implements OnInit {
     if (getApps().length > 0) return getApps()[0];
     return initializeApp({
       apiKey: environment.firebaseApiKey,
-      authDomain: environment.firebaseAuthDomain
+      authDomain: getFirebaseAuthDomain()
     });
   }
 

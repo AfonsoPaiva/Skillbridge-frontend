@@ -8,6 +8,7 @@ import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operato
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { RegisterInput, SkillSection, SkillsListResponse } from '../../core/models/models';
+import { getFirebaseAuthDomain } from '../../core/utils/firebase-auth-domain.utils';
 import { environment } from '../../../environments/environment';
 import { rankedAutocomplete, sanitizeInput } from '../../core/utils/search.utils';
 import type { FirebaseApp } from 'firebase/app';
@@ -642,7 +643,7 @@ export class OnboardingComponent implements OnInit, OnDestroy {
     if (app.getApps().length > 0) return app.getApps()[0];
     return app.initializeApp({
       apiKey: environment.firebaseApiKey,
-      authDomain: environment.firebaseAuthDomain
+      authDomain: getFirebaseAuthDomain()
     });
   }
 

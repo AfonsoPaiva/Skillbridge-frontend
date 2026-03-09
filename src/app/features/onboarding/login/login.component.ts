@@ -8,6 +8,7 @@ import type { FirebaseApp } from 'firebase/app';
 import type { Auth, UserCredential } from 'firebase/auth';
 import { AuthService } from '../../../core/services/auth.service';
 import { ApiService } from '../../../core/services/api.service';
+import { getFirebaseAuthDomain } from '../../../core/utils/firebase-auth-domain.utils';
 import { environment } from '../../../../environments/environment';
 import { OnboardingDialogData } from '../onboarding.component';
 import { trigger, transition, style, animate } from '@angular/animations';
@@ -196,7 +197,7 @@ export class LoginComponent implements OnInit {
     if (app.getApps().length > 0) {
       return app.getApps()[0];
     }
-    return app.initializeApp({ apiKey: environment.firebaseApiKey, authDomain: environment.firebaseAuthDomain });
+    return app.initializeApp({ apiKey: environment.firebaseApiKey, authDomain: getFirebaseAuthDomain() });
   }
 
   private preloadFirebaseAuth(): Promise<void> {

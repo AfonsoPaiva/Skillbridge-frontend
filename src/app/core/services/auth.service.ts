@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { User } from '../models/models';
 import { ApiService } from './api.service';
 import { environment } from '../../../environments/environment';
+import { getFirebaseAuthDomain } from '../utils/firebase-auth-domain.utils';
 
 // Lazy-loaded Firebase types (only used for type hints, not runtime imports)
 type FirebaseApp = import('firebase/app').FirebaseApp;
@@ -54,7 +55,7 @@ export class AuthService {
 
     const app = getApps().length > 0 ? getApps()[0] : initializeApp({
       apiKey: environment.firebaseApiKey,
-      authDomain: environment.firebaseAuthDomain
+      authDomain: getFirebaseAuthDomain()
     });
 
     this.firebaseAuth = getAuth(app);
