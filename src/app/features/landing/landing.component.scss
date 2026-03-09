@@ -339,6 +339,12 @@
     font-weight: v.$font-weight-medium;
     color: v.$color-text;
 
+     .counter {
+      font-feature-settings: "tnum";
+      font-variant-numeric: tabular-nums;
+      transition: all 0.1s ease;
+    }
+
     mat-icon {
       color: v.$color-primary;
       font-size: 20px;

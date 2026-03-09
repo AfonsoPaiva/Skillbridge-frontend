@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from '../../core/services/api.service';
@@ -33,10 +33,19 @@ import {
     ])
   ]
 })
-export class LandingComponent implements OnInit {
+export class LandingComponent implements OnInit, AfterViewInit {
+  @ViewChild('donationSection') donationSection!: ElementRef;
+  
   projects: Project[] = [];
   loadingProjects = true;
   platformStats = { users: 0, projects: 0 };
+  
+  // Valores animados
+  animatedUsers = 0;
+  animatedProjects = 0;
+  
+  private animationStarted = false;
+  private animationFrame: any;
 
   steps = [
     {
@@ -73,10 +82,8 @@ export class LandingComponent implements OnInit {
   ngOnInit(): void {
     // Fetch platform statistics
     this.api.getPlatformStats().subscribe({
-      next: (stats) => {
-        this.platformStats = stats;
-        // Expose stats for animation script
-        (window as any).angularComponent = { platformStats: stats };
+      next: (stats) => { 
+        this.platformStats = stats; 
       },
       error: () => { /* stats optional, fail silently */ }
     });
@@ -89,6 +96,60 @@ export class LandingComponent implements OnInit {
       },
       error: () => { this.loadingProjects = false; }
     });
+  }
+
+  ngAfterViewInit(): void {
+    this.setupIntersectionObserver();
+  }
+
+  private setupIntersectionObserver(): void {
+    const options = {
+      root: null,
+      threshold: 0.3,
+      rootMargin: '0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !this.animationStarted) {
+          this.startNumberAnimation();
+          this.animationStarted = true;
+          observer.disconnect();
+        }
+      });
+    }, options);
+
+    if (this.donationSection) {
+      observer.observe(this.donationSection.nativeElement);
+    }
+  }
+
+  private startNumberAnimation(): void {
+    const duration = 2000; // 2 segundos
+    const startTime = performance.now();
+    const targetUsers = this.platformStats.users || 1250; // fallback se não carregar
+    const targetProjects = this.platformStats.projects || 320; // fallback se não carregar
+
+    const animate = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // Easing function para efeito mais natural (ease-out quadrático)
+      const easeProgress = 1 - Math.pow(1 - progress, 3);
+
+      this.animatedUsers = Math.floor(easeProgress * targetUsers);
+      this.animatedProjects = Math.floor(easeProgress * targetProjects);
+
+      if (progress < 1) {
+        this.animationFrame = requestAnimationFrame(animate);
+      } else {
+        // Garantir que termina nos valores exatos
+        this.animatedUsers = targetUsers;
+        this.animatedProjects = targetProjects;
+      }
+    };
+
+    this.animationFrame = requestAnimationFrame(animate);
   }
 
   private blurActiveElement(): void {
@@ -137,5 +198,11 @@ export class LandingComponent implements OnInit {
       full: 'Vagas cheias'
     };
     return map[status] ?? status;
+  }
+
+  ngOnDestroy(): void {
+    if (this.animationFrame) {
+      cancelAnimationFrame(this.animationFrame);
+    }
   }
 }

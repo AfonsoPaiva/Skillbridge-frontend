@@ -163,7 +163,7 @@
 </section>
 
 <!-- ===================== DOAÇÃO ===================== -->
-<section class="section section--donation" id="donation">
+<section class="section section--donation" id="donation" #donationSection>
   <div class="container donation-section" @fadeUp>
     <div class="donation-content">
       <h2>Apoia-me</h2>
@@ -175,15 +175,11 @@
       <div class="donation-stats">
         <div class="stat">
           <mat-icon>people</mat-icon>
-          <span>
-            <span id="stat-users">0</span> estudantes
-          </span>
+          <span class="counter">{{ animatedUsers }} estudantes</span>
         </div>
         <div class="stat">
           <mat-icon>work</mat-icon>
-          <span>
-            <span id="stat-projects">0</span> projetos
-          </span>
+          <span class="counter">{{ animatedProjects }} projetos</span>
         </div>
         <div class="stat">
           <mat-icon>verified</mat-icon>
@@ -195,7 +191,7 @@
         color="primary" 
         class="donation-btn"
         (click)="openDonationDialog()">
-        <mat-icon>attach_money</mat-icon>
+        <mat-icon>favorite</mat-icon>
         Fazer uma doação
       </button>
       <p class="donation-note">
@@ -203,47 +199,5 @@
         Pagamento seguro
       </p>
     </div>
-    <script>
-      // Count-up animation for stats
-      function animateCountUp(id, target, duration = 1200) {
-        const el = document.getElementById(id);
-        if (!el) return;
-        let start = 0;
-        let startTime = null;
-        const exponential = (t) => Math.pow(t, 2.2); // Exponential curve
-        function step(ts) {
-          if (!startTime) startTime = ts;
-          let progress = Math.min((ts - startTime) / duration, 1);
-          let value = Math.floor(exponential(progress) * target);
-          el.textContent = value > target ? target : value;
-          if (progress < 1) {
-            requestAnimationFrame(step);
-          } else {
-            el.textContent = target;
-          }
-        }
-        requestAnimationFrame(step);
-      }
-      function runStatsAnimation() {
-        // Get values from Angular
-        const users = window.angularComponent?.platformStats?.users || 0;
-        const projects = window.angularComponent?.platformStats?.projects || 0;
-        animateCountUp('stat-users', users);
-        animateCountUp('stat-projects', projects);
-      }
-      // Observe visibility
-      const statsSection = document.querySelector('.donation-stats');
-      if (statsSection) {
-        let animated = false;
-        const observer = new IntersectionObserver((entries) => {
-          if (entries[0].isIntersecting && !animated) {
-            animated = true;
-            runStatsAnimation();
-            observer.disconnect();
-          }
-        }, { threshold: 0.3 });
-        observer.observe(statsSection);
-      }
-    </script>
-    </div>
+  </div>
 </section>
