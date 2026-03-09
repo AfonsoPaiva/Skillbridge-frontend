@@ -1,4 +1,4 @@
-import { Component, Optional } from '@angular/core';
+import { Component, Optional, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatDialogRef, MatDialog } from '@angular/material/dialog';
@@ -25,7 +25,7 @@ import { trigger, transition, style, animate } from '@angular/animations';
     ])
   ]
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   form: FormGroup;
   loading = false;
   error = '';
@@ -45,6 +45,80 @@ export class LoginComponent {
       email:    ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
+  }
+
+  async ngOnInit(): Promise<void> {
+    // Check for redirect result (mobile OAuth flow)
+    await this.handleRedirectResult();
+  }
+
+  private async handleRedirectResult(): Promise<void> {
+    try {
+      const { auth: authMod } = await this.loadFirebase();
+      const fbAuth = authMod.getAuth(await this.getFirebaseApp());
+      const result = await authMod.getRedirectResult(fbAuth);
+      
+      if (result && result.user) {
+        this.loading = true;
+        const idToken = await result.user.getIdToken();
+        const tokenResult = await result.user.getIdTokenResult();
+        const expiresAt = new Date(tokenResult.expirationTime).getTime();
+        
+        this.auth.setUser({ 
+          uid: result.user.uid, 
+          email: result.user.email, 
+          displayName: result.user.displayName, 
+          token: idToken,
+          expiresAt
+        });
+
+        this.api.getMyProfile().subscribe({
+          next: () => {
+            this.loading = false;
+            this.close();
+            this.router.navigate(['/dashboard']).then(() => {
+              window.scrollTo(0, 0);
+            });
+          },
+          error: (err) => {
+            if (err.status === 404) {
+              // First social login — open onboarding
+              this.loading = false;
+              const name = result.user.displayName || result.user.email?.split('@')[0] || '';
+              this.close();
+              setTimeout(async () => {
+                const { OnboardingComponent } = await import('../onboarding.component');
+                this.dialog.open(OnboardingComponent, {
+                  width: '540px',
+                  maxWidth: '95vw',
+                  maxHeight: '90vh',
+                  panelClass: 'onboarding-dialog',
+                  autoFocus: false,
+                  restoreFocus: false,
+                  disableClose: true,
+                  data: {
+                    socialMode: true,
+                    name,
+                    email: result.user.email
+                  } as OnboardingDialogData
+                });
+              }, 200);
+            } else {
+              this.loading = false;
+              this.close();
+              this.router.navigate(['/dashboard']).then(() => {
+                window.scrollTo(0, 0);
+              });
+            }
+          }
+        });
+      }
+    } catch (err: any) {
+      const code: string = err?.code ?? '';
+      if (code && code !== 'auth/popup-closed-by-user' && code !== 'auth/cancelled-popup-request') {
+        this.error = 'Erro ao iniciar sessão. Tenta novamente.';
+      }
+    }
   }
 
   close(): void {
@@ -218,8 +292,22 @@ export class LoginComponent {
       authProvider.addScope('email');
     }
 
+    // Detect mobile devices - use redirect instead of popup
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) 
+                     || window.innerWidth <= 768;
+
     try {
-      const cred: UserCredential = await authMod.signInWithPopup(fbAuth, authProvider);
+      let cred: UserCredential;
+      
+      if (isMobile) {
+        // On mobile, use redirect flow
+        await authMod.signInWithRedirect(fbAuth, authProvider);
+        return; // Flow will continue after redirect
+      } else {
+        // On desktop, use popup
+        cred = await authMod.signInWithPopup(fbAuth, authProvider);
+      }
+      
       const idToken = await cred.user.getIdToken();
       const tokenResult = await cred.user.getIdTokenResult();
       const expiresAt = new Date(tokenResult.expirationTime).getTime();
