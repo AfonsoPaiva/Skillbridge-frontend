@@ -292,7 +292,9 @@ export class LoginComponent implements OnInit {
 
   private buildAuthProvider(authMod: any, provider: 'google' | 'github' | 'microsoft'): any {
     if (provider === 'google') {
-      return new authMod.GoogleAuthProvider();
+      const google = new authMod.GoogleAuthProvider();
+      google.setCustomParameters({ prompt: 'select_account' });
+      return google;
     }
 
     if (provider === 'github') {
