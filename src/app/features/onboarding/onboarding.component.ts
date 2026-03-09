@@ -152,8 +152,7 @@ export class OnboardingComponent implements OnInit, OnDestroy {
     @Optional() @Inject(MAT_DIALOG_DATA) public data: OnboardingDialogData | null
   ) {}
   async ngOnInit(): Promise<void> {
-    this.warmUpSocialAuth();
-    await this.handleRedirectResult();
+    // Initialize forms first
     this.roleForm = this.fb.group({
       // single string value: 'needs_help' | 'helper' | 'both'
       role: ['', Validators.required]
@@ -171,6 +170,9 @@ export class OnboardingComponent implements OnInit, OnDestroy {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
+
+    this.warmUpSocialAuth();
+    await this.handleRedirectResult();
 
     this.skillSearchControl.valueChanges.pipe(
       startWith(this.skillSearchControl.value),
@@ -680,7 +682,7 @@ export class OnboardingComponent implements OnInit, OnDestroy {
       const result = await authMod.getRedirectResult(fbAuth);
       
       if (result && result.user) {
-        this.loading = true;
+        // User returned from OAuth redirect - pre-fill their info
         const idToken = await result.user.getIdToken();
         const tokenResult = await result.user.getIdTokenResult();
         const expiresAt = new Date(tokenResult.expirationTime).getTime();
@@ -694,40 +696,18 @@ export class OnboardingComponent implements OnInit, OnDestroy {
           expiresAt
         });
 
-        const guestToken = localStorage.getItem('sb_guest_token') || undefined;
-        const payload: RegisterInput = {
-          name,
-          university: this.academicForm.get('university')!.value,
-          course: this.academicForm.get('course')!.value,
-          year: this.academicForm.get('year')!.value,
-          bio: '',
-          role: this.roleForm.get('role')!.value,
-          guest_session_token: guestToken
-        };
-
-        this.api.registerUser(payload).subscribe({
-          next: () => {
-            if (this.isHelper && this.selectedSkills.length > 0) {
-              let idx = 0;
-              const addNext = () => {
-                if (idx >= this.selectedSkills.length) { this.finishRegistration(); return; }
-                this.api.addSkill(this.selectedSkills[idx++]).subscribe({ next: addNext, error: addNext });
-              };
-              addNext();
-            } else {
-              this.finishRegistration();
-            }
-          },
-          error: (err) => {
-            this.loading = false;
-            this.error = err?.error?.error ?? 'Erro ao criar perfil. Tenta novamente.';
-          }
-        });
+        // Pre-fill the name from social login
+        this.personalForm.get('name')?.setValue(name);
+        
+        // User still needs to complete the onboarding form
+        // Don't auto-register without the required academic info
+        this.loading = false;
       }
     } catch (err: any) {
       const code: string = err?.code ?? '';
       if (code && code !== 'auth/popup-closed-by-user' && code !== 'auth/cancelled-popup-request') {
         this.error = 'Erro ao iniciar sessão. Tenta novamente.';
+        this.loading = false;
       }
     }
   }

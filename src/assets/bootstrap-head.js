@@ -45,6 +45,16 @@
           return String(value);
         },
         createScriptURL: function (value) {
+          var normalized = String(value);
+          
+          // Allow same-origin scripts (Firebase auth handlers, app bundles, etc.)
+          if (!normalized || normalized.startsWith('/') || normalized.startsWith('./') || 
+              normalized.startsWith(window.location.origin) ||
+              normalized.startsWith('https://skill-bridge-makelinks.firebaseapp.com')) {
+            return normalized;
+          }
+          
+          // Check against the strict allowlist for third-party scripts
           return toTrustedScriptURL(value);
         }
       });
