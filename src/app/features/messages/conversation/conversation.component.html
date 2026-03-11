@@ -55,7 +55,13 @@
           <p class="msg-application__status msg-application__status--rejected" *ngIf="!isMine(msg) && msg.meta_status === 'rejected'">
             <mat-icon>cancel</mat-icon> Candidatura rejeitada
           </p>
-          <p class="msg-application__sent" *ngIf="isMine(msg)">Candidatura enviada</p>
+          <p class="msg-application__sent" *ngIf="isMine(msg) && (!msg.meta_status || msg.meta_status === 'pending')">Candidatura enviada</p>
+          <p class="msg-application__status msg-application__status--accepted" *ngIf="isMine(msg) && msg.meta_status === 'accepted'">
+            <mat-icon>check_circle</mat-icon> Candidatura aceite
+          </p>
+          <p class="msg-application__status msg-application__status--rejected" *ngIf="isMine(msg) && msg.meta_status === 'rejected'">
+            <mat-icon>cancel</mat-icon> Candidatura rejeitada
+          </p>
         </div>
         <time class="msg-application__time">{{ formatTime(msg.created_at) }}</time>
       </div>
