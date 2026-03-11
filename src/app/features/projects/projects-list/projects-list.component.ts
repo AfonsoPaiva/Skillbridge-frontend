@@ -33,15 +33,15 @@ export class ProjectsListComponent implements OnInit {
   filtered: Project[] = [];
   loading = true;
   search = '';
-  statusFilter: 'all' | 'open' | 'in_progress' | 'completed' = 'all';
+  statusFilter: 'all' | 'open' | 'full' | 'completed' = 'all';
   
   // Debounce da busca para melhor performance
   private debouncedFilter = debounce(() => this.performFilter(), 300);
 
-  statusOptions: { value: 'all' | 'open' | 'in_progress' | 'completed'; label: string }[] = [
+  statusOptions: { value: 'all' | 'open' | 'full' | 'completed'; label: string }[] = [
     { value: 'all', label: 'Todos' },
     { value: 'open', label: 'Abertos' },
-    { value: 'in_progress', label: 'Em progresso' },
+    { value: 'full', label: 'Vagas cheias' },
     { value: 'completed', label: 'Concluídos' }
   ];
 
@@ -119,28 +119,23 @@ export class ProjectsListComponent implements OnInit {
   }
 
   getStatusLabel(status: string): string {
-    const map: Record<string, string> = { open: 'Aberto', in_progress: 'Em progresso', completed: 'Concluído', full: 'Vagas cheias' };
+    const map: Record<string, string> = { open: 'Aberto', full: 'Vagas cheias', completed: 'Concluído' };
     return map[status] ?? status;
   }
 
-  onStatusChange(newStatus: 'all' | 'open' | 'in_progress' | 'completed'): void {
+  onStatusChange(newStatus: 'all' | 'open' | 'full' | 'completed'): void {
     if (newStatus === this.statusFilter) {
       return;
     }
-    
     const previousStatus = this.statusFilter;
     this.statusFilter = newStatus;
-    
-    // If we have all projects cached and we're just changing filters, use client-side filtering
     if (this.allProjects.length > 0 && previousStatus === 'all') {
       this.projects = this.allProjects;
       this.performFilterSync();
     } else if (this.allProjects.length > 0) {
-      // We have cached data, use it for instant filtering
       this.projects = this.allProjects;
       this.performFilterSync();
     } else {
-      // Need to load from server
       this.loadProjects();
     }
   }

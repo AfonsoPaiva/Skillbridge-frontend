@@ -141,7 +141,7 @@ export class ApiService {
    * `internal/handlers/project_handler.go`.
    */
   listProjects(
-    status: 'open' | 'in_progress' | 'completed' | 'all' = 'open',
+    status: 'open' | 'in_progress' | 'completed' | 'all' | 'full' = 'open',
     skillId?: number
   ): Observable<Project[]> {
     let params = new HttpParams().set('status', status);
