@@ -725,15 +725,15 @@ body {
 
 .mat-mdc-snack-bar-container {
   border-radius: v.$radius-sm !important;
-  background: v.$color-text !important;
+  background: #f5f5f5 !important;
   box-shadow: v.$shadow-lg !important;
   
   .mdc-snackbar__surface {
-    background: v.$color-text !important;
+    background: #f5f5f5 !important;
   }
   
   .mat-mdc-snack-bar-label {
-    color: white !important;
+    color: black !important;
   }
   
   .mat-mdc-button {
