@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { filter } from 'rxjs/operators';
 import { AuthService } from './core/services/auth.service';
 import { ApiService } from './core/services/api.service';
+import { PushNotificationService } from './core/services/push-notification.service';
 import { Meta, Title } from '@angular/platform-browser';
 import { environment } from '../environments/environment';
 import { getFirebaseAuthDomain } from './core/utils/firebase-auth-domain.utils';
@@ -69,6 +70,7 @@ export class AppComponent implements OnInit {
     private router: Router, 
     private route: ActivatedRoute,
     private api: ApiService,
+    private pushNotifications: PushNotificationService,
     private dialog: MatDialog,
     private title: Title,
     private meta: Meta,
@@ -83,6 +85,16 @@ export class AppComponent implements OnInit {
     // Restore session before profile prefetch to avoid startup 401 with expired tokens
     this.auth.ensureSessionRestored().finally(() => {
       this.auth.prefetchUserProfile(this.api);
+
+      if (this.auth.isLoggedIn) {
+        this.pushNotifications.initializeForLoggedUser();
+      }
+    });
+
+    this.auth.currentUser$.subscribe(user => {
+      if (user) {
+        this.pushNotifications.initializeForLoggedUser();
+      }
     });
 
     // Handle pending OAuth redirect (embedded browsers or popup-blocked fallback)

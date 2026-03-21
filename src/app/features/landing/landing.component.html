@@ -162,6 +162,29 @@
   </div>
 </section>
 
+<!-- ===================== APP DOWNLOAD ===================== -->
+<section class="section app-download" id="download-app">
+  <div class="container" @fadeUp>
+    <div class="section__header">
+      <span class="section__tag">Aplicação</span>
+      <h2>Faça download da aplicação para Android e iOS</h2>
+      <p>Instala diretamente a partir do site, sem Play Store e sem App Store.</p>
+    </div>
+
+    <div class="app-download__actions">
+      <button mat-raised-button color="primary" class="app-download__btn" (click)="installForAndroid()">
+        <mat-icon>android</mat-icon>
+        Android
+      </button>
+
+      <button mat-stroked-button color="primary" class="app-download__btn" (click)="openIosInstallDialog()">
+        <mat-icon>phone_iphone</mat-icon>
+        iOS
+      </button>
+    </div>
+  </div>
+</section>
+
 <!-- ===================== DOAÇÃO ===================== -->
 <section class="section section--donation" id="donation" #donationSection>
   <div class="container donation-section" @fadeUp>

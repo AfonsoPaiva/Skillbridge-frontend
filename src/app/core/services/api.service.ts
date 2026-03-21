@@ -201,6 +201,19 @@ export class ApiService {
     });
   }
 
+  registerPushToken(token: string, platform: 'web' | 'android' | 'ios'): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.base}/notifications/tokens`, { token, platform }, {
+      headers: this.authHeaders()
+    });
+  }
+
+  deletePushToken(token: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.base}/notifications/tokens`, {
+      headers: this.authHeaders(),
+      body: { token }
+    });
+  }
+
   // ── Reviews ───────────────────────────────────
   createReview(data: { reviewed_id: number; project_id?: number; rating: number; comment: string }): Observable<Review> {
     return this.http.post<Review>(`${this.base}/reviews`, data, {

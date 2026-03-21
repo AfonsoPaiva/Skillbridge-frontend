@@ -1,0 +1,38 @@
+@use '../../../../styles/variables' as v;
+
+.ios-install__header {
+  display: flex;
+  align-items: center;
+  gap: v.$space-2;
+
+  h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: v.$font-weight-semibold;
+  }
+}
+
+.ios-install__content {
+  p {
+    color: v.$color-text-soft;
+    line-height: 1.6;
+  }
+
+  ol {
+    margin: v.$space-3 0;
+    padding-left: v.$space-4;
+    display: grid;
+    gap: v.$space-2;
+
+    li {
+      color: v.$color-text;
+      line-height: 1.5;
+    }
+  }
+}
+
+.ios-install__note {
+  margin-top: v.$space-3;
+  color: v.$color-primary !important;
+  font-weight: v.$font-weight-medium;
+}

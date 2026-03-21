@@ -1,12 +1,18 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Project } from '../../core/models/models';
 import {
   trigger, transition, style, animate, stagger, query
 } from '@angular/animations';
+
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
+}
 
 @Component({
   selector: 'app-landing',
@@ -46,6 +52,16 @@ export class LandingComponent implements OnInit, AfterViewInit {
   
   private animationStarted = false;
   private animationFrame: any;
+  private deferredInstallPrompt: BeforeInstallPromptEvent | null = null;
+
+  private readonly onBeforeInstallPrompt = (event: Event): void => {
+    event.preventDefault();
+    this.deferredInstallPrompt = event as BeforeInstallPromptEvent;
+  };
+
+  private readonly onAppInstalled = (): void => {
+    this.deferredInstallPrompt = null;
+  };
 
   steps = [
     {
@@ -76,10 +92,16 @@ export class LandingComponent implements OnInit, AfterViewInit {
     private api: ApiService,
     public auth: AuthService,
     private router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
+    if (typeof window !== 'undefined') {
+      window.addEventListener('beforeinstallprompt', this.onBeforeInstallPrompt);
+      window.addEventListener('appinstalled', this.onAppInstalled);
+    }
+
     // Fetch platform statistics
     this.api.getPlatformStats().subscribe({
       next: (stats) => { 
@@ -200,7 +222,54 @@ export class LandingComponent implements OnInit, AfterViewInit {
     return map[status] ?? status;
   }
 
+  async installForAndroid(): Promise<void> {
+    if (this.isInstalled()) {
+      this.snackBar.open('A aplicação já está instalada neste dispositivo.', 'Fechar', { duration: 3500 });
+      return;
+    }
+
+    if (!this.deferredInstallPrompt) {
+      this.snackBar.open('No Android, abre o menu do navegador e escolhe “Instalar aplicação”.', 'Fechar', {
+        duration: 4500
+      });
+      return;
+    }
+
+    await this.deferredInstallPrompt.prompt();
+    await this.deferredInstallPrompt.userChoice;
+    this.deferredInstallPrompt = null;
+  }
+
+  async openIosInstallDialog(): Promise<void> {
+    if (this.isInstalled()) {
+      this.snackBar.open('A aplicação já está instalada neste dispositivo.', 'Fechar', { duration: 3500 });
+      return;
+    }
+
+    const { IosInstallDialogComponent } = await import('./ios-install-dialog/ios-install-dialog.component');
+    this.dialog.open(IosInstallDialogComponent, {
+      width: '460px',
+      maxWidth: '95vw',
+      autoFocus: false,
+      restoreFocus: false
+    });
+  }
+
+  private isInstalled(): boolean {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+
+    const navigatorStandalone = (window.navigator as Navigator & { standalone?: boolean }).standalone;
+    return window.matchMedia('(display-mode: standalone)').matches || navigatorStandalone === true;
+  }
+
   ngOnDestroy(): void {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('beforeinstallprompt', this.onBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', this.onAppInstalled);
+    }
+
     if (this.animationFrame) {
       cancelAnimationFrame(this.animationFrame);
     }

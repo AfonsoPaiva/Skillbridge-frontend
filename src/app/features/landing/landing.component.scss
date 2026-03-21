@@ -500,6 +500,32 @@
   }
 }
 
+// ── App download ────────────────────────────────
+.app-download {
+  border-top: 1px solid rgba(v.$color-primary, 0.1);
+
+  .section__header {
+    margin-bottom: v.$space-8;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: center;
+    gap: v.$space-3;
+    flex-wrap: wrap;
+  }
+
+  &__btn {
+    min-width: 180px;
+    height: 48px !important;
+    padding: 0 v.$space-5 !important;
+
+    mat-icon {
+      margin-right: v.$space-2;
+    }
+  }
+}
+
 // ── Empty state ───────────────────────────────────
 .empty-state {
   display: flex;
