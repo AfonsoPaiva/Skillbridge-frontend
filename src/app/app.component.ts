@@ -80,9 +80,10 @@ export class AppComponent implements OnInit {
       history.scrollRestoration = 'manual';
     }
 
-    // Restore session from localStorage (sync, no Firebase SDK needed)
-    this.auth.restoreSession();
-    this.auth.prefetchUserProfile(this.api);
+    // Restore session before profile prefetch to avoid startup 401 with expired tokens
+    this.auth.ensureSessionRestored().finally(() => {
+      this.auth.prefetchUserProfile(this.api);
+    });
 
     // Handle pending OAuth redirect (embedded browsers or popup-blocked fallback)
     this.handlePendingAuthRedirect();

@@ -28,6 +28,7 @@ export class AuthService {
   private firebaseAuth: Auth | null = null;
   private tokenRefreshTimer: any = null;
   private firebaseInitPromise: Promise<void> | null = null;
+  private sessionRestorePromise: Promise<void> | null = null;
 
   get currentUser(): AuthUser | null {
     return this._currentUser$.getValue();
@@ -139,8 +140,19 @@ export class AuthService {
     this._currentUser$.next(user);
   }
 
-  /** Restore session from localStorage (sync — no Firebase needed for cached sessions) */
-  restoreSession(): void {
+  /** Ensure session restore runs once and can be awaited by guards/bootstrap code */
+  ensureSessionRestored(): Promise<void> {
+    if (this.sessionRestorePromise) return this.sessionRestorePromise;
+
+    this.sessionRestorePromise = this.restoreSession().finally(() => {
+      this.sessionRestorePromise = null;
+    });
+
+    return this.sessionRestorePromise;
+  }
+
+  /** Restore session from localStorage */
+  async restoreSession(): Promise<void> {
     const raw = localStorage.getItem('sb_user');
     if (raw) {
       try {
@@ -148,8 +160,8 @@ export class AuthService {
 
         if (user.expiresAt && user.expiresAt < Date.now()) {
           // Token expired — lazy-load Firebase to refresh
-          this._currentUser$.next(user);          // show stale user immediately
-          this.refreshToken();                     // refresh in background
+          this._currentUser$.next(user); // keep UI state while refreshing
+          await this.refreshToken();
         } else {
           this._currentUser$.next(user);
 

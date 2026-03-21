@@ -6,7 +6,9 @@ import { AuthService } from '../services/auth.service';
 export class AuthGuard implements CanActivate {
   constructor(private auth: AuthService, private router: Router) {}
 
-  canActivate(): boolean {
+  async canActivate(): Promise<boolean> {
+    await this.auth.ensureSessionRestored();
+
     if (!this.auth.isLoggedIn) {
       this.router.navigate(['/landing']);
       return false;

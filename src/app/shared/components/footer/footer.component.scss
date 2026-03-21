@@ -99,6 +99,23 @@
         color: lighten(v.$color-secondary, 15%);
       }
     }
+
+      .bug-link {
+        color: #ffb300 !important;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        margin-top: v.$space-2;
+        margin-bottom: v.$space-2;
+        text-decoration: none;
+        transition: color 0.2s;
+        &:hover {
+          color: #fff176 !important;
+        }
+        mat-icon {
+          color: #ffb300 !important;
+        }
+      }
   }
 
   &__bottom {
