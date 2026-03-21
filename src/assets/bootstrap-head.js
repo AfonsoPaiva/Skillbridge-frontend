@@ -72,8 +72,10 @@
   });
 
   (function (w, d, s, l, i) {
-    var isLocalhost = /^(localhost|127\.0\.0\.1)$/.test(w.location.hostname || '');
-    if (isLocalhost) {
+    var hostname = (w.location.hostname || '').toLowerCase();
+    var isLocalhost = /^(localhost|127\.0\.0\.1)$/.test(hostname);
+    var isProductionHost = /^(skillbridge\.pt|www\.skillbridge\.pt)$/.test(hostname);
+    if (isLocalhost || !isProductionHost) {
       return;
     }
 
