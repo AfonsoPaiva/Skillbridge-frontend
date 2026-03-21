@@ -25,6 +25,7 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
+              "src/manifest.json",
               "src/robots.txt",
               "src/sitemap.xml"
             ],
@@ -35,6 +36,7 @@
             ],
             "scripts": [],
             "inlineStyleLanguage": "scss",
+            "serviceWorker": "ngsw-config.json",
             "allowedCommonJsDependencies": ["firebase/app", "@firebase/auth"]
           },
           "configurations": {
