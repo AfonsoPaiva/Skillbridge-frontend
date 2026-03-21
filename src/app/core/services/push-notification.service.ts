@@ -11,6 +11,21 @@ export class PushNotificationService {
   private initialized = false;
   private syncing = false;
 
+  private isNonFatalPushError(error: unknown): boolean {
+    const errorName = (error as any)?.name || '';
+    const errorCode = (error as any)?.code || '';
+    const errorMessage = ((error as any)?.message || '').toString().toLowerCase();
+
+    return (
+      errorName === 'AbortError'
+      || errorName === 'NotAllowedError'
+      || errorCode === 'messaging/token-subscribe-failed'
+      || errorCode === 'messaging/permission-blocked'
+      || errorMessage.includes('registration failed - push service error')
+      || errorMessage.includes('push service error')
+    );
+  }
+
   async initializeForLoggedUser(): Promise<void> {
     if (this.syncing) return;
     this.syncing = true;
@@ -100,6 +115,11 @@ export class PushNotificationService {
 
       this.initialized = true;
     } catch (error) {
+      if (this.isNonFatalPushError(error)) {
+        console.warn('Push notifications unavailable for this browser/session:', error);
+        return;
+      }
+
       console.error('Failed to initialize push notifications:', error);
     } finally {
       this.syncing = false;
@@ -109,6 +129,7 @@ export class PushNotificationService {
   private canUsePush(): boolean {
     return typeof window !== 'undefined'
       && 'Notification' in window
+      && 'PushManager' in window
       && 'serviceWorker' in navigator
       && window.isSecureContext;
   }
