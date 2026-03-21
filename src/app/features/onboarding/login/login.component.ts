@@ -268,7 +268,13 @@ export class LoginComponent implements OnInit {
     if (app.getApps().length > 0) {
       return app.getApps()[0];
     }
-    return app.initializeApp({ apiKey: environment.firebaseApiKey, authDomain: getFirebaseAuthDomain() });
+    return app.initializeApp({
+      apiKey: environment.firebaseApiKey,
+      authDomain: getFirebaseAuthDomain(),
+      projectId: environment.firebaseProjectId,
+      messagingSenderId: environment.firebaseMessagingSenderId,
+      appId: environment.firebaseAppId
+    });
   }
 
   private preloadFirebaseAuth(): Promise<void> {

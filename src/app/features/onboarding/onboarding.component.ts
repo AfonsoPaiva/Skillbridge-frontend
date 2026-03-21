@@ -646,7 +646,10 @@ export class OnboardingComponent implements OnInit, OnDestroy {
     if (app.getApps().length > 0) return app.getApps()[0];
     return app.initializeApp({
       apiKey: environment.firebaseApiKey,
-      authDomain: getFirebaseAuthDomain()
+      authDomain: getFirebaseAuthDomain(),
+      projectId: environment.firebaseProjectId,
+      messagingSenderId: environment.firebaseMessagingSenderId,
+      appId: environment.firebaseAppId
     });
   }
 

@@ -56,7 +56,10 @@ export class AuthService {
 
     const app = getApps().length > 0 ? getApps()[0] : initializeApp({
       apiKey: environment.firebaseApiKey,
-      authDomain: getFirebaseAuthDomain()
+      authDomain: getFirebaseAuthDomain(),
+      projectId: environment.firebaseProjectId,
+      messagingSenderId: environment.firebaseMessagingSenderId,
+      appId: environment.firebaseAppId
     });
 
     this.firebaseAuth = getAuth(app);

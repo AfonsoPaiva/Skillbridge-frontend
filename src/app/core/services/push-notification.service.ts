@@ -46,7 +46,12 @@ export class PushNotificationService {
             appId: environment.firebaseAppId
           });
 
-      const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
+      const trustedScriptUrlFactory = (window as any).__skillbridgeTrustedScriptURL;
+      const serviceWorkerUrl = typeof trustedScriptUrlFactory === 'function'
+        ? trustedScriptUrlFactory('/firebase-messaging-sw.js')
+        : '/firebase-messaging-sw.js';
+
+      const registration = await (navigator.serviceWorker as any).register(serviceWorkerUrl, {
         scope: '/firebase-cloud-messaging-push-scope'
       });
 

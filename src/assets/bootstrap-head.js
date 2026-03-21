@@ -2,6 +2,7 @@
   'use strict';
 
   var trustedScriptUrlPatterns = [
+    /^\/firebase-messaging-sw\.js(?:\?.*)?$/,
     /^https:\/\/www\.googletagmanager\.com\/gtm\.js\?id=GTM-KHGQ445F(?:&l=dataLayer)?$/,
     /^https:\/\/cdn\.jsdelivr\.net\/npm\/klaro@0\.7\.22\/dist\/klaro-no-css\.min\.js$/,
     /^https:\/\/js\.stripe\.com\/(?:v3(?:\/.*)?|clover\/stripe\.js(?:\/.*)?)(?:\?.*)?$/,
@@ -71,6 +72,11 @@
   });
 
   (function (w, d, s, l, i) {
+    var isLocalhost = /^(localhost|127\.0\.0\.1)$/.test(w.location.hostname || '');
+    if (isLocalhost) {
+      return;
+    }
+
     w[l] = w[l] || [];
     w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
 
@@ -80,6 +86,9 @@
       var dl = l !== 'dataLayer' ? '&l=' + l : '';
       j.async = true;
       j.src = toTrustedScriptURL('https://www.googletagmanager.com/gtm.js?id=' + i + dl);
+      j.onerror = function () {
+        console.warn('GTM failed to load. Analytics disabled for this session.');
+      };
       if (f && f.parentNode) {
         f.parentNode.insertBefore(j, f);
       } else {

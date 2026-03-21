@@ -9,7 +9,8 @@
   align-items: center;
   justify-content: center;
   margin: 0;
-  padding: 0;
+  padding: 0 v.$space-6 0 v.$space-2;
+  overflow: hidden;
 }
 
 mat-dialog-content {
@@ -29,22 +30,29 @@ mat-dialog-content {
   z-index: 2;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .ob-close--corner {
-    top: 6px;
-    right: 6px;
+    top: 4px;
+    right: 4px;
   }
 
   .ob-actions {
     flex-wrap: wrap !important;
     row-gap: v.$space-2 !important;
+    overflow: hidden;
 
     &__spacer {
       display: none;
     }
 
+    &__back {
+      width: 100%;
+      justify-content: center;
+    }
+
     &__primary {
       width: 100%;
+      margin-left: 0;
 
       button {
         width: 100%;
@@ -61,14 +69,15 @@ mat-dialog-content {
   justify-content: flex-start !important;
   gap: v.$space-2 !important;
   padding: v.$space-4 0 0 !important;
-  min-height: 52px !important;  
+  min-height: 56px !important;
   flex-wrap: nowrap !important;
   border-top: 1px solid v.$color-border;
   margin-top: v.$space-2 !important;
+  overflow: hidden;
 
   &__back {
     flex-shrink: 0;
-    height: 40px !important;
+    min-height: 48px !important;
     display: inline-flex !important;
     align-items: center !important;
   }
@@ -85,7 +94,7 @@ mat-dialog-content {
         align-items: center;
 
         button {
-      height: 40px !important;
+      min-height: 48px !important;
       display: inline-flex !important;
       align-items: center !important;
       gap: v.$space-1 !important;
