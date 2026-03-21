@@ -12,8 +12,8 @@
 
 .login-close--corner {
   position: absolute;
-  top: -12px;
-  right: -20px;
+  top: 8px;
+  right: 8px;
   z-index: 2;
 }
 
@@ -23,8 +23,8 @@ mat-dialog-content {
 
 @media (max-width: 600px) {
   .login-close--corner {
-    top: -18px;
-    right: -10px;
+    top: 6px;
+    right: 6px;
   }
 
   mat-dialog-content {
