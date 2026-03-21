@@ -42,21 +42,13 @@ export class DashboardComponent implements OnInit {
     this.userSub = this.auth.user$.subscribe(u => {
       this.user = u;
       this.loadingUser = false;
-      // If not cached, fetch from API
-      if (!u) {
-        this.loadingUser = true;
-        this.api.getMyProfile().subscribe({
-          next: (user: User) => { 
-            this.user = user; 
-            this.loadingUser = false;
-            this.filterRecommendedProjects();
-          },
-          error: () => { this.loadingUser = false; }
-        });
-      } else {
-        this.filterRecommendedProjects();
-      }
+      this.filterRecommendedProjects();
     });
+
+    // Always revalidate profile from API so role/skills changes reflect immediately
+    // when returning to dashboard after editing profile.
+    this.refreshProfile();
+
     // request all statuses so that items don't vanish when the status
     // is changed on the backend (the API defaults to `status=open`).
     this.api.listProjects('all').subscribe({
@@ -66,6 +58,24 @@ export class DashboardComponent implements OnInit {
         this.filterRecommendedProjects();
       },
       error: () => { this.loadingProjects = false; }
+    });
+  }
+
+  private refreshProfile(): void {
+    if (!this.user) {
+      this.loadingUser = true;
+    }
+
+    this.api.getMyProfile().subscribe({
+      next: (user: User) => {
+        this.user = user;
+        this.auth.setCachedProfile(user);
+        this.loadingUser = false;
+        this.filterRecommendedProjects();
+      },
+      error: () => {
+        this.loadingUser = false;
+      }
     });
   }
 

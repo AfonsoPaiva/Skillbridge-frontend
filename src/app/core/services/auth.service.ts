@@ -38,6 +38,14 @@ export class AuthService {
     return !!this._currentUser$.getValue();
   }
 
+  get cachedProfile(): User | null {
+    return this._user$.getValue();
+  }
+
+  setCachedProfile(user: User | null): void {
+    this._user$.next(user);
+  }
+
   /** Initialize Firebase Auth lazily — only downloads the SDK when called */
   initializeFirebaseAuth(): Promise<void> {
     if (this.firebaseAuth) return Promise.resolve();

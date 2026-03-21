@@ -243,6 +243,10 @@ export class EditProfileComponent implements OnInit {
       next: (res: { skills: string[] }) => {
         this.userSkills = res.skills;
         this.userSkillsSubject.next(this.userSkills);
+        const cached = this.auth.cachedProfile;
+        if (cached) {
+          this.auth.setCachedProfile({ ...cached, skills: [...res.skills] });
+        }
         this.skillSearchControl.setValue('', { emitEvent: false });
       },
       error: (e: HttpErrorResponse) => this.snack.open(e?.error?.error || 'Erro ao adicionar competência.', 'Fechar', { duration: 3000 })
@@ -262,6 +266,10 @@ export class EditProfileComponent implements OnInit {
       next: (res: { skills: string[] }) => {
         this.userSkills = res.skills;
         this.userSkillsSubject.next(this.userSkills);
+        const cached = this.auth.cachedProfile;
+        if (cached) {
+          this.auth.setCachedProfile({ ...cached, skills: [...res.skills] });
+        }
         this.removingSkill = '';
       },
       error: () => { this.removingSkill = ''; }
@@ -277,7 +285,12 @@ export class EditProfileComponent implements OnInit {
       contact_links: this.normalizeContactLinks(this.form.value.contact_links)
     };
     this.api.updateProfile(payload).subscribe({
-      next: () => {
+      next: (res) => {
+        if (res?.user) {
+          this.auth.setCachedProfile(res.user);
+        } else {
+          this.auth.prefetchUserProfile(this.api);
+        }
         this.snack.open('Perfil atualizado com sucesso!', 'Fechar', { duration: 3000 });
         this.router.navigate(['/perfil/eu']);
       },
