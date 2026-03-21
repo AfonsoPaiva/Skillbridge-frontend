@@ -6,7 +6,6 @@ import { Directive, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 })
 export class SmartFitImgDirective implements AfterViewInit, OnDestroy {
   private static colorCache = new Map<string, { r: number; g: number; b: number }>();
-  private corsAttempted = false;
   private resizeObserver?: ResizeObserver;
 
   private removeLoadListener?: () => void;
@@ -16,12 +15,6 @@ export class SmartFitImgDirective implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     const img = this.el.nativeElement;
-
-    // Try CORS first for color extraction
-    if (!img.complete && !img.crossOrigin) {
-      img.crossOrigin = 'anonymous';
-      this.corsAttempted = true;
-    }
 
     const onLoad = () => this.onImageLoad();
     const onError = () => this.onImageError();
@@ -119,38 +112,14 @@ export class SmartFitImgDirective implements AfterViewInit, OnDestroy {
 
   private onImageError(): void {
     const img = this.el.nativeElement;
-    
-    // If CORS failed and we haven't retried yet, try without CORS
-    if (this.corsAttempted && img.crossOrigin) {
-      this.corsAttempted = false;
-      
-      // Cleanup existing listeners
-      this.removeLoadListener?.();
-      this.removeErrorListener?.();
-      
-      // Remove CORS and force reload
-      img.removeAttribute('crossorigin');
-      const originalSrc = img.src;
-      img.src = '';
-      
-      // Small delay to ensure browser registers the change
-      setTimeout(() => {
-        img.src = originalSrc;
-        
-        // Re-attach listeners
-        const onLoad = () => this.onImageLoad();
-        const onError = () => this.applyFallbackStyles();
-        
-        img.addEventListener('load', onLoad);
-        img.addEventListener('error', onError);
-        
-        this.removeLoadListener = () => img.removeEventListener('load', onLoad);
-        this.removeErrorListener = () => img.removeEventListener('error', onError);
-      }, 10);
-    } else {
-      // No more retries, apply fallback
-      this.applyFallbackStyles();
+
+    const fallbackSrc = 'assets/project-placeholder.svg';
+    if (!img.src.includes(fallbackSrc)) {
+      img.src = fallbackSrc;
+      return;
     }
+
+    this.applyFallbackStyles();
   }
 
   private applyFallbackStyles(): void {

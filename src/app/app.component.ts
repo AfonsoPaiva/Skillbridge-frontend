@@ -61,7 +61,7 @@ export const routeAnimation = trigger('routeAnimation', [
 })
 export class AppComponent implements OnInit {
   private readonly siteUrl = 'https://skillbridge.pt';
-  private readonly defaultTitle = 'SkillBridge — Liga Estudantes a Projetos';
+  private readonly defaultTitle = 'SkillBridge';
   private readonly defaultDescription = 'Plataforma portuguesa que liga estudantes através da partilha de competências para criar projetos reais e enriquecer portfólios.';
 
   hideFooter = false;

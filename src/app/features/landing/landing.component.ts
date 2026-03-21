@@ -52,6 +52,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
   
   private animationStarted = false;
   private animationFrame: any;
+  installingAndroid = false;
   private deferredInstallPrompt: BeforeInstallPromptEvent | null = null;
 
   private readonly onBeforeInstallPrompt = (event: Event): void => {
@@ -223,21 +224,57 @@ export class LandingComponent implements OnInit, AfterViewInit {
   }
 
   async installForAndroid(): Promise<void> {
+    if (this.installingAndroid) {
+      return;
+    }
+
     if (this.isInstalled()) {
       this.snackBar.open('A aplicação já está instalada neste dispositivo.', 'Fechar', { duration: 3500 });
       return;
     }
 
-    if (!this.deferredInstallPrompt) {
-      this.snackBar.open('No Android, abre o menu do navegador e escolhe “Instalar aplicação”.', 'Fechar', {
-        duration: 4500
+    this.installingAndroid = true;
+
+    try {
+      const installPrompt = this.deferredInstallPrompt || await this.waitForInstallPrompt();
+
+      if (installPrompt) {
+        await installPrompt.prompt();
+        await installPrompt.userChoice;
+        this.deferredInstallPrompt = null;
+        return;
+      }
+
+      const { AndroidInstallDialogComponent } = await import('./android-install-dialog/android-install-dialog.component');
+      this.dialog.open(AndroidInstallDialogComponent, {
+        width: '460px',
+        maxWidth: '95vw',
+        autoFocus: false,
+        restoreFocus: false
       });
-      return;
+    } finally {
+      this.installingAndroid = false;
+    }
+  }
+
+  private waitForInstallPrompt(timeoutMs: number = 1500): Promise<BeforeInstallPromptEvent | null> {
+    if (this.deferredInstallPrompt) {
+      return Promise.resolve(this.deferredInstallPrompt);
     }
 
-    await this.deferredInstallPrompt.prompt();
-    await this.deferredInstallPrompt.userChoice;
-    this.deferredInstallPrompt = null;
+    return new Promise(resolve => {
+      const timeout = setTimeout(() => resolve(null), timeoutMs);
+      const listener = (event: Event) => {
+        clearTimeout(timeout);
+        window.removeEventListener('beforeinstallprompt', listener);
+        event.preventDefault();
+        const promptEvent = event as BeforeInstallPromptEvent;
+        this.deferredInstallPrompt = promptEvent;
+        resolve(promptEvent);
+      };
+
+      window.addEventListener('beforeinstallprompt', listener, { once: true });
+    });
   }
 
   async openIosInstallDialog(): Promise<void> {

@@ -172,7 +172,7 @@
     </div>
 
     <div class="app-download__actions">
-      <button mat-raised-button color="primary" class="app-download__btn" (click)="installForAndroid()">
+      <button mat-raised-button color="primary" class="app-download__btn" (click)="installForAndroid()" [disabled]="installingAndroid">
         <mat-icon>android</mat-icon>
         Android
       </button>

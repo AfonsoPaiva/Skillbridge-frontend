@@ -12,7 +12,7 @@ const routes: Routes = [
   {
     path: 'landing',
     data: {
-      title: 'SkillBridge — Liga Estudantes a Projetos',
+      title: 'SkillBridge',
       description: 'Plataforma portuguesa que liga estudantes através da partilha de competências para criar projetos reais e enriquecer portfólios.',
       robots: 'index, follow'
     },
