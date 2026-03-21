@@ -78,18 +78,15 @@ export class PushNotificationService {
 
       if (!token) return;
 
-      const currentToken = localStorage.getItem(PushNotificationService.TOKEN_KEY);
-      if (currentToken !== token) {
-        await new Promise<void>((resolve) => {
-          this.api.registerPushToken(token, this.detectPlatform()).subscribe({
-            next: () => {
-              localStorage.setItem(PushNotificationService.TOKEN_KEY, token);
-              resolve();
-            },
-            error: () => resolve()
-          });
+      await new Promise<void>((resolve) => {
+        this.api.registerPushToken(token, this.detectPlatform()).subscribe({
+          next: () => {
+            localStorage.setItem(PushNotificationService.TOKEN_KEY, token);
+            resolve();
+          },
+          error: () => resolve()
         });
-      }
+      });
 
       if (!this.initialized) {
         onMessage(messaging, (payload) => {
