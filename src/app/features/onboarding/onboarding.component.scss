@@ -2,44 +2,111 @@
 @use '../../../styles/variables' as v;
 
 // ── Dialog header ─────────────────────────────────
-
-.ob-header {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0;
-  padding: 0 v.$space-6 0 v.$space-2;
-  overflow: hidden;
+// Material adds its own padding to mat-dialog-title which shifts everything
+// inside it unpredictably across breakpoints. We zero it out and own all spacing.
+::ng-deep .mat-mdc-dialog-title.ob-header {
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
-mat-dialog-content {
-  max-height: 70vh;
-  overflow-y: auto !important;
-  overflow-x: hidden;
+.ob-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.ob-header__spacer {
+  width: 40px;
+  flex-shrink: 0;
+}
+
+.ob-close--corner {
+  flex-shrink: 0;
+  margin-top: 8px;
+
+  @media (max-width: 768px) {
+    margin-top: 16px;
+    margin-right: -8px;
+  }
 }
 
 .ob-close {
   color: v.$color-text-soft;
 }
 
-.ob-close--corner {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  z-index: 2;
+// ── Scrollable content ─────────────────────────────
+// Use calc so the actions bar always stays visible:
+// subtract logo header (~110px) + progress bar (~20px) +
+// step count (~28px) + actions bar (~80px) = ~240px overhead.
+mat-dialog-content {
+  max-height: calc(90vh - 260px) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden;
 }
 
 @media (max-width: 768px) {
-  .ob-close--corner {
-    top: 4px;
-    right: 4px;
+  mat-dialog-content {
+    max-height: calc(90vh - 240px) !important;
+    overflow-y: auto !important;
+  }
+}
+
+@media (max-height: 650px) {
+  mat-dialog-content {
+    max-height: calc(90vh - 220px) !important;
+    overflow-y: auto !important;
+  }
+}
+
+// ── Actions row ───────────────────────────────────
+.ob-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: v.$space-2 !important;
+  padding: v.$space-3 16px v.$space-3 !important;
+  min-height: 56px !important;
+  flex-wrap: nowrap !important;
+  border-top: 1px solid v.$color-border;
+  margin-top: v.$space-2 !important;
+  // overflow:hidden removed — this was clipping ob-actions__primary at narrow widths,
+  // causing the Continuar button to disappear below ~778px dialog width.
+  overflow: visible !important;
+
+  &__back {
+    flex-shrink: 0;
+    min-height: 48px !important;
+    display: inline-flex !important;
+    align-items: center !important;
   }
 
+  &__spacer {
+    flex: 1;
+    min-width: 0; // prevent spacer from pushing primary off-screen
+  }
+
+  &__primary {
+    flex-shrink: 0;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+
+    button {
+      min-height: 48px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: v.$space-1 !important;
+      padding: 0 v.$space-5 !important;
+      white-space: nowrap;
+    }
+  }
+}
+
+@media (max-width: 768px) {
   .ob-actions {
     flex-wrap: wrap !important;
     row-gap: v.$space-2 !important;
-    overflow: hidden;
+    padding-bottom: 32px !important;
 
     &__spacer {
       display: none;
@@ -61,48 +128,6 @@ mat-dialog-content {
     }
   }
 }
-
-// ── Actions row ───────────────────────────────────
-.ob-actions {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: flex-start !important;
-  gap: v.$space-2 !important;
-  padding: v.$space-4 0 0 !important;
-  min-height: 56px !important;
-  flex-wrap: nowrap !important;
-  border-top: 1px solid v.$color-border;
-  margin-top: v.$space-2 !important;
-  overflow: hidden;
-
-  &__back {
-    flex-shrink: 0;
-    min-height: 48px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-  }
-
-  &__spacer {
-    flex: 1;
-  }
-
-  &__primary {
-    flex-shrink: 0;
-
-        margin-left: auto;
-        display: flex;
-        align-items: center;
-
-        button {
-      min-height: 48px !important;
-      display: inline-flex !important;
-      align-items: center !important;
-      gap: v.$space-1 !important;
-      padding: 0 v.$space-5 !important;
-    }
-  }
-}
-
 
 // Submit button with spinner
 .ob-submit-btn {
@@ -130,35 +155,31 @@ mat-dialog-content {
   }
 }
 
-
-.onboarding__logo {
-  display: flex;
-  align-items: center;
-  gap: v.$space-2;
-  font-size: 20px;
-  color: v.$color-text;
-
-  .logo-icon {
-    font-size: 28px;
-    color: v.$color-primary;
-  }
-  strong { color: v.$color-primary; }
-}
-
-
 .onboarding__logo--centered {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding-bottom: 15px;
+  padding-top: 8px;
+  padding-bottom: 12px;
   width: 100%;
   margin: 0;
 
   svg {
     width: 150px;
-    height: 100px;
+    height: auto;
     display: block;
     margin: 0 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .onboarding__logo--centered {
+    padding-top: 36px;
+    padding-bottom: 8px;
+
+    svg {
+      width: 110px;
+    }
   }
 }
 
@@ -173,12 +194,12 @@ mat-dialog-content {
   font-size: 12px;
   color: v.$color-text-soft;
   text-align: right;
-  margin-bottom: v.$space-6;
+  margin-bottom: v.$space-4;
 }
 
 .onboarding__steps {
   position: relative;
-  min-height: 320px;
+  min-height: 280px;
 }
 
 @supports (-webkit-touch-callout: none) {
@@ -203,10 +224,9 @@ mat-dialog-content {
   }
 }
 
-.mat-icon{
+.mat-icon {
   overflow: visible;
 }
-
 
 // ── Individual step ───────────────────────────────
 .ob-step {
@@ -465,7 +485,7 @@ mat-dialog-content {
 // ── Info box ──────────────────────────────────────
 
 .skills-sections {
-  max-height: 320px;
+  max-height: 260px;
   overflow-y: auto;
   padding-right: v.$space-1;
   -webkit-overflow-scrolling: touch;
@@ -496,6 +516,7 @@ mat-dialog-content {
   color: v.$color-text-soft;
   font-size: 14px;
 }
+
 .info-box {
   display: flex;
   gap: v.$space-4;
