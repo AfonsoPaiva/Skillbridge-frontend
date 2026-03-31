@@ -63,6 +63,15 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
+  
+  // Set default consent for GA4 - will be updated by Klaro
+  gtag('consent', 'default', {
+    analytics_storage: 'granted',
+    ad_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied'
+  });
+  
   gtag('config', 'G-QHFVDPSG80');
 
   // Load GA4 script
@@ -196,19 +205,23 @@
       },
       {
         name: 'analytics',
-        title: 'Análise e Estatísticas',
-        description: 'Ajuda-nos a melhorar a experiência de todos.',
+        title: 'Google Analytics 4',
+        description: 'Ajuda-nos a melhorar a experiência de todos através de análise anónima.',
         purposes: ['analytics'],
         required: false,
         optOut: true,
-        default: false
+        default: true,
+        cookies: [/^_ga/, /^_gat/, /^_gid/, 'G-QHFVDPSG80']
       }
     ],
     callback: function (consent, service) {
       var analyticsGranted = !!(consent && consent.analytics);
       if (typeof window.gtag === 'function') {
         window.gtag('consent', 'update', {
-          analytics_storage: analyticsGranted ? 'granted' : 'denied'
+          analytics_storage: analyticsGranted ? 'granted' : 'denied',
+          ad_storage: 'denied',
+          ad_user_data: 'denied',
+          ad_personalization: 'denied'
         });
       }
       window.dataLayer = window.dataLayer || [];
@@ -217,7 +230,7 @@
         analytics_storage: analyticsGranted ? 'granted' : 'denied',
         updated_service: service ? service.name : 'all'
       });
-      console.log('Klaro consent updated:', service ? service.name : 'all services', consent);
+      console.log('Klaro consent updated:', service ? service.name : 'all services', 'Analytics:', analyticsGranted);
     }
   };
 
