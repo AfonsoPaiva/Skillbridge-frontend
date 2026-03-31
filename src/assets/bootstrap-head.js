@@ -86,29 +86,12 @@
       var f = d.getElementsByTagName(s)[0];
       var j = d.createElement(s);
       var dl = l !== 'dataLayer' ? '&l=' + l : '';
-      var hasTrackedLoad = false;
-
       j.async = true;
       j.src = toTrustedScriptURL('https://www.googletagmanager.com/gtm.js?id=' + i + dl);
-
-      j.onload = function () {
-        hasTrackedLoad = true;
-        console.info('GTM loaded successfully.');
-      };
-
       j.onerror = function () {
-        hasTrackedLoad = true;
-        console.debug('GTM failed to load. Analytics disabled for this session.');
+        // GTM failed to load; this is expected on some networks or if blocking is enabled.
+        console.warn('GTM failed to load. Analytics disabled for this session.');
       };
-      
-
-      setTimeout(function () {
-        if (!hasTrackedLoad) {
-          console.debug('GTM load timeout. Analytics disabled for this session.');
-          hasTrackedLoad = true;
-        }
-      }, 15000);
-
       if (f && f.parentNode) {
         f.parentNode.insertBefore(j, f);
       } else {
