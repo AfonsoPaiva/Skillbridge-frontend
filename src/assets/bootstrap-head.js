@@ -3,7 +3,7 @@
 
   var trustedScriptUrlPatterns = [
     /^\/firebase-messaging-sw\.js(?:\?.*)?$/,
-    /^https:\/\/www\.googletagmanager\.com\/gtm\.js\?id=GTM-KHGQ445F(?:&l=dataLayer)?$/,
+    /^https:\/\/www\.googletagmanager\.com\/gtag\/js\?id=G-QHFVDPSG80(?:\?.*)?$/,
     /^https:\/\/cdn\.jsdelivr\.net\/npm\/klaro@0\.7\.22\/dist\/klaro-no-css\.min\.js$/,
     /^https:\/\/js\.stripe\.com\/(?:v3(?:\/.*)?|clover\/stripe\.js(?:\/.*)?)(?:\?.*)?$/,
     /^https:\/\/apis\.google\.com\/.*/,
@@ -59,65 +59,40 @@
 
   window.__skillbridgeTrustedScriptURL = toTrustedScriptURL;
 
+  // Google Analytics 4 initialization
   window.dataLayer = window.dataLayer || [];
-  window.gtag = function gtag() {
-    window.dataLayer.push(arguments);
-  };
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-QHFVDPSG80');
 
-  window.gtag('consent', 'default', {
-    analytics_storage: 'denied',
-    ad_storage: 'denied',
-    ad_user_data: 'denied',
-    ad_personalization: 'denied'
+  // Load GA4 script
+  function loadGA4() {
+    var script = document.createElement('script');
+    script.async = true;
+    script.src = toTrustedScriptURL('https://www.googletagmanager.com/gtag/js?id=G-QHFVDPSG80');
+    script.onerror = function () {
+      console.warn('GA4 failed to load. Analytics disabled for this session.');
+    };
+    document.head.appendChild(script);
+  }
+
+  var ga4Loaded = false;
+  function tryLoadGA4() {
+    if (!ga4Loaded) {
+      ga4Loaded = true;
+      loadGA4();
+    }
+  }
+
+  if (document.readyState === 'complete') {
+    setTimeout(tryLoadGA4, 100);
+  } else {
+    window.addEventListener('load', function () { setTimeout(tryLoadGA4, 100); }, { once: true });
+  }
+
+  ['click', 'scroll', 'touchstart', 'keydown'].forEach(function (eventName) {
+    window.addEventListener(eventName, tryLoadGA4, { once: true, passive: true });
   });
-
-  (function (w, d, s, l, i) {
-    var hostname = (w.location.hostname || '').toLowerCase();
-    var isLocalhost = /^(localhost|127\.0\.0\.1)$/.test(hostname);
-    var isProductionHost = /^(skillbridge\.pt|www\.skillbridge\.pt)$/.test(hostname);
-    if (isLocalhost || !isProductionHost) {
-      return;
-    }
-
-    w[l] = w[l] || [];
-    w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
-
-    function loadGTM() {
-      var f = d.getElementsByTagName(s)[0];
-      var j = d.createElement(s);
-      var dl = l !== 'dataLayer' ? '&l=' + l : '';
-      j.async = true;
-      j.src = toTrustedScriptURL('https://www.googletagmanager.com/gtm.js?id=' + i + dl);
-      j.onerror = function () {
-        console.warn('GTM failed to load. Analytics disabled for this session.');
-      };
-      if (f && f.parentNode) {
-        f.parentNode.insertBefore(j, f);
-      } else {
-        d.head.appendChild(j);
-      }
-    }
-
-    var gtmLoaded = false;
-    function tryLoadGTM() {
-      if (!gtmLoaded) {
-        gtmLoaded = true;
-        loadGTM();
-      }
-    }
-
-    setTimeout(function () {
-      if (d.readyState === 'complete') {
-        setTimeout(tryLoadGTM, 4000);
-      } else {
-        w.addEventListener('load', function () { setTimeout(tryLoadGTM, 4000); }, { once: true });
-      }
-    }, 0);
-
-    ['click', 'scroll', 'touchstart', 'keydown'].forEach(function (eventName) {
-      w.addEventListener(eventName, tryLoadGTM, { once: true, passive: true });
-    });
-  })(window, document, 'script', 'dataLayer', 'GTM-KHGQ445F');
 
   var iconsLoaded = false;
   function loadIcons() {
