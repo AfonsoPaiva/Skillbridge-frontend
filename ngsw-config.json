@@ -28,5 +28,20 @@
         ]
       }
     }
+  ],
+  "dataGroups": [
+    {
+      "name": "analytics",
+      "urls": [
+        "https://www.googletagmanager.com/**",
+        "https://www.google-analytics.com/**",
+        "https://cdn.jsdelivr.net/**"
+      ],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "maxAge": "1h",
+        "maxSize": 10
+      }
+    }
   ]
 }
