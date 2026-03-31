@@ -100,6 +100,7 @@
         hasTrackedLoad = true;
         console.debug('GTM failed to load. Analytics disabled for this session.');
       };
+      
 
       setTimeout(function () {
         if (!hasTrackedLoad) {
