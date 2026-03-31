@@ -89,7 +89,6 @@
       j.async = true;
       j.src = toTrustedScriptURL('https://www.googletagmanager.com/gtm.js?id=' + i + dl);
       j.onerror = function () {
-        // GTM failed to load; this is expected on some networks or if blocking is enabled.
         console.warn('GTM failed to load. Analytics disabled for this session.');
       };
       if (f && f.parentNode) {
