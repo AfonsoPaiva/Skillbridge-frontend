@@ -189,6 +189,12 @@ export class ApiService {
     return this.http.get<ProjectMember[]>(`${this.base}/projects/${projectSlugOrId}/members`);
   }
 
+  getMyProjectApplications(projectSlugOrId: string | number): Observable<ProjectMember[]> {
+    return this.http.get<ProjectMember[]>(`${this.base}/projects/${projectSlugOrId}/my-applications`, {
+      headers: this.authHeaders()
+    });
+  }
+
   removeProjectMember(projectSlugOrId: string | number, memberId: number): Observable<{ message: string }> {
     return this.http.delete<{ message: string }>(`${this.base}/projects/${projectSlugOrId}/members/${memberId}`, {
       headers: this.authHeaders()

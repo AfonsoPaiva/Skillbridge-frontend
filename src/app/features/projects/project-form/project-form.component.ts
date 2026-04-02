@@ -7,7 +7,7 @@ import { Project } from '../../../core/models/models';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { startWith, debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
-import { safeAutocomplete } from '../../../core/utils/search.utils';
+import { rankedAutocomplete } from '../../../core/utils/search.utils';
 
 @Component({
   selector: 'app-project-form',
@@ -70,7 +70,7 @@ export class ProjectFormComponent implements OnInit {
     });
 
     // Load skills for role forms
-    this.api.listSkillsFlat().subscribe({ next: (s: string[]) => this.availableSkills = s });
+    this.api.listSkills().subscribe({ next: res => this.availableSkills = res.skills || [] });
 
     // Listen to status changes to update role validations
     this.form.get('status')?.valueChanges.subscribe((status: string) => {
@@ -256,11 +256,9 @@ export class ProjectFormComponent implements OnInit {
       map((query: string) => {
         const q = (query || '').trim();
         if (q.length === 0) {
-          // Show first 30 when no search query
           return this.availableSkills.slice(0, 30);
         }
-        // Use safeAutocomplete for word-by-word search
-        return safeAutocomplete(this.availableSkills, q, 50);
+        return rankedAutocomplete(this.availableSkills, q, 50);
       })
     );
     

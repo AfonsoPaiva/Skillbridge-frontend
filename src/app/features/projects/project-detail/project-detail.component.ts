@@ -26,6 +26,7 @@ export class ProjectDetailComponent implements OnInit {
   members: ProjectMember[] = [];
   loading = true;
   applyingRoleId: number | null = null; // Track which specific role is being applied to
+  appliedRoleIds = new Set<number>();   // Roles this user has already applied to
   deleteLoading = false;
 
   get isOwner(): boolean {
@@ -58,6 +59,12 @@ export class ProjectDetailComponent implements OnInit {
             next: (m: ProjectMember[]) => this.members = m,
             error: () => {}
           });
+          this.api.getMyProjectApplications(slug).subscribe({
+            next: (apps: ProjectMember[]) => {
+              apps.forEach(a => { if (a.role_id) this.appliedRoleIds.add(a.role_id); });
+            },
+            error: () => {}
+          });
         }
       },
       error: () => { this.loading = false; this.router.navigate(['/projects']); }
@@ -81,9 +88,12 @@ export class ProjectDetailComponent implements OnInit {
     this.api.applyToProject(this.project!.slug, roleId).subscribe({
       next: () => {
         this.snack.open('Candidatura enviada!', 'Fechar', { duration: 3000 });
+        if (roleId) this.appliedRoleIds.add(roleId);
         this.applyingRoleId = null;
       },
       error: (e: HttpErrorResponse) => {
+        // 409 = already applied — mark as applied so UI reflects state
+        if (e.status === 409 && roleId) this.appliedRoleIds.add(roleId);
         this.snack.open(e?.error?.error || 'Erro ao candidatar-se.', 'Fechar', { duration: 4000 });
         this.applyingRoleId = null;
       }
