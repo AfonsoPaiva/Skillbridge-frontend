@@ -1,20 +1,32 @@
-import { Component, OnInit, ElementRef, ViewChild, HostListener } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
+import { Component, OnInit, OnDestroy, ElementRef, ViewChild, HostListener } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../../core/services/api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Project } from '../../../core/models/models';
+import { Project, SkillSection } from '../../../core/models/models';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { startWith, debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
-import { rankedAutocomplete } from '../../../core/utils/search.utils';
+import { Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { rankedAutocomplete, sanitizeInput } from '../../../core/utils/search.utils';
+
+interface DisplaySkillSection extends SkillSection {
+  totalSkills: number;
+  hiddenSkillsCount: number;
+}
+
+interface RoleSkillState {
+  searchControl: FormControl;
+  filteredSections: DisplaySkillSection[];
+  expandedSections: Set<string>;
+  hasActiveSearch: boolean;
+}
 
 @Component({
   selector: 'app-project-form',
   templateUrl: './project-form.component.html',
   styleUrls: ['./project-form.component.scss']
 })
-export class ProjectFormComponent implements OnInit {
+export class ProjectFormComponent implements OnInit, OnDestroy {
   @ViewChild('editorFrame') editorFrame?: ElementRef<HTMLDivElement>;
 
   form!: FormGroup;
@@ -23,6 +35,7 @@ export class ProjectFormComponent implements OnInit {
   isEdit = false;
   projectSlug: string | null = null;
   availableSkills: string[] = [];
+  availableSkillSections: SkillSection[] = [];
   imagePreview: string | null = null;
   uploadingImage = false;
   rawImageSrc: string | null = null;
@@ -40,8 +53,9 @@ export class ProjectFormComponent implements OnInit {
   private startPosX = 50;
   private startPosY = 50;
   
-  // Map to store filtered skills observables for each role
-  private roleSkillFilters = new Map<number, Observable<string[]>>();
+  roleSkillStates: RoleSkillState[] = [];
+  private roleSubscriptions: Subscription[] = [];
+  private readonly INITIAL_PER_SECTION = 12;
 
   statusOptions = [
     { value: 'open', label: 'Aberto — aceitar candidaturas' },
@@ -70,7 +84,15 @@ export class ProjectFormComponent implements OnInit {
     });
 
     // Load skills for role forms
-    this.api.listSkills().subscribe({ next: res => this.availableSkills = res.skills || [] });
+    this.api.listSkills().subscribe({
+      next: res => {
+        this.availableSkills = res.skills || [];
+        this.availableSkillSections = res.sections || [];
+        this.roleSkillStates.forEach(state =>
+          this.updateStateFilteredSections(state, state.searchControl.value)
+        );
+      }
+    });
 
     // Listen to status changes to update role validations
     this.form.get('status')?.valueChanges.subscribe((status: string) => {
@@ -105,21 +127,36 @@ export class ProjectFormComponent implements OnInit {
   addRole(data?: any): void {
     const currentStatus = this.form.get('status')?.value;
     const isCompleted = currentStatus === 'completed';
-    
+
     const rg = this.fb.group({
       title: [data?.title || '', isCompleted ? [] : [Validators.required]],
       description: [data?.description || ''],
       skill_name: [data?.skill_name || ''],
       spots: [data?.spots || 1, isCompleted ? [] : [Validators.required, Validators.min(1)]]
     });
-    const index = this.roles.length;
     this.roles.push(rg);
-    this.setupRoleSkillFilter(index, rg);
+
+    const state: RoleSkillState = {
+      searchControl: new FormControl(''),
+      filteredSections: [],
+      expandedSections: new Set<string>(),
+      hasActiveSearch: false
+    };
+    this.roleSkillStates.push(state);
+    this.updateStateFilteredSections(state, '');
+
+    const sub = state.searchControl.valueChanges.pipe(
+      debounceTime(150),
+      distinctUntilChanged()
+    ).subscribe(query => this.updateStateFilteredSections(state, query ?? ''));
+    this.roleSubscriptions.push(sub);
   }
 
   removeRole(i: number): void {
     this.roles.removeAt(i);
-    this.roleSkillFilters.delete(i);
+    this.roleSubscriptions[i]?.unsubscribe();
+    this.roleSubscriptions.splice(i, 1);
+    this.roleSkillStates.splice(i, 1);
   }
 
   onImageChange(event: Event): void {
@@ -245,26 +282,67 @@ export class ProjectFormComponent implements OnInit {
     });
   }
   
-  private setupRoleSkillFilter(index: number, roleGroup: FormGroup): void {
-    const skillControl = roleGroup.get('skill_name');
-    if (!skillControl) return;
-    
-    const filtered$ = skillControl.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300), // Increased for better performance with 300+ items
-      distinctUntilChanged(),
-      map((query: string) => {
-        const q = (query || '').trim();
-        if (q.length === 0) {
-          return this.availableSkills.slice(0, 30);
-        }
-        return rankedAutocomplete(this.availableSkills, q, 50);
-      })
-    );
-    
-    this.roleSkillFilters.set(index, filtered$);
+  ngOnDestroy(): void {
+    this.roleSubscriptions.forEach(s => s.unsubscribe());
   }
-  
+
+  private updateStateFilteredSections(state: RoleSkillState, rawQuery: string): void {
+    const query = sanitizeInput(rawQuery.trim());
+    state.hasActiveSearch = query.length > 0;
+
+    if (query.length === 0) {
+      state.filteredSections = this.availableSkillSections.map(section => {
+        const isExpanded = state.expandedSections.has(section.id);
+        const limit = isExpanded ? section.skills.length : this.INITIAL_PER_SECTION;
+        const visible = section.skills.slice(0, limit);
+        return {
+          ...section,
+          skills: visible,
+          totalSkills: section.skills.length,
+          hiddenSkillsCount: Math.max(0, section.skills.length - visible.length)
+        };
+      }).filter(s => s.skills.length > 0);
+    } else {
+      state.filteredSections = this.availableSkillSections.map(section => {
+        const matched = rankedAutocomplete(section.skills, query, 40);
+        return {
+          ...section,
+          skills: matched,
+          totalSkills: section.skills.length,
+          hiddenSkillsCount: 0
+        };
+      }).filter(s => s.skills.length > 0);
+    }
+  }
+
+  setRoleSkill(index: number, skill: string): void {
+    const roleGroup = this.roles.at(index) as FormGroup;
+    const current = roleGroup.get('skill_name')?.value;
+    roleGroup.get('skill_name')?.setValue(current === skill ? '' : skill);
+  }
+
+  clearRoleSkill(index: number): void {
+    (this.roles.at(index) as FormGroup).get('skill_name')?.setValue('');
+  }
+
+  clearRoleSkillSearch(index: number): void {
+    this.roleSkillStates[index]?.searchControl.setValue('');
+  }
+
+  showAllRoleSkillsInSection(index: number, sectionId: string): void {
+    const state = this.roleSkillStates[index];
+    if (!state) return;
+    state.expandedSections.add(sectionId);
+    this.updateStateFilteredSections(state, state.searchControl.value);
+  }
+
+  isRoleSkillSelected(index: number, skill: string): boolean {
+    return (this.roles.at(index) as FormGroup).get('skill_name')?.value === skill;
+  }
+
+  getRoleSkillValue(index: number): string {
+    return (this.roles.at(index) as FormGroup).get('skill_name')?.value ?? '';
+  }
 
   private updateRoleValidators(status: string): void {
     const isCompleted = status === 'completed';
@@ -290,9 +368,6 @@ export class ProjectFormComponent implements OnInit {
   
   get isCompletedProject(): boolean {
     return this.form.get('status')?.value === 'completed';
-  }
-  getFilteredSkills(index: number): Observable<string[]> {
-    return this.roleSkillFilters.get(index) || of(this.availableSkills);
   }
 
   private updateEditorDrag(clientX: number, clientY: number): void {

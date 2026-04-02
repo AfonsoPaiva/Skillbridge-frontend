@@ -148,30 +148,65 @@
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
-                  <mat-label>Competência</mat-label>
-                  <input matInput
-                         formControlName="skill_name"
-                         [matAutocomplete]="skillAuto"
-                         placeholder="Pesquisar competência…"
-                         autocomplete="off">
-                  <mat-icon matSuffix>search</mat-icon>
-                  <mat-autocomplete #skillAuto="matAutocomplete">
-                    <mat-option value="">— Sem competência específica —</mat-option>
-                    <mat-option *ngFor="let s of getFilteredSkills(i) | async" [value]="s">
-                      {{ s }}
-                    </mat-option>
-                    <mat-option *ngIf="(getFilteredSkills(i) | async)?.length === 0" disabled>
-                      Nenhuma competência encontrada.
-                    </mat-option>
-                  </mat-autocomplete>
-                </mat-form-field>
-
-                <mat-form-field appearance="outline">
                   <mat-label>Nº de vagas{{ isCompletedProject ? '' : ' *' }}</mat-label>
                   <input matInput type="number" formControlName="spots" min="1">
                   <mat-error *ngIf="r.get('spots')?.errors?.['required']">Obrigatório.</mat-error>
                   <mat-error *ngIf="r.get('spots')?.errors?.['min']">Mínimo 1.</mat-error>
                 </mat-form-field>
+
+                <!-- Skill picker (full width) -->
+                <div class="role-skill-picker full-col">
+                  <label class="role-skill-picker__label">Competência</label>
+
+                  <!-- Selected skill display -->
+                  <div class="role-selected-skill" *ngIf="getRoleSkillValue(i)">
+                    <mat-icon>check_circle</mat-icon>
+                    <span>{{ getRoleSkillValue(i) }}</span>
+                    <button mat-icon-button type="button" class="role-selected-skill__clear"
+                            (click)="clearRoleSkill(i)" matTooltip="Remover competência">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </div>
+
+                  <!-- Search field -->
+                  <mat-form-field appearance="outline" class="skill-search-field">
+                    <mat-label>Pesquisar competência</mat-label>
+                    <input matInput [formControl]="roleSkillStates[i].searchControl"
+                           placeholder="Ex: Python, Figma..." autocomplete="off">
+                    <button *ngIf="roleSkillStates[i].searchControl.value"
+                            mat-icon-button matSuffix type="button"
+                            (click)="clearRoleSkillSearch(i)">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                    <mat-icon matSuffix *ngIf="!roleSkillStates[i].searchControl.value">search</mat-icon>
+                  </mat-form-field>
+
+                  <!-- Sections -->
+                  <div class="skills-sections" *ngIf="roleSkillStates[i].filteredSections.length > 0">
+                    <div class="skills-section"
+                         *ngFor="let section of roleSkillStates[i].filteredSections">
+                      <h3>{{ section.label }}</h3>
+                      <div class="skills-grid">
+                        <button *ngFor="let s of section.skills"
+                                mat-stroked-button [disableRipple]="true"
+                                [color]="isRoleSkillSelected(i, s) ? 'primary' : ''"
+                                (click)="setRoleSkill(i, s)"
+                                type="button"
+                                class="skill-btn">{{ s }}</button>
+                      </div>
+                      <button *ngIf="section.hiddenSkillsCount > 0 && !roleSkillStates[i].hasActiveSearch"
+                              mat-button type="button" class="skills-section__more"
+                              (click)="showAllRoleSkillsInSection(i, section.id)">
+                        Mostrar mais {{ section.hiddenSkillsCount }} competência{{ section.hiddenSkillsCount !== 1 ? 's' : '' }}
+                      </button>
+                    </div>
+                  </div>
+
+                  <p class="no-skills-found"
+                     *ngIf="roleSkillStates[i].filteredSections.length === 0 && roleSkillStates[i].hasActiveSearch">
+                    Nenhuma competência encontrada.
+                  </p>
+                </div>
 
                 <mat-form-field appearance="outline" class="full-col">
                   <mat-label>Descrição da vaga</mat-label>
