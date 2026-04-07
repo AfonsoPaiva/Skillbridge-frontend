@@ -25,6 +25,7 @@ export class UniversityCarouselComponent implements AfterViewInit, OnDestroy {
   { name: 'Universidade de Aveiro', logo: 'https://storage-prtl-co.imgix.net/endor/organisations/772/logos/1547652569_logo_UA.png', url: 'https://www.ua.pt' },
   { name: 'Politécnico de Coimbra', logo: 'https://comum.rcaap.pt/server/api/core/bitstreams/4cf13649-f296-40ab-821b-a9e475b1100b/content', url: 'https://www.ipc.pt' },
   { name: 'Instituto Politécnico do Cávado e do Ave', logo: 'https://maismagazine.pt/wp-content/uploads/2025/02/IPCA-Logo_v2-1024x532.jpg', url: 'https://www.ipca.pt' },
+  { name: 'Instituto Politécnico de Tomar', logo: 'https://portugalpolytechnicuniversities.com/wp-content/uploads/2017/04/IP-TOMAR-768x761.png', url: 'https://www.ipt.pt' },
   { name: 'Universidade NOVA de Lisboa', logo: 'https://upload.wikimedia.org/wikipedia/commons/5/5c/Universidade_NOVA_de_Lisboa_logo_logotipo_2021.png', url: 'https://www.unl.pt' },
   { name: 'Instituto Politécnico do Porto', logo: 'https://www.fmam.pt/wp-content/uploads/2020/11/Politecnico-Porto-FAES.png', url: 'https://www.ipp.pt' },
   { name: 'Instituto Politécnico de Bragança', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCTLM-wJ4STDg2BesAKG-fsnKuQBiIlZJYgw&s', url: 'https://www.ipb.pt' },
