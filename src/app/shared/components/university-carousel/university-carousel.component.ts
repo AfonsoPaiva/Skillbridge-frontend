@@ -22,7 +22,7 @@ export class UniversityCarouselComponent implements AfterViewInit, OnDestroy {
  { name: 'Universidade do Minho', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Minho_University.svg/3840px-Minho_University.svg.png', url: 'https://www.uminho.pt' },
   { name: 'Universidade dos Açores', logo: 'https://uac.pt/files/Logos/UAc/logo_UAc.jpg', url: 'https://www.uac.pt' },
   { name: 'Universidade de Coimbra', logo: 'https://pages.uc.pt/site/assets/files/312072/logomarca_1290.1200x0.jpg', url: 'https://www.uc.pt' },
-  { name: 'Universidade de Aveiro', logo: 'https://storage-prtl-co.imgix.net/endor/organisations/772/logos/1547652569_logo_UA.png', url: 'https://www.ua.pt' },
+  // { name: 'Universidade de Aveiro', logo: 'https://storage-prtl-co.imgix.net/endor/organisations/772/logos/1547652569_logo_UA.png', url: 'https://www.ua.pt' },
   { name: 'Politécnico de Coimbra', logo: 'https://comum.rcaap.pt/server/api/core/bitstreams/4cf13649-f296-40ab-821b-a9e475b1100b/content', url: 'https://www.ipc.pt' },
   { name: 'Instituto Politécnico do Cávado e do Ave', logo: 'https://maismagazine.pt/wp-content/uploads/2025/02/IPCA-Logo_v2-1024x532.jpg', url: 'https://www.ipca.pt' },
   { name: 'Instituto Politécnico de Tomar', logo: 'https://portugalpolytechnicuniversities.com/wp-content/uploads/2017/04/IP-TOMAR-768x761.png', url: 'https://www.ipt.pt' },
