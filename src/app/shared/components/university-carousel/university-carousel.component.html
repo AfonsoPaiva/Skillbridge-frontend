@@ -1,7 +1,7 @@
 <div class="carousel-wrapper" (mouseenter)="pauseAutoplay()" (mouseleave)="resumeAutoplay()">
   <h3 class="carousel-title">Apoiado Por</h3>
 
-  <section class="splide university-splide" [class.is-static]="isStaticLayout" #universitySplide>
+  <section *ngIf="!isStaticLayout; else staticUniversities" class="splide university-splide" #universitySplide>
     <div class="splide__track">
       <ul class="splide__list">
         <li
@@ -10,10 +10,10 @@
           (click)="openUniversity(uni.url)"
           matRipple
           [matTooltip]="uni.name">
-          <img 
-            [src]="uni.logo" 
-            [alt]="uni.name" 
-            class="uni-logo" 
+          <img
+            [src]="uni.logo"
+            [alt]="uni.name"
+            class="uni-logo"
             draggable="false"
             loading="lazy"
             decoding="async"
@@ -23,4 +23,28 @@
       </ul>
     </div>
   </section>
+
+  <ng-template #staticUniversities>
+    <section class="university-static">
+      <div class="university-static-list">
+        <button
+          *ngFor="let uni of universities; trackBy: trackByUniversity"
+          type="button"
+          class="carousel-item university-static-item"
+          (click)="openUniversity(uni.url)"
+          matRipple
+          [matTooltip]="uni.name">
+          <img
+            [src]="uni.logo"
+            [alt]="uni.name"
+            class="uni-logo"
+            draggable="false"
+            loading="lazy"
+            decoding="async"
+            width="186"
+            height="96">
+        </button>
+      </div>
+    </section>
+  </ng-template>
 </div>

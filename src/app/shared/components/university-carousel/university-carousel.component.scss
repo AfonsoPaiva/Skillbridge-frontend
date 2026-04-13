@@ -60,22 +60,28 @@
   .splide__list {
     align-items: stretch;
   }
+}
 
-  &.is-static {
-    mask-image: none;
-    -webkit-mask-image: none;
+.university-static {
+  width: 90%;
+  margin: 0 auto;
+}
 
-    &::before,
-    &::after {
-      display: none;
-    }
+.university-static-list {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
 
-    .splide__list {
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-    }
-  }
+.university-static-item {
+  appearance: none;
+  font: inherit;
+  color: inherit;
+}
+
+.university-static-item::before {
+  display: none;
 }
 
 .carousel-item {
@@ -89,6 +95,7 @@
   background: white;
   border-radius: v.$radius-md;
   border: 1px solid v.$color-border;
+  outline: none;
   cursor: pointer;
   transition: all v.$transition-base;
   box-sizing: border-box;
@@ -123,10 +130,8 @@
 
 // Responsive
 @include m.md {
-  .university-splide.is-static {
-    .splide__list {
-      gap: 1rem;
-    }
+  .university-static-list {
+    gap: 1rem;
   }
 
   .carousel-item {
