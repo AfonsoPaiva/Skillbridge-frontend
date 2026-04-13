@@ -42,14 +42,16 @@ export class UniversityCarouselComponent implements AfterViewInit, OnDestroy {
 
   ];
 
-  universities: University[] = [];
-
-  constructor() {
-    // Initialize universities in constructor to avoid ExpressionChangedAfterItHasBeenCheckedError
-    this.universities = [...this.baseUniversities, ...this.baseUniversities, ...this.baseUniversities];
-  }
+  readonly isStaticLayout = this.baseUniversities.length <= 3;
+  universities: University[] = this.isStaticLayout
+    ? [...this.baseUniversities]
+    : [...this.baseUniversities, ...this.baseUniversities, ...this.baseUniversities];
 
   ngAfterViewInit(): void {
+    if (this.isStaticLayout) {
+      return;
+    }
+
     // Wait for Angular to render slides before initializing Splide
     setTimeout(() => this.initSplide(), 50);
   }
@@ -68,8 +70,8 @@ export class UniversityCarouselComponent implements AfterViewInit, OnDestroy {
     auto?.play();
   }
 
-  trackByName(_: number, item: University): string {
-    return item.name;
+  trackByUniversity(index: number, item: University): string {
+    return `${item.name}-${index}`;
   }
 
   openUniversity(url: string): void {
@@ -77,7 +79,7 @@ export class UniversityCarouselComponent implements AfterViewInit, OnDestroy {
   }
 
   private initSplide(): void {
-    if (!this.splideEl) {
+    if (this.isStaticLayout || !this.splideEl) {
       return;
     }
 

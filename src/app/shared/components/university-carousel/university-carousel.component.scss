@@ -60,6 +60,22 @@
   .splide__list {
     align-items: stretch;
   }
+
+  &.is-static {
+    mask-image: none;
+    -webkit-mask-image: none;
+
+    &::before,
+    &::after {
+      display: none;
+    }
+
+    .splide__list {
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+  }
 }
 
 .carousel-item {
@@ -107,6 +123,12 @@
 
 // Responsive
 @include m.md {
+  .university-splide.is-static {
+    .splide__list {
+      gap: 1rem;
+    }
+  }
+
   .carousel-item {
     width: 220px;
     min-width: 220px;

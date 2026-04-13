@@ -1,11 +1,11 @@
 <div class="carousel-wrapper" (mouseenter)="pauseAutoplay()" (mouseleave)="resumeAutoplay()">
   <h3 class="carousel-title">Apoiado Por</h3>
 
-  <section class="splide university-splide" #universitySplide>
+  <section class="splide university-splide" [class.is-static]="isStaticLayout" #universitySplide>
     <div class="splide__track">
       <ul class="splide__list">
         <li
-          *ngFor="let uni of universities; trackBy: trackByName"
+          *ngFor="let uni of universities; trackBy: trackByUniversity"
           class="splide__slide carousel-item"
           (click)="openUniversity(uni.url)"
           matRipple
