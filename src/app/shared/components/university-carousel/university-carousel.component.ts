@@ -32,12 +32,12 @@ export class UniversityCarouselComponent implements AfterViewInit, OnDestroy {
   //{ name: 'Universidade do Algarve', logo: 'https://upload.wikimedia.org/wikipedia/commons/9/99/Log%C3%B3tipo_da_Universidade_do_Algarve.jpg', url: 'https://www.ualg.pt' },
   //{ name: 'Instituto Universitário de Lisboa', logo: 'https://upload.wikimedia.org/wikipedia/commons/0/04/Logo_ISCTE_Instituto_Universit%C3%A1rio_de_Lisboa.svg', url: 'https://www.iscte-iul.pt' },
   //{ name: 'Instituto Politécnico de Lisboa', logo: 'https://portal.ipl.pt/logo_politecnico_lisboa_horizontal_rgb.png', url: 'https://www.ipl.pt' },
-  { name: 'Universidade de Trás-os-Montes e Alto Douro', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Logo_UTAD_Completo_Azul.svg/1280px-Logo_UTAD_Completo_Azul.svg.png', url: 'https://www.utad.pt' },
+  //{ name: 'Universidade de Trás-os-Montes e Alto Douro', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Logo_UTAD_Completo_Azul.svg/1280px-Logo_UTAD_Completo_Azul.svg.png', url: 'https://www.utad.pt' },
   //{ name: 'Universidade de Lisboa', logo: 'https://www.dges.gov.pt/simges/public/storage/files/instituicoes_uo/219_logotipo.jpg', url: 'https://www.ulisboa.pt' },
   //{ name: 'Politécnico de Leiria', logo: 'https://upload.wikimedia.org/wikipedia/commons/9/9a/Log%C3%B3tipo_Polit%C3%A9cnico_Leiria_01.png', url: 'https://www.ipleiria.pt' },
   //{ name: 'Universidade do Porto', logo: 'https://www.viversaudavel.pt/wp-content/uploads/uporto-noticia-1432129257374-1504021150976-e1582202582700.png', url: 'https://www.up.pt' },
   //{ name: 'Universidade de Évora', logo: 'https://prosaudemais.aulp.org/wp-content/uploads/2024/04/d644083a-781c-4cff-a186-60b6c88cceb1.png', url: 'https://www.uevora.pt' },
-  //{ name: 'Universidade da Beira Interior', logo: 'https://www.cm-covilha.pt/db/imagens/1027.1.1477311537.1temp?t.png', url: 'https://www.ubi.pt' },
+  { name: 'Universidade da Beira Interior', logo: 'https://www.cm-covilha.pt/db/imagens/1027.1.1477311537.1temp?t.png', url: 'https://www.ubi.pt' },
   //{ name: 'Instituto Politécnico de Viana do Castelo', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLN_NO2X0HCj3ClVJTCrqarwLzfL9chLEvAQ&s', url: 'https://www.ipvc.pt' },
 
   ];
