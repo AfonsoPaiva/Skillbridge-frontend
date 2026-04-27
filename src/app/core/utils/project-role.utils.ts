@@ -53,6 +53,19 @@ export function getProjectSkillLabels(
   return labels;
 }
 
+export function getProjectCardSkillLabels(
+  roles: Array<Pick<ProjectRole, 'skill_names' | 'skill_name' | 'title'>> | null | undefined,
+  limit: number = 3,
+  options: RoleSkillOptions = { fallbackToTitle: true }
+): string[] {
+  const labels = getProjectSkillLabels(roles, options);
+  if (labels.length <= limit) {
+    return labels;
+  }
+
+  return [...labels.slice(0, limit), '...'];
+}
+
 function normalizeSkillList(skillNames: string[] | null | undefined): string[] {
   if (!Array.isArray(skillNames)) {
     return [];

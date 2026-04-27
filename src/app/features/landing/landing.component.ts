@@ -5,7 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Project } from '../../core/models/models';
-import { getProjectSkillLabels } from '../../core/utils/project-role.utils';
+import { getProjectCardSkillLabels } from '../../core/utils/project-role.utils';
 import {
   trigger, transition, style, animate, stagger, query
 } from '@angular/animations';
@@ -41,7 +41,7 @@ interface BeforeInstallPromptEvent extends Event {
   ]
 })
 export class LandingComponent implements OnInit, AfterViewInit {
-  readonly getProjectSkillLabels = getProjectSkillLabels;
+  readonly getProjectCardSkillLabels = getProjectCardSkillLabels;
   @ViewChild('donationSection') donationSection!: ElementRef;
   
   projects: Project[] = [];
