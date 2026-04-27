@@ -19,18 +19,22 @@
         <!-- Title -->
         <mat-form-field appearance="outline">
           <mat-label>Título do projeto *</mat-label>
-          <input matInput formControlName="title" placeholder="Ex: App de partilha de receitas">
+          <input matInput formControlName="title" placeholder="Ex: App de partilha de receitas" [maxlength]="projectTitleMaxLength">
+          <mat-hint align="end">{{ (form.get('title')?.value?.length || 0) }}/{{ projectTitleMaxLength }}</mat-hint>
           <mat-error *ngIf="form.get('title')?.errors?.['required']">O título é obrigatório.</mat-error>
           <mat-error *ngIf="form.get('title')?.errors?.['minlength']">Mínimo 3 caracteres.</mat-error>
+          <mat-error *ngIf="form.get('title')?.errors?.['maxlength']">Máximo {{ projectTitleMaxLength }} caracteres.</mat-error>
         </mat-form-field>
 
         <!-- Description -->
         <mat-form-field appearance="outline">
           <mat-label>Descrição *</mat-label>
-          <textarea matInput formControlName="description" rows="5"
+          <textarea matInput formControlName="description" rows="5" [maxlength]="projectDescriptionMaxLength"
                     placeholder="Descreve o projeto, os objetivos e o que vais construir..."></textarea>
+          <mat-hint align="end">{{ (form.get('description')?.value?.length || 0) }}/{{ projectDescriptionMaxLength }}</mat-hint>
           <mat-error *ngIf="form.get('description')?.errors?.['required']">A descrição é obrigatória.</mat-error>
           <mat-error *ngIf="form.get('description')?.errors?.['minlength']">Mínimo 10 caracteres.</mat-error>
+          <mat-error *ngIf="form.get('description')?.errors?.['maxlength']">Máximo {{ projectDescriptionMaxLength }} caracteres.</mat-error>
         </mat-form-field>
 
         <!-- Status -->
@@ -143,8 +147,10 @@
               <div class="role-form__grid">
                 <mat-form-field appearance="outline">
                   <mat-label>Título da vaga{{ isCompletedProject ? '' : ' *' }}</mat-label>
-                  <input matInput formControlName="title" placeholder="Ex: Desenvolvedor Frontend">
+                  <input matInput formControlName="title" placeholder="Ex: Desenvolvedor Frontend" [maxlength]="roleTitleMaxLength">
+                  <mat-hint align="end">{{ (r.get('title')?.value?.length || 0) }}/{{ roleTitleMaxLength }}</mat-hint>
                   <mat-error *ngIf="r.get('title')?.errors?.['required']">Obrigatório.</mat-error>
+                  <mat-error *ngIf="r.get('title')?.errors?.['maxlength']">Máximo {{ roleTitleMaxLength }} caracteres.</mat-error>
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
@@ -212,8 +218,10 @@
 
                 <mat-form-field appearance="outline" class="full-col">
                   <mat-label>Descrição da vaga</mat-label>
-                  <textarea matInput formControlName="description" rows="2"
+                  <textarea matInput formControlName="description" rows="2" [maxlength]="roleDescriptionMaxLength"
                             placeholder="O que irá fazer esta pessoa no projeto..."></textarea>
+                  <mat-hint align="end">{{ (r.get('description')?.value?.length || 0) }}/{{ roleDescriptionMaxLength }}</mat-hint>
+                  <mat-error *ngIf="r.get('description')?.errors?.['maxlength']">Máximo {{ roleDescriptionMaxLength }} caracteres.</mat-error>
                 </mat-form-field>
               </div>
             </div>

@@ -30,6 +30,11 @@ interface RoleSkillState {
 export class ProjectFormComponent implements OnInit, OnDestroy {
   @ViewChild('editorFrame') editorFrame?: ElementRef<HTMLDivElement>;
 
+  readonly projectTitleMaxLength = 80;
+  readonly projectDescriptionMaxLength = 320;
+  readonly roleTitleMaxLength = 60;
+  readonly roleDescriptionMaxLength = 180;
+
   form!: FormGroup;
   loading = false;
   submitting = false;
@@ -77,8 +82,8 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      title: ['', [Validators.required, Validators.minLength(3)]],
-      description: ['', [Validators.required, Validators.minLength(10)]],
+      title: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(this.projectTitleMaxLength)]],
+      description: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(this.projectDescriptionMaxLength)]],
       status: ['open', Validators.required],
       image_url: [''],
       roles: this.fb.array([])
@@ -131,10 +136,10 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     const selectedSkills = getRoleSkillNames(data);
 
     const rg = this.fb.group({
-      title: [data?.title || '', isCompleted ? [] : [Validators.required]],
-      description: [data?.description || ''],
+      title: [data?.title || '', this.getRoleTitleValidators(isCompleted)],
+      description: [data?.description || '', [Validators.maxLength(this.roleDescriptionMaxLength)]],
       skill_names: [selectedSkills],
-      spots: [data?.spots || 1, isCompleted ? [] : [Validators.required, Validators.min(1)]]
+      spots: [data?.spots || 1, this.getRoleSpotsValidators(isCompleted)]
     });
     this.roles.push(rg);
 
@@ -362,24 +367,32 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     this.roles.controls.forEach((roleGroup: any) => {
       const titleControl = roleGroup.get('title');
       const spotsControl = roleGroup.get('spots');
+      const descriptionControl = roleGroup.get('description');
       
-      if (isCompleted) {
-        // Remove required validators for completed projects
-        titleControl?.clearValidators();
-        spotsControl?.clearValidators();
-      } else {
-        // Add required validators for non-completed projects
-        titleControl?.setValidators([Validators.required]);
-        spotsControl?.setValidators([Validators.required, Validators.min(1)]);
-      }
+      titleControl?.setValidators(this.getRoleTitleValidators(isCompleted));
+      spotsControl?.setValidators(this.getRoleSpotsValidators(isCompleted));
+      descriptionControl?.setValidators([Validators.maxLength(this.roleDescriptionMaxLength)]);
       
       titleControl?.updateValueAndValidity();
       spotsControl?.updateValueAndValidity();
+      descriptionControl?.updateValueAndValidity();
     });
   }
   
   get isCompletedProject(): boolean {
     return this.form.get('status')?.value === 'completed';
+  }
+
+  private getRoleTitleValidators(isCompleted: boolean) {
+    return isCompleted
+      ? [Validators.maxLength(this.roleTitleMaxLength)]
+      : [Validators.required, Validators.maxLength(this.roleTitleMaxLength)];
+  }
+
+  private getRoleSpotsValidators(isCompleted: boolean) {
+    return isCompleted
+      ? []
+      : [Validators.required, Validators.min(1)];
   }
 
   private updateEditorDrag(clientX: number, clientY: number): void {

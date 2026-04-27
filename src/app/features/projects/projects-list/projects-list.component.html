@@ -58,9 +58,8 @@
           <h3 [attr.title]="p.title">{{ getProjectCardTitle(p.title) }}</h3>
           <p [attr.title]="p.description">{{ getProjectCardDescription(p.description) }}</p>
           <div class="pcard__skills"
-               *ngIf="getProjectCardSkillText(p.roles) as skillText"
-               [attr.title]="skillText">
-            {{ skillText }}
+               [attr.title]="getProjectCardSkillText(p.roles) || null">
+            {{ getProjectCardSkillText(p.roles) }}
           </div>
         </mat-card-content>
       </mat-card>

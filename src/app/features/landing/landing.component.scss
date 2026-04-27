@@ -422,6 +422,7 @@
 .projects-grid {
   display: grid;
   grid-template-columns: 1fr;
+  align-items: stretch;
   gap: v.$space-5;
 
   @include m.md { grid-template-columns: repeat(2, 1fr); }
@@ -479,8 +480,10 @@
   &__body {
     padding: v.$space-4 !important;
     display: flex;
+    flex: 1 1 auto;
     flex-direction: column;
     gap: v.$space-2;
+    margin: 0 !important;
   }
 
   &__title {
@@ -510,6 +513,10 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+
+    &:empty::before {
+      content: '\00a0';
+    }
   }
 }
 
