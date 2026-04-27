@@ -7,6 +7,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { Project } from '../../core/models/models';
 import {
   getProjectCardDescription,
+  getProjectCardSkillLabels,
   getProjectCardSkillText,
   getProjectCardTitle
 } from '../../core/utils/project-role.utils';
@@ -46,6 +47,7 @@ interface BeforeInstallPromptEvent extends Event {
 })
 export class LandingComponent implements OnInit, AfterViewInit {
   readonly getProjectCardDescription = getProjectCardDescription;
+  readonly getProjectCardSkillLabels = getProjectCardSkillLabels;
   readonly getProjectCardSkillText = getProjectCardSkillText;
   readonly getProjectCardTitle = getProjectCardTitle;
   @ViewChild('donationSection') donationSection!: ElementRef;

@@ -7,6 +7,7 @@ import { trigger, transition, style, animate, stagger, query } from '@angular/an
 import { flexibleSearchMultiField, sanitizeInput, debounce } from '../../../core/utils/search.utils';
 import {
   getProjectCardDescription,
+  getProjectCardSkillLabels,
   getProjectCardSkillText,
   getProjectCardTitle,
   getProjectSkillLabels
@@ -35,6 +36,7 @@ import {
 })
 export class ProjectsListComponent implements OnInit {
   readonly getProjectCardDescription = getProjectCardDescription;
+  readonly getProjectCardSkillLabels = getProjectCardSkillLabels;
   readonly getProjectCardSkillText = getProjectCardSkillText;
   readonly getProjectCardTitle = getProjectCardTitle;
   readonly getProjectSkillLabels = getProjectSkillLabels;

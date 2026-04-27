@@ -260,16 +260,28 @@
 
   &__skills {
     margin-top: auto;
-    min-height: 20px;
+    min-height: 28px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: nowrap;
+    overflow: hidden;
     font-size: 12px;
     line-height: 20px;
     color: v.$color-text-soft;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 
-    &:empty::before {
-      content: '\00a0';
+    .chip--card-skill {
+      flex: 0 1 auto;
+      min-width: 0;
+      max-width: calc(50% - 2px);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      &:last-child {
+        flex: 0 0 auto;
+        max-width: none;
+      }
     }
   }
 }

@@ -143,7 +143,9 @@
           <p class="project-card__desc" [attr.title]="p.description">{{ getProjectCardDescription(p.description) }}</p>
           <div class="project-card__skills"
                [attr.title]="getProjectCardSkillText(p.roles) || null">
-            {{ getProjectCardSkillText(p.roles) }}
+            <span class="chip chip--card-skill" *ngFor="let skill of getProjectCardSkillLabels(p.roles, 2)">
+              {{ skill }}
+            </span>
           </div>
         </mat-card-content>
       </mat-card>

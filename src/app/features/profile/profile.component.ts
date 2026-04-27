@@ -10,6 +10,7 @@ import { RateUserDialogComponent } from './rate-user-dialog/rate-user-dialog.com
 import { FollowListDialogComponent } from './follow-list-dialog/follow-list-dialog.component';
 import {
   getProjectCardDescription,
+  getProjectCardSkillLabels,
   getProjectCardSkillText,
   getProjectCardTitle
 } from '../../core/utils/project-role.utils';
@@ -37,6 +38,7 @@ import {
 })
 export class ProfileComponent implements OnInit {
   readonly getProjectCardDescription = getProjectCardDescription;
+  readonly getProjectCardSkillLabels = getProjectCardSkillLabels;
   readonly getProjectCardSkillText = getProjectCardSkillText;
   readonly getProjectCardTitle = getProjectCardTitle;
   user: User | null = null;
