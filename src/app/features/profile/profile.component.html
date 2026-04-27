@@ -165,8 +165,8 @@
                 <mat-card-content class="pcard__body">
                   <h3>{{ p.title }}</h3>
                   <p>{{ p.description }}</p>
-                  <div class="pcard__tags" *ngIf="p.roles?.length">
-                    <span class="chip" *ngFor="let r of p.roles?.slice(0,4)">{{ r.skill_name || r.title }}</span>
+                  <div class="pcard__tags" *ngIf="getProjectSkillLabels(p.roles).length">
+                    <span class="chip" *ngFor="let skill of getProjectSkillLabels(p.roles)">{{ skill }}</span>
                   </div>
                 </mat-card-content>
               </mat-card>

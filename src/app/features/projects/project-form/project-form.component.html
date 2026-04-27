@@ -156,16 +156,18 @@
 
                 <!-- Skill picker (full width) -->
                 <div class="role-skill-picker full-col">
-                  <label class="role-skill-picker__label">Competência</label>
+                  <label class="role-skill-picker__label">Competências</label>
 
-                  <!-- Selected skill display -->
-                  <div class="role-selected-skill" *ngIf="getRoleSkillValue(i)">
-                    <mat-icon>check_circle</mat-icon>
-                    <span>{{ getRoleSkillValue(i) }}</span>
-                    <button mat-icon-button type="button" class="role-selected-skill__clear"
-                            (click)="clearRoleSkill(i)" matTooltip="Remover competência">
-                      <mat-icon>close</mat-icon>
-                    </button>
+                  <!-- Selected skills display -->
+                  <div class="role-selected-skills" *ngIf="getRoleSkillValues(i).length">
+                    <div class="role-selected-skill" *ngFor="let skill of getRoleSkillValues(i)">
+                      <mat-icon>check_circle</mat-icon>
+                      <span>{{ skill }}</span>
+                      <button mat-icon-button type="button" class="role-selected-skill__clear"
+                              (click)="clearRoleSkill(i, skill)" matTooltip="Remover competência">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                    </div>
                   </div>
 
                   <!-- Search field -->

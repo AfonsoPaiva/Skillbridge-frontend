@@ -63,7 +63,9 @@
             <mat-card class="role-card" *ngFor="let r of project.roles">
               <mat-card-content>
                 <div class="role-card__header">
-                  <span class="chip">{{ r.skill_name || r.title }}</span>
+                  <div class="role-card__skills" *ngIf="getRoleSkillNames(r).length">
+                    <span class="chip" *ngFor="let skill of getRoleSkillNames(r)">{{ skill }}</span>
+                  </div>
                   <span class="role-card__spots">{{ r.filled }}/{{ r.spots }} preenchidas</span>
                 </div>
                 <h3>{{ r.title }}</h3>

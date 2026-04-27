@@ -4,6 +4,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { User, Project } from '../../core/models/models';
 import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
 import { Subscription } from 'rxjs';
+import { getProjectSkillLabels, getRoleSkillNames } from '../../core/utils/project-role.utils';
 
 @Component({
   selector: 'app-dashboard',
@@ -27,6 +28,7 @@ import { Subscription } from 'rxjs';
   ]
 })
 export class DashboardComponent implements OnInit {
+  readonly getProjectSkillLabels = getProjectSkillLabels;
   user: User | null = null;
   projects: Project[] = [];
   recommendedProjects: Project[] = [];
@@ -89,14 +91,14 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
+    const userSkills = new Set(this.user.skills.map(skill => skill.toLowerCase()));
+
     // Filter projects that have roles matching at least one of the user's skills
     this.recommendedProjects = this.projects.filter(project => {
       if (!project.roles || project.roles.length === 0) return false;
       
-      return project.roles.some(role => 
-        this.user!.skills.some(userSkill => 
-          role.skill_name?.toLowerCase() === userSkill.toLowerCase()
-        )
+      return project.roles.some(role =>
+        getRoleSkillNames(role).some(skill => userSkills.has(skill.toLowerCase()))
       );
     });
   }

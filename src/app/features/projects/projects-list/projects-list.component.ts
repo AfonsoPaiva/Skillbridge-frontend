@@ -5,6 +5,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { Project } from '../../../core/models/models';
 import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
 import { flexibleSearchMultiField, sanitizeInput, debounce } from '../../../core/utils/search.utils';
+import { getProjectSkillLabels } from '../../../core/utils/project-role.utils';
 
 @Component({
   selector: 'app-projects-list',
@@ -28,6 +29,7 @@ import { flexibleSearchMultiField, sanitizeInput, debounce } from '../../../core
   ]
 })
 export class ProjectsListComponent implements OnInit {
+  readonly getProjectSkillLabels = getProjectSkillLabels;
   projects: Project[] = [];
   allProjects: Project[] = []; // Cache of all projects for client-side filtering
   filtered: Project[] = [];
@@ -106,7 +108,7 @@ export class ProjectsListComponent implements OnInit {
         flexibleSearchMultiField(
           p,
           sanitized,
-          ['title', 'description', (proj) => proj.roles?.map(r => r.skill_name || r.title).join(' ')]
+          ['title', 'description', (proj) => getProjectSkillLabels(proj.roles).join(' ')]
         )
       );
     }

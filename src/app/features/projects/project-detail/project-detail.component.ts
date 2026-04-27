@@ -7,6 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { HttpErrorResponse } from '@angular/common/http';
+import { getRoleSkillNames } from '../../../core/utils/project-role.utils';
 
 @Component({
   selector: 'app-project-detail',
@@ -22,6 +23,7 @@ import { HttpErrorResponse } from '@angular/common/http';
   ]
 })
 export class ProjectDetailComponent implements OnInit {
+  readonly getRoleSkillNames = getRoleSkillNames;
   project: Project | null = null;
   members: ProjectMember[] = [];
   loading = true;

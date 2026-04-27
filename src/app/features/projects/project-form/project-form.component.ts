@@ -8,6 +8,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { rankedAutocomplete, sanitizeInput } from '../../../core/utils/search.utils';
+import { getRoleSkillNames } from '../../../core/utils/project-role.utils';
 
 interface DisplaySkillSection extends SkillSection {
   totalSkills: number;
@@ -127,11 +128,12 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
   addRole(data?: any): void {
     const currentStatus = this.form.get('status')?.value;
     const isCompleted = currentStatus === 'completed';
+    const selectedSkills = getRoleSkillNames(data);
 
     const rg = this.fb.group({
       title: [data?.title || '', isCompleted ? [] : [Validators.required]],
       description: [data?.description || ''],
-      skill_name: [data?.skill_name || ''],
+      skill_names: [selectedSkills],
       spots: [data?.spots || 1, isCompleted ? [] : [Validators.required, Validators.min(1)]]
     });
     this.roles.push(rg);
@@ -317,12 +319,21 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
 
   setRoleSkill(index: number, skill: string): void {
     const roleGroup = this.roles.at(index) as FormGroup;
-    const current = roleGroup.get('skill_name')?.value;
-    roleGroup.get('skill_name')?.setValue(current === skill ? '' : skill);
+    const current = this.getRoleSkillValues(index);
+    const next = current.includes(skill)
+      ? current.filter(existing => existing !== skill)
+      : [...current, skill];
+    roleGroup.get('skill_names')?.setValue(next);
   }
 
-  clearRoleSkill(index: number): void {
-    (this.roles.at(index) as FormGroup).get('skill_name')?.setValue('');
+  clearRoleSkill(index: number, skill?: string): void {
+    const control = (this.roles.at(index) as FormGroup).get('skill_names');
+    if (!skill) {
+      control?.setValue([]);
+      return;
+    }
+
+    control?.setValue(this.getRoleSkillValues(index).filter(existing => existing !== skill));
   }
 
   clearRoleSkillSearch(index: number): void {
@@ -337,11 +348,12 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
   }
 
   isRoleSkillSelected(index: number, skill: string): boolean {
-    return (this.roles.at(index) as FormGroup).get('skill_name')?.value === skill;
+    return this.getRoleSkillValues(index).includes(skill);
   }
 
-  getRoleSkillValue(index: number): string {
-    return (this.roles.at(index) as FormGroup).get('skill_name')?.value ?? '';
+  getRoleSkillValues(index: number): string[] {
+    const value = (this.roles.at(index) as FormGroup).get('skill_names')?.value;
+    return Array.isArray(value) ? value : [];
   }
 
   private updateRoleValidators(status: string): void {

@@ -268,6 +268,13 @@ mat-divider { margin: v.$space-4 0 !important; }
   .skill-search-field { width: 100%; }
 }
 
+.role-selected-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: v.$space-2;
+  margin-bottom: v.$space-2;
+}
+
 .role-selected-skill {
   display: flex;
   align-items: center;
@@ -277,7 +284,6 @@ mat-divider { margin: v.$space-4 0 !important; }
   background: rgba(104, 0, 122, 0.08);
   border-radius: 999px;
   width: fit-content;
-  margin-bottom: v.$space-2;
 
   > mat-icon:first-child {
     color: v.$color-primary;

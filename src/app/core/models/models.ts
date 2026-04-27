@@ -46,7 +46,8 @@ export interface ProjectRole {
   project_id: number;
   title: string;
   description: string;
-  skill_name: string;
+  skill_names?: string[];
+  skill_name?: string;
   spots: number;
   filled: number;
 }

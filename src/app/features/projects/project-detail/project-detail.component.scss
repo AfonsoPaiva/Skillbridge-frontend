@@ -106,8 +106,16 @@
   &__header { 
     @include m.flex-between; 
     align-items: flex-start;
+    flex-wrap: wrap;
+    gap: v.$space-2;
     margin-bottom: v.$space-3; 
   }
+
+  &__skills {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px;
+	}
   
   &__spots { 
     font-size: 13px; 
