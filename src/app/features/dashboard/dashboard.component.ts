@@ -4,7 +4,13 @@ import { AuthService } from '../../core/services/auth.service';
 import { User, Project } from '../../core/models/models';
 import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
 import { Subscription } from 'rxjs';
-import { getProjectCardSkillLabels, getProjectSkillLabels, getRoleSkillNames } from '../../core/utils/project-role.utils';
+import {
+  getProjectCardDescription,
+  getProjectCardSkillText,
+  getProjectCardTitle,
+  getProjectSkillLabels,
+  getRoleSkillNames
+} from '../../core/utils/project-role.utils';
 
 @Component({
   selector: 'app-dashboard',
@@ -28,7 +34,9 @@ import { getProjectCardSkillLabels, getProjectSkillLabels, getRoleSkillNames } f
   ]
 })
 export class DashboardComponent implements OnInit {
-  readonly getProjectCardSkillLabels = getProjectCardSkillLabels;
+  readonly getProjectCardDescription = getProjectCardDescription;
+  readonly getProjectCardSkillText = getProjectCardSkillText;
+  readonly getProjectCardTitle = getProjectCardTitle;
   readonly getProjectSkillLabels = getProjectSkillLabels;
   user: User | null = null;
   projects: Project[] = [];

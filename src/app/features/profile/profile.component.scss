@@ -195,6 +195,9 @@
 
 .pcard {
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   overflow: hidden;
   border-radius: v.$radius-md !important;
   transition: transform v.$transition-base, box-shadow v.$transition-base !important;
@@ -229,9 +232,38 @@
 
   &__body {
     padding: v.$space-4;
-    h3 { font-size: 16px; font-weight: v.$font-weight-semibold; margin-bottom: v.$space-2; }
-    p { font-size: 14px; color: v.$color-text-soft; max-height: 40px; overflow: hidden; }
-    .pcard__tags { margin-top: v.$space-2; display: flex; flex-wrap: wrap; gap: v.$space-1; }
+    display: flex;
+    flex-direction: column;
+    gap: v.$space-2;
+
+    h3 {
+      font-size: 16px;
+      font-weight: v.$font-weight-semibold;
+      line-height: 1.35;
+      min-height: calc(1.35em * 2);
+      margin: 0;
+      @include m.truncate(2);
+    }
+
+    p {
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: calc(1.5em * 2);
+      color: v.$color-text-soft;
+      margin: 0;
+      @include m.truncate(2);
+    }
+  }
+
+  &__skills {
+    margin-top: auto;
+    min-height: 20px;
+    font-size: 12px;
+    line-height: 20px;
+    color: v.$color-text-soft;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 

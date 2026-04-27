@@ -5,7 +5,12 @@ import { AuthService } from '../../../core/services/auth.service';
 import { Project } from '../../../core/models/models';
 import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
 import { flexibleSearchMultiField, sanitizeInput, debounce } from '../../../core/utils/search.utils';
-import { getProjectCardSkillLabels, getProjectSkillLabels } from '../../../core/utils/project-role.utils';
+import {
+  getProjectCardDescription,
+  getProjectCardSkillText,
+  getProjectCardTitle,
+  getProjectSkillLabels
+} from '../../../core/utils/project-role.utils';
 
 @Component({
   selector: 'app-projects-list',
@@ -29,7 +34,9 @@ import { getProjectCardSkillLabels, getProjectSkillLabels } from '../../../core/
   ]
 })
 export class ProjectsListComponent implements OnInit {
-  readonly getProjectCardSkillLabels = getProjectCardSkillLabels;
+  readonly getProjectCardDescription = getProjectCardDescription;
+  readonly getProjectCardSkillText = getProjectCardSkillText;
+  readonly getProjectCardTitle = getProjectCardTitle;
   readonly getProjectSkillLabels = getProjectSkillLabels;
   projects: Project[] = [];
   allProjects: Project[] = []; // Cache of all projects for client-side filtering

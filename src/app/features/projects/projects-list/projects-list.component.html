@@ -55,10 +55,12 @@
           <span class="pcard__badge" [attr.data-status]="p.status">{{ getStatusLabel(p.status) }}</span>
         </div>
         <mat-card-content class="pcard__body">
-          <h3>{{ p.title }}</h3>
-          <p>{{ p.description }}</p>
-          <div class="pcard__tags" *ngIf="getProjectCardSkillLabels(p.roles).length">
-            <span class="chip" *ngFor="let skill of getProjectCardSkillLabels(p.roles)">{{ skill }}</span>
+          <h3 [attr.title]="p.title">{{ getProjectCardTitle(p.title) }}</h3>
+          <p [attr.title]="p.description">{{ getProjectCardDescription(p.description) }}</p>
+          <div class="pcard__skills"
+               *ngIf="getProjectCardSkillText(p.roles) as skillText"
+               [attr.title]="skillText">
+            {{ skillText }}
           </div>
         </mat-card-content>
       </mat-card>

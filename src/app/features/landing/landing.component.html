@@ -139,10 +139,12 @@
           </span>
         </div>
         <mat-card-content class="project-card__body">
-          <h3 class="project-card__title">{{ p.title }}</h3>
-          <p class="project-card__desc">{{ p.description }}</p>
-          <div class="project-card__roles" *ngIf="getProjectCardSkillLabels(p.roles).length">
-            <span class="chip" *ngFor="let skill of getProjectCardSkillLabels(p.roles)">{{ skill }}</span>
+          <h3 class="project-card__title" [attr.title]="p.title">{{ getProjectCardTitle(p.title) }}</h3>
+          <p class="project-card__desc" [attr.title]="p.description">{{ getProjectCardDescription(p.description) }}</p>
+          <div class="project-card__skills"
+               *ngIf="getProjectCardSkillText(p.roles) as skillText"
+               [attr.title]="skillText">
+            {{ skillText }}
           </div>
         </mat-card-content>
       </mat-card>

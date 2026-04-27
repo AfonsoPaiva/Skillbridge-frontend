@@ -66,6 +66,21 @@ export function getProjectCardSkillLabels(
   return [...labels.slice(0, limit), '...'];
 }
 
+export function getProjectCardSkillText(
+  roles: Array<Pick<ProjectRole, 'skill_names' | 'skill_name' | 'title'>> | null | undefined,
+  options: RoleSkillOptions = { fallbackToTitle: true }
+): string {
+  return getProjectSkillLabels(roles, options).join(' • ');
+}
+
+export function getProjectCardTitle(title: string | null | undefined, limit: number = 58): string {
+  return getTextPreview(title, limit);
+}
+
+export function getProjectCardDescription(description: string | null | undefined, limit: number = 110): string {
+  return getTextPreview(description, limit);
+}
+
 function normalizeSkillList(skillNames: string[] | null | undefined): string[] {
   if (!Array.isArray(skillNames)) {
     return [];
@@ -91,4 +106,13 @@ function normalizeSkillList(skillNames: string[] | null | undefined): string[] {
 
 function normalizeSingleValue(value: string | null | undefined): string {
   return typeof value === 'string' ? value.trim() : '';
+}
+
+function getTextPreview(value: string | null | undefined, limit: number): string {
+  const normalized = normalizeSingleValue(value).replace(/\s+/g, ' ');
+  if (normalized.length <= limit) {
+    return normalized;
+  }
+
+  return `${normalized.slice(0, Math.max(0, limit - 3)).trimEnd()}...`;
 }

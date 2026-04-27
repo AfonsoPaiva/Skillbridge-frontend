@@ -8,7 +8,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { RateUserDialogComponent } from './rate-user-dialog/rate-user-dialog.component';
 import { FollowListDialogComponent } from './follow-list-dialog/follow-list-dialog.component';
-import { getProjectCardSkillLabels } from '../../core/utils/project-role.utils';
+import {
+  getProjectCardDescription,
+  getProjectCardSkillText,
+  getProjectCardTitle
+} from '../../core/utils/project-role.utils';
 
 @Component({
   selector: 'app-profile',
@@ -32,7 +36,9 @@ import { getProjectCardSkillLabels } from '../../core/utils/project-role.utils';
   ]
 })
 export class ProfileComponent implements OnInit {
-  readonly getProjectCardSkillLabels = getProjectCardSkillLabels;
+  readonly getProjectCardDescription = getProjectCardDescription;
+  readonly getProjectCardSkillText = getProjectCardSkillText;
+  readonly getProjectCardTitle = getProjectCardTitle;
   user: User | null = null;
   userProjects: Project[] = [];
   loadingProjects = false;

@@ -430,6 +430,9 @@
 
 .project-card {
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   overflow: hidden;
   border-radius: v.$radius-md !important;
   transition: transform v.$transition-base, box-shadow v.$transition-base !important;
@@ -483,20 +486,30 @@
   &__title {
     font-size: 16px;
     font-weight: v.$font-weight-semibold;
+    line-height: 1.35;
+    min-height: calc(1.35em * 2);
     @include m.truncate(2);
+    margin: 0;
   }
 
   &__desc {
     font-size: 13px;
+    line-height: 1.5;
+    min-height: calc(1.5em * 2);
     color: v.$color-text-soft;
     @include m.truncate(2);
+    margin: 0;
   }
 
-  &__roles {
-    display: flex;
-    flex-wrap: wrap;
-    gap: v.$space-1;
-    margin-top: v.$space-1;
+  &__skills {
+    margin-top: auto;
+    min-height: 20px;
+    font-size: 12px;
+    line-height: 20px;
+    color: v.$color-text-soft;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
