@@ -5,6 +5,7 @@
     /^\/firebase-messaging-sw\.js(?:\?.*)?$/,
     /^https:\/\/www\.googletagmanager\.com\/gtag\/js\?id=G-QHFVDPSG80(?:\?.*)?$/,
     /^https:\/\/cdn\.jsdelivr\.net\/npm\/klaro@0\.7\.22\/dist\/klaro-no-css\.min\.js$/,
+    /^https:\/\/cdn\.mouseflow\.com\/projects\/18bc0cf5-3689-48d3-ad57-551634f35e7f\.js(?:\?.*)?$/,
     /^https:\/\/js\.stripe\.com\/(?:v3(?:\/.*)?|clover\/stripe\.js(?:\/.*)?)(?:\?.*)?$/,
     /^https:\/\/apis\.google\.com\/.*/,
     /^https:\/\/accounts\.google\.com\/.*/,
@@ -34,6 +35,24 @@
 
   function toTrustedScriptURL(value) {
     return trustedPolicy ? trustedPolicy.createScriptURL(value) : value;
+  }
+
+  function hasAnalyticsConsent() {
+    try {
+      var rawConsent = localStorage.getItem('klaro-sb');
+      if (!rawConsent) {
+        return true;
+      }
+
+      var parsedConsent = JSON.parse(rawConsent);
+      if (parsedConsent && typeof parsedConsent.analytics === 'boolean') {
+        return parsedConsent.analytics;
+      }
+    } catch (error) {
+      // If consent cannot be parsed, keep current behavior and load analytics.
+    }
+
+    return true;
   }
 
   if (window.trustedTypes && typeof window.trustedTypes.createPolicy === 'function') {
@@ -93,14 +112,42 @@
     }
   }
 
+  var mouseflowLoaded = false;
+  function loadMouseflow() {
+    if (mouseflowLoaded) {
+      return;
+    }
+
+    mouseflowLoaded = true;
+    window._mfq = window._mfq || [];
+
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.defer = true;
+    script.src = toTrustedScriptURL('https://cdn.mouseflow.com/projects/18bc0cf5-3689-48d3-ad57-551634f35e7f.js');
+    script.onerror = function () {
+      console.warn('Mouseflow failed to load. Heatmap disabled for this session.');
+    };
+    document.head.appendChild(script);
+  }
+
+  function tryLoadAnalyticsTools() {
+    if (!hasAnalyticsConsent()) {
+      return;
+    }
+
+    tryLoadGA4();
+    loadMouseflow();
+  }
+
   if (document.readyState === 'complete') {
-    setTimeout(tryLoadGA4, 100);
+    setTimeout(tryLoadAnalyticsTools, 100);
   } else {
-    window.addEventListener('load', function () { setTimeout(tryLoadGA4, 100); }, { once: true });
+    window.addEventListener('load', function () { setTimeout(tryLoadAnalyticsTools, 100); }, { once: true });
   }
 
   ['click', 'scroll', 'touchstart', 'keydown'].forEach(function (eventName) {
-    window.addEventListener(eventName, tryLoadGA4, { once: true, passive: true });
+    window.addEventListener(eventName, tryLoadAnalyticsTools, { once: true, passive: true });
   });
 
   var iconsLoaded = false;
@@ -216,6 +263,9 @@
     ],
     callback: function (consent, service) {
       var analyticsGranted = !!(consent && consent.analytics);
+      if (analyticsGranted) {
+        tryLoadAnalyticsTools();
+      }
       if (typeof window.gtag === 'function') {
         window.gtag('consent', 'update', {
           analytics_storage: analyticsGranted ? 'granted' : 'denied',
