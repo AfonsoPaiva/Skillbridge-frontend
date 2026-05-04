@@ -13,7 +13,13 @@
     /^https:\/\/recaptcha\.google\.com\/.*/,
     /^https:\/\/www\.gstatic\.com\/.*/,
     /^https:\/\/ssl\.gstatic\.com\/.*/,
-    /^https:\/\/www\.googleapis\.com\/.*/
+    /^https:\/\/www\.googleapis\.com\/.*/,
+    /^https:\/\/firebase\.google\.com\/.*/,
+    /^https:\/\/[a-z0-9\-]*\.firebaseio\.com\/.*/,
+    /^https:\/\/[a-z0-9\-]*\.firebaseapp\.com\/.*/,
+    /^https:\/\/identitytoolkit\.googleapis\.com\/.*/,
+    /^https:\/\/securetoken\.googleapis\.com\/.*/,
+    /^https:\/\/cdn\.jsdelivr\.net\/.*/
   ];
 
   var trustedPolicy = window.trustedTypes && typeof window.trustedTypes.createPolicy === 'function'
