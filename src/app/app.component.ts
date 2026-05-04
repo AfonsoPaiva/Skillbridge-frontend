@@ -175,11 +175,12 @@ export class AppComponent implements OnInit {
       const idToken = await result.user.getIdToken();
       const tokenResult = await result.user.getIdTokenResult();
       const expiresAt = new Date(tokenResult.expirationTime).getTime();
+      const redirectUser = result.user; // Store user reference to avoid null issues in closures
 
       this.auth.setUser({
-        uid: result.user.uid,
-        email: result.user.email,
-        displayName: result.user.displayName,
+        uid: redirectUser.uid,
+        email: redirectUser.email,
+        displayName: redirectUser.displayName,
         token: idToken,
         expiresAt
       });
@@ -191,7 +192,7 @@ export class AppComponent implements OnInit {
         error: (err) => {
           if (err.status === 404) {
             // First social login — open onboarding to complete profile
-            const name = result.user.displayName || result.user.email?.split('@')[0] || '';
+            const name = redirectUser.displayName || redirectUser.email?.split('@')[0] || '';
             setTimeout(async () => {
               const { OnboardingComponent } = await import('./features/onboarding/onboarding.component');
               this.dialog.open(OnboardingComponent, {
@@ -205,7 +206,7 @@ export class AppComponent implements OnInit {
                 data: {
                   socialMode: true,
                   name,
-                  email: result.user.email
+                  email: redirectUser.email
                 }
               });
             }, 200);
