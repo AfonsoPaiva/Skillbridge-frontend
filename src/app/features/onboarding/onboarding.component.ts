@@ -461,23 +461,50 @@ export class OnboardingComponent implements OnInit, OnDestroy {
   }
 
   private setupIPhoneViewportFix(): void {
-    if (!this.isiPhone || typeof window === 'undefined' || typeof document === 'undefined') {
-      return;
-    }
-
-    const updateViewportHeight = () => {
-      const height = window.visualViewport?.height ?? window.innerHeight;
-      document.documentElement.style.setProperty('--sb-visual-viewport-height', `${Math.round(height)}px`);
-    };
-
-    updateViewportHeight();
-    this.visualViewportResizeHandler = updateViewportHeight;
-
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', updateViewportHeight);
-      window.visualViewport.addEventListener('scroll', updateViewportHeight);
-    }
+  // Aplica a todos os dispositivos móveis, não só iPhone
+  const isMobile = /Android|iPhone|iPad|iPod|webOS/i.test(navigator.userAgent);
+  
+  if (!isMobile || typeof window === 'undefined' || typeof document === 'undefined') {
+    return;
   }
+
+  const updateViewportHeight = () => {
+    const height = window.visualViewport?.height ?? window.innerHeight;
+    document.documentElement.style.setProperty('--sb-visual-viewport-height', `${Math.round(height)}px`);
+    
+    // Atualiza também a altura do dialog container se existir
+    const dialogContainer = document.querySelector('.mat-mdc-dialog-container') as HTMLElement;
+    if (dialogContainer) {
+      dialogContainer.style.height = `${height}px`;
+      dialogContainer.style.maxHeight = `${height}px`;
+    }
+    
+    // Ajusta o dialog content
+    const dialogContent = this.dialogContent?.nativeElement;
+    if (dialogContent) {
+      const headerHeight = 110; // altura aproximada do header + progress
+      const actionsHeight = 80; // altura aproximada das ações
+      const maxContentHeight = height - headerHeight - actionsHeight;
+      
+      if (maxContentHeight > 200) { // altura mínima razoável
+        dialogContent.style.maxHeight = `${maxContentHeight}px`;
+      }
+    }
+  };
+
+  updateViewportHeight();
+  this.visualViewportResizeHandler = updateViewportHeight;
+
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', updateViewportHeight);
+    window.visualViewport.addEventListener('scroll', updateViewportHeight);
+  }
+  
+  // Também ouve mudanças de orientação
+  window.addEventListener('orientationchange', () => {
+    setTimeout(updateViewportHeight, 100);
+  });
+}
 
   private resetDialogScroll(): void {
     requestAnimationFrame(() => {
