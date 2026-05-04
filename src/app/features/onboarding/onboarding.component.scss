@@ -1,6 +1,40 @@
 @use '../../../styles/mixins' as m;
 @use '../../../styles/variables' as v;
 
+// ── Fullscreen on mobile ─────────────────────────────────
+@media (max-width: 767px) {
+  ::ng-deep .mat-mdc-dialog-container {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    max-height: none !important;
+    border-radius: 0 !important;
+  }
+
+  ::ng-deep .mat-mdc-dialog-surface {
+    border-radius: 0 !important;
+  }
+}
+
+// ── Slide-in animation ─────────────────────────────────
+.slide-in-dialog {
+  ::ng-deep .mat-mdc-dialog-container {
+    animation: slideIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(100vh);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
 // ── Dialog header ─────────────────────────────────
 // Material adds its own padding to mat-dialog-title which shifts everything
 // inside it unpredictably across breakpoints. We zero it out and own all spacing.
@@ -46,14 +80,14 @@ mat-dialog-content {
 
 @media (max-width: 768px) {
   mat-dialog-content {
-    max-height: calc(90vh - 240px) !important;
+    max-height: calc(100vh - 240px) !important;
     overflow-y: auto !important;
   }
 }
 
 @media (max-height: 650px) {
   mat-dialog-content {
-    max-height: calc(90vh - 220px) !important;
+    max-height: calc(100vh - 220px) !important;
     overflow-y: auto !important;
   }
 }

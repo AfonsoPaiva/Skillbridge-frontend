@@ -39,7 +39,7 @@ export class FooterComponent {
       width: '420px',
       maxWidth: '95vw',
       maxHeight: '90vh',
-      panelClass: 'onboarding-dialog',
+      panelClass: ['onboarding-dialog', 'slide-in-dialog'],
       autoFocus: false,
       restoreFocus: false
     });

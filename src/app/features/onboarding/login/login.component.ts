@@ -172,7 +172,7 @@ export class LoginComponent implements OnInit {
       const { OnboardingComponent } = await import('../onboarding.component');
       this.dialog.open(OnboardingComponent, {
         width: '540px', maxWidth: '95vw', maxHeight: '90vh',
-        panelClass: 'onboarding-dialog', autoFocus: false, restoreFocus: false
+        panelClass: ['onboarding-dialog', 'slide-in-dialog'], autoFocus: false, restoreFocus: false
       });
     }, 200);
   }
