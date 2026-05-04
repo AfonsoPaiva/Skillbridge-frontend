@@ -684,7 +684,7 @@ export class OnboardingComponent implements OnInit, OnDestroy {
       const fbAuth = authMod.getAuth(await this.getFirebaseApp());
       
       // In webviews, getRedirectResult may need a slight delay
-      let result = null;
+      let result: UserCredential | null = null;
       let retries = 3;
       
       while (!result && retries > 0) {

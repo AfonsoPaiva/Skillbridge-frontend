@@ -10,6 +10,7 @@ import { PushNotificationService } from './core/services/push-notification.servi
 import { Meta, Title } from '@angular/platform-browser';
 import { environment } from '../environments/environment';
 import { getFirebaseAuthDomain } from './core/utils/firebase-auth-domain.utils';
+import type { UserCredential } from 'firebase/auth';
 import {
   trigger, transition, style, animate, query, group
 } from '@angular/animations';
@@ -146,7 +147,7 @@ export class AppComponent implements OnInit {
       const fbAuth = getAuth(app);
       
       // In webviews, getRedirectResult may need retries
-      let result = null;
+      let result: UserCredential | null = null;
       let retries = 3;
       
       while (!result && retries > 0) {
