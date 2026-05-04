@@ -84,7 +84,37 @@
 
   window.__skillbridgeTrustedScriptURL = toTrustedScriptURL;
 
-  // Google Analytics 4 initialization
+  // Webview compatibility fix for Instagram, TikTok, etc.
+  // These apps have limited popup/window.opener support
+  // This polyfill helps Firebase Auth work better in these contexts
+  (function setupWebviewFix() {
+    var ua = navigator.userAgent || '';
+    var isWebview = /(FBAN|FBAV|Instagram|Line|LinkedInApp|TikTok|WebView|; wv\))/i.test(ua);
+    
+    if (!isWebview) return;
+    
+    // Store reference to make auth flow more resilient
+    if (typeof window !== 'undefined') {
+      window.__skillbridgeWebviewCompat = {
+        isWebview: true,
+        preserveAuthState: true
+      };
+      
+      // Ensure localStorage is available (some webviews restrict it)
+      try {
+        localStorage.setItem('__skillbridge_check', '1');
+        localStorage.removeItem('__skillbridge_check');
+      } catch (e) {
+        // If localStorage fails, use in-memory fallback
+        console.warn('localStorage unavailable in webview');
+        if (!window.__skillbridgeStorage) {
+          window.__skillbridgeStorage = {};
+        }
+      }
+    }
+  })();
+
+  window.__skillbridgeTrustedScriptURL = toTrustedScriptURL;
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());

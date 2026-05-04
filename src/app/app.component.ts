@@ -144,7 +144,30 @@ export class AppComponent implements OnInit {
       });
 
       const fbAuth = getAuth(app);
-      const result = await getRedirectResult(fbAuth);
+      
+      // In webviews, getRedirectResult may need retries
+      let result = null;
+      let retries = 3;
+      
+      while (!result && retries > 0) {
+        try {
+          result = await getRedirectResult(fbAuth);
+          if (result) break;
+        } catch (err: any) {
+          if (err?.code === 'auth/redirect-operation-pending') {
+            // Redirect is still pending, wait and retry
+            await new Promise(resolve => setTimeout(resolve, 500));
+            retries--;
+            continue;
+          }
+          throw err;
+        }
+        
+        if (!result && retries > 0) {
+          await new Promise(resolve => setTimeout(resolve, 300));
+          retries--;
+        }
+      }
 
       if (!result || !result.user) return;
 

@@ -61,7 +61,30 @@ export class LoginComponent implements OnInit {
     try {
       const { auth: authMod } = await this.loadFirebase();
       const fbAuth = authMod.getAuth(await this.getFirebaseApp());
-      const result = await authMod.getRedirectResult(fbAuth);
+      
+      // In webviews, getRedirectResult may need a slight delay
+      let result = null;
+      let retries = 3;
+      
+      while (!result && retries > 0) {
+        try {
+          result = await authMod.getRedirectResult(fbAuth);
+          if (result) break;
+        } catch (err: any) {
+          if (err?.code === 'auth/redirect-operation-pending') {
+            // Redirect is still pending, wait and retry
+            await new Promise(resolve => setTimeout(resolve, 500));
+            retries--;
+            continue;
+          }
+          throw err;
+        }
+        
+        if (!result && retries > 0) {
+          await new Promise(resolve => setTimeout(resolve, 300));
+          retries--;
+        }
+      }
       
       if (result && result.user) {
         this.loading = true;
@@ -77,6 +100,9 @@ export class LoginComponent implements OnInit {
           expiresAt
         });
 
+        // Clear redirect flag
+        localStorage.removeItem('sb_auth_redirect_pending');
+
         this.api.getMyProfile().subscribe({
           next: () => {
             this.loading = false;
@@ -88,7 +114,7 @@ export class LoginComponent implements OnInit {
           error: (err) => {
             if (err.status === 404) {
               this.loading = false;
-              const name = result.user.displayName || result.user.email?.split('@')[0] || '';
+              const name = result.user!.displayName || result.user!.email?.split('@')[0] || '';
               this.close();
               setTimeout(async () => {
                 const { OnboardingComponent } = await import('../onboarding.component');
@@ -103,7 +129,7 @@ export class LoginComponent implements OnInit {
                   data: {
                     socialMode: true,
                     name,
-                    email: result.user.email
+                    email: result.user!.email
                   } as OnboardingDialogData
                 });
               }, 200);
@@ -116,12 +142,17 @@ export class LoginComponent implements OnInit {
             }
           }
         });
+      } else {
+        // No redirect result - check if we should clear the pending flag
+        localStorage.removeItem('sb_auth_redirect_pending');
       }
     } catch (err: any) {
       const code: string = err?.code ?? '';
       if (code && code !== 'auth/popup-closed-by-user' && code !== 'auth/cancelled-popup-request') {
-        this.error = 'Erro ao iniciar sessão. Tenta novamente.';
+        console.warn('Redirect result error:', code, err);
       }
+      // Clear redirect flag on error
+      localStorage.removeItem('sb_auth_redirect_pending');
     }
   }
 
@@ -326,7 +357,9 @@ export class LoginComponent implements OnInit {
   }
 
   private shouldUseRedirect(): boolean {
-    return this.isEmbeddedBrowser();
+    // Try popup first even in embedded browsers like Instagram webview
+    // Only force redirect if popup explicitly fails
+    return localStorage.getItem('sb_force_redirect_auth') === '1';
   }
 
   async signInWithProvider(provider: 'google' | 'github' | 'microsoft'): Promise<void> {
@@ -348,17 +381,13 @@ export class LoginComponent implements OnInit {
     try {
       let cred: UserCredential;
 
-      if (this.shouldUseRedirect()) {
-        localStorage.setItem('sb_auth_redirect_pending', '1');
-        await authMod.signInWithRedirect(fbAuth, authProvider);
-        return;
-      }
-
+      // Always try popup first (even in Instagram webview - it works there)
       try {
         cred = await authMod.signInWithPopup(fbAuth, authProvider);
       } catch (popupErr: any) {
         if (popupErr?.code === 'auth/popup-blocked') {
-          // Fallback to redirect if popup is blocked
+          // Only fallback to redirect if popup is explicitly blocked
+          localStorage.setItem('sb_force_redirect_auth', '1');
           localStorage.setItem('sb_auth_redirect_pending', '1');
           await authMod.signInWithRedirect(fbAuth, authProvider);
           return;

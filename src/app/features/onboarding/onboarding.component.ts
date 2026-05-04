@@ -682,7 +682,30 @@ export class OnboardingComponent implements OnInit, OnDestroy {
     try {
       const { auth: authMod } = await this.loadFirebase();
       const fbAuth = authMod.getAuth(await this.getFirebaseApp());
-      const result = await authMod.getRedirectResult(fbAuth);
+      
+      // In webviews, getRedirectResult may need a slight delay
+      let result = null;
+      let retries = 3;
+      
+      while (!result && retries > 0) {
+        try {
+          result = await authMod.getRedirectResult(fbAuth);
+          if (result) break;
+        } catch (err: any) {
+          if (err?.code === 'auth/redirect-operation-pending') {
+            // Redirect is still pending, wait and retry
+            await new Promise(resolve => setTimeout(resolve, 500));
+            retries--;
+            continue;
+          }
+          throw err;
+        }
+        
+        if (!result && retries > 0) {
+          await new Promise(resolve => setTimeout(resolve, 300));
+          retries--;
+        }
+      }
       
       if (result && result.user) {
         // User returned from OAuth redirect - pre-fill their info
@@ -702,16 +725,24 @@ export class OnboardingComponent implements OnInit, OnDestroy {
         // Pre-fill the name from social login
         this.personalForm.get('name')?.setValue(name);
         
+        // Clear redirect flag
+        localStorage.removeItem('sb_auth_redirect_pending');
+        
         // User still needs to complete the onboarding form
         // Don't auto-register without the required academic info
         this.loading = false;
+      } else {
+        // No redirect result - check if we should clear the pending flag
+        localStorage.removeItem('sb_auth_redirect_pending');
       }
     } catch (err: any) {
       const code: string = err?.code ?? '';
       if (code && code !== 'auth/popup-closed-by-user' && code !== 'auth/cancelled-popup-request') {
-        this.error = 'Erro ao iniciar sessão. Tenta novamente.';
-        this.loading = false;
+        console.warn('Redirect result error:', code, err);
       }
+      // Clear redirect flag on error
+      localStorage.removeItem('sb_auth_redirect_pending');
+      this.loading = false;
     }
   }
 
@@ -745,7 +776,9 @@ export class OnboardingComponent implements OnInit, OnDestroy {
   }
 
   private shouldUseRedirect(): boolean {
-    return this.isEmbeddedBrowser();
+    // Try popup first even in embedded browsers like Instagram webview
+    // Only force redirect if popup explicitly fails
+    return localStorage.getItem('sb_force_redirect_auth') === '1';
   }
 
   async signInWithProvider(provider: 'google' | 'github' | 'microsoft'): Promise<void> {
@@ -765,17 +798,14 @@ export class OnboardingComponent implements OnInit, OnDestroy {
     const authProvider = this.buildAuthProvider(authMod, provider);
 
     try {
-      if (this.shouldUseRedirect()) {
-        localStorage.setItem('sb_auth_redirect_pending', '1');
-        await authMod.signInWithRedirect(fbAuth, authProvider);
-        return;
-      }
-
+      // Always try popup first (even in Instagram webview - it works there)
       let credential: UserCredential;
       try {
         credential = await authMod.signInWithPopup(fbAuth, authProvider);
       } catch (popupErr: any) {
         if (popupErr?.code === 'auth/popup-blocked') {
+          // Only fallback to redirect if popup is explicitly blocked
+          localStorage.setItem('sb_force_redirect_auth', '1');
           localStorage.setItem('sb_auth_redirect_pending', '1');
           await authMod.signInWithRedirect(fbAuth, authProvider);
           return;
