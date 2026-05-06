@@ -84,3 +84,14 @@
 @mixin contain-layout {
   contain: layout style paint;
 }
+
+// ── iOS Safe Area (PWA) ──────────────────────────
+// Applies padding-top that respects iPhone notch/status bar when installed as PWA
+@mixin navbar-offset {
+  padding-top: calc(64px + max(0px, env(safe-area-inset-top)));
+}
+
+// Full page padding with navbar offset + side spacing + bottom spacing
+@mixin navbar-offset-page {
+  padding: calc(64px + max(0px, env(safe-area-inset-top))) v.$space-8 v.$space-16 v.$space-8;
+}

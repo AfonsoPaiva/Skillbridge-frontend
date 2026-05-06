@@ -3,7 +3,7 @@
 
 .profile-page {
   min-height: 100vh;
-  padding-top: 64px;
+  padding-top: calc(64px + max(0px, env(safe-area-inset-top)));
   padding-bottom: v.$space-16;
 }
 

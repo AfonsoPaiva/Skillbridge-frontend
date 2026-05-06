@@ -61,7 +61,7 @@
 
 .edit-page {
   min-height: 100vh;
-  padding: calc(64px + #{v.$space-8}) 0 v.$space-16;
+  padding: calc(64px + max(0px, env(safe-area-inset-top))) v.$space-8 v.$space-16;
 
   &__header {
     display: flex; align-items: center; gap: v.$space-3;

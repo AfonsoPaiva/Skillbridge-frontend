@@ -3,8 +3,8 @@
 
 .msgs-page {
   display: flex;
-  height: calc(100vh - 64px);
-  margin-top: 64px;
+  height: calc(100vh - 64px - max(0px, env(safe-area-inset-top)));
+  margin-top: calc(64px + max(0px, env(safe-area-inset-top)));
   overflow: hidden;
   max-width: 1400px;
   margin-left: auto;
