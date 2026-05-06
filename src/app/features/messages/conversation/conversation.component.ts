@@ -51,7 +51,7 @@ export class ConversationComponent implements OnInit, OnDestroy, AfterViewChecke
   error = '';
   shouldScroll = false;
   respondingIds = new Set<number>();
-  readonly MAX_MESSAGE_LENGTH = 100;
+  readonly MAX_MESSAGE_LENGTH = 400;
   private routeParamsSub?: Subscription;
 
   constructor(private route: ActivatedRoute, private router: Router, private api: ApiService, private snack: MatSnackBar) {}
