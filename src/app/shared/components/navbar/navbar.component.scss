@@ -113,6 +113,12 @@
       align-items: center;
       justify-content: center;
 
+      &.mat-badge-hidden {
+        ::ng-deep .mat-badge-content {
+          display: none !important;
+        }
+      }
+
       ::ng-deep .mat-badge-content {
         top: -2px !important;
         right: -6px !important;
