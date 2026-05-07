@@ -30,10 +30,10 @@ interface RoleSkillState {
 export class ProjectFormComponent implements OnInit, OnDestroy {
   @ViewChild('editorFrame') editorFrame?: ElementRef<HTMLDivElement>;
 
-  readonly projectTitleMaxLength = 20;
-  readonly projectDescriptionMaxLength = 120;
-  readonly roleTitleMaxLength = 20;
-  readonly roleDescriptionMaxLength = 100;
+  readonly projectTitleMaxLength = 40;
+  readonly projectDescriptionMaxLength = 300;
+  readonly roleTitleMaxLength = 40;
+  readonly roleDescriptionMaxLength = 1200;
 
   form!: FormGroup;
   loading = false;

@@ -135,15 +135,24 @@
             Como este projeto está marcado como <strong>concluído</strong>, as vagas são opcionais.
           </p>
 
-          <div formArrayName="roles">
-            <div class="role-form" *ngFor="let r of roles.controls; let i = index" [formGroupName]="i">
-              <div class="role-form__header">
-                <span class="role-form__num">Vaga {{ i + 1 }}</span>
-                <button type="button" mat-icon-button color="warn" (click)="removeRole(i)"
-                        *ngIf="roles.length > 1" matTooltip="Remover vaga">
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </div>
+          <mat-accordion class="roles-accordion" multi formArrayName="roles">
+            <mat-expansion-panel *ngFor="let r of roles.controls; let i = index" 
+                                 [formGroupName]="i" 
+                                 [expanded]="true"
+                                 class="role-panel-form">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  <span class="role-form__num">Vaga {{ i + 1 }}</span>
+                  <span class="role-summary-title" *ngIf="r.get('title')?.value"> — {{ r.get('title')?.value }}</span>
+                </mat-panel-title>
+                <mat-panel-description>
+                  <button type="button" mat-icon-button color="warn" (click)="removeRole(i); $event.stopPropagation()"
+                          *ngIf="roles.length > 1" matTooltip="Remover vaga">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+
               <div class="role-form__grid">
                 <mat-form-field appearance="outline">
                   <mat-label>Título da vaga{{ isCompletedProject ? '' : ' *' }}</mat-label>
@@ -218,14 +227,14 @@
 
                 <mat-form-field appearance="outline" class="full-col">
                   <mat-label>Descrição da vaga</mat-label>
-                  <textarea matInput formControlName="description" rows="2" [maxlength]="roleDescriptionMaxLength"
+                  <textarea matInput formControlName="description" rows="5" [maxlength]="roleDescriptionMaxLength"
                             placeholder="O que irá fazer esta pessoa no projeto..."></textarea>
                   <mat-hint align="end">{{ (r.get('description')?.value?.length || 0) }}/{{ roleDescriptionMaxLength }}</mat-hint>
                   <mat-error *ngIf="r.get('description')?.errors?.['maxlength']">Máximo {{ roleDescriptionMaxLength }} caracteres.</mat-error>
                 </mat-form-field>
               </div>
-            </div>
-          </div>
+            </mat-expansion-panel>
+          </mat-accordion>
         </div>
 
         <!-- Submit -->

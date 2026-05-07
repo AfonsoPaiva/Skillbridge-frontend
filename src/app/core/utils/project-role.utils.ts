@@ -87,11 +87,11 @@ export function getProjectCardSkillText(
   return getProjectSkillLabels(roles, options).join(' • ');
 }
 
-export function getProjectCardTitle(title: string | null | undefined, limit: number = 58): string {
+export function getProjectCardTitle(title: string | null | undefined, limit: number = 80): string {
   return getTextPreview(title, limit);
 }
 
-export function getProjectCardDescription(description: string | null | undefined, limit: number = 110): string {
+export function getProjectCardDescription(description: string | null | undefined, limit: number = 250): string {
   return getTextPreview(description, limit);
 }
 
