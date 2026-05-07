@@ -30,7 +30,8 @@ export function getRoleSkillNames(
 
 export function getProjectSkillLabels(
   roles: Array<Pick<ProjectRole, 'skill_names' | 'skill_name' | 'title'>> | null | undefined,
-  options: RoleSkillOptions = { fallbackToTitle: true }
+  options: RoleSkillOptions = { fallbackToTitle: true },
+  userSkills: string[] = []
 ): string[] {
   if (!roles?.length) {
     return [];
@@ -38,6 +39,7 @@ export function getProjectSkillLabels(
 
   const labels: string[] = [];
   const seen = new Set<string>();
+  const userSkillsSet = new Set(userSkills.map(s => s.toLowerCase()));
 
   for (const role of roles) {
     for (const skill of getRoleSkillNames(role, options)) {
@@ -50,15 +52,27 @@ export function getProjectSkillLabels(
     }
   }
 
+  // Se tivermos skills do utilizador, ordenamos para que as correspondentes fiquem primeiro
+  if (userSkillsSet.size > 0) {
+    labels.sort((a, b) => {
+      const aMatched = userSkillsSet.has(a.toLowerCase());
+      const bMatched = userSkillsSet.has(b.toLowerCase());
+      if (aMatched && !bMatched) return -1;
+      if (!aMatched && bMatched) return 1;
+      return 0;
+    });
+  }
+
   return labels;
 }
 
 export function getProjectCardSkillLabels(
   roles: Array<Pick<ProjectRole, 'skill_names' | 'skill_name' | 'title'>> | null | undefined,
   limit: number = 3,
-  options: RoleSkillOptions = { fallbackToTitle: true }
+  options: RoleSkillOptions = { fallbackToTitle: true },
+  userSkills: string[] = []
 ): string[] {
-  const labels = getProjectSkillLabels(roles, options);
+  const labels = getProjectSkillLabels(roles, options, userSkills);
   if (labels.length <= limit) {
     return labels;
   }

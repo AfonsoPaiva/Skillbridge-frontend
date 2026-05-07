@@ -61,7 +61,7 @@
                        [attr.title]="getProjectCardSkillText(p.roles) || null">
                     <span class="chip chip--card-skill" 
                           [class.chip--matched]="isMatchedSkill(skill)"
-                          *ngFor="let skill of getProjectCardSkillLabels(p.roles, 2)">
+                          *ngFor="let skill of getProjectCardSkillLabels(p.roles, 2, {fallbackToTitle: true}, auth.currentUserSkills)">
                       {{ skill }}
                     </span>
                   </div>

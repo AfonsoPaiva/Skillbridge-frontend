@@ -60,7 +60,9 @@
         <div class="detail-roles" *ngIf="project.roles?.length">
           <h2>Vagas disponíveis</h2>
           <mat-accordion class="roles-accordion" multi>
-            <mat-expansion-panel *ngFor="let r of project.roles" class="role-panel" [class.role-panel--full]="r.filled >= r.spots">
+            <mat-expansion-panel *ngFor="let r of project.roles" class="role-panel" 
+                                 [class.role-panel--full]="r.filled >= r.spots"
+                                 [class.role-panel--open]="r.filled < r.spots">
               <mat-expansion-panel-header>
                 <mat-panel-title>
                   <span class="role-title">{{ r.title }}</span>
@@ -71,8 +73,10 @@
               </mat-expansion-panel-header>
 
               <div class="role-content">
-                <div class="role-skills" *ngIf="getRoleSkillNames(r).length">
-                  <span class="chip" *ngFor="let skill of getRoleSkillNames(r)">{{ skill }}</span>
+                <div class="role-skills" *ngIf="getSortedSkills(r).length">
+                  <span class="chip" 
+                        [class.chip--matched]="isMatchedSkill(skill)"
+                        *ngFor="let skill of getSortedSkills(r)">{{ skill }}</span>
                 </div>
                 
                 <p class="role-desc">{{ r.description }}</p>

@@ -109,6 +109,10 @@
     background: rgba(v.$color-primary, 0.01);
   }
 
+  &.role-panel--open {
+    border-color: rgba(v.$color-primary, 0.2) !important;
+  }
+
   &.role-panel--full {
     background: rgba(v.$color-text-soft, 0.02);
     border-color: rgba(v.$color-border, 0.5) !important;
@@ -172,6 +176,13 @@
       color: v.$color-primary;
       font-size: 12px;
       padding: 4px 10px;
+
+      &.chip--matched {
+        background: rgba(v.$color-secondary, 0.15) !important;
+        color: darken(v.$color-secondary, 30%) !important;
+        border: 1px solid rgba(v.$color-secondary, 0.3) !important;
+        font-weight: v.$font-weight-medium;
+      }
     }
   }
 

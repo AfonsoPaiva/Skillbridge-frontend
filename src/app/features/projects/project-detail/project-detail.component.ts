@@ -186,4 +186,25 @@ export class ProjectDetailComponent implements OnInit {
     
     return ['/perfil', userSlug];
   }
+
+  isMatchedSkill(skill: string): boolean {
+    if (!this.auth.currentUserSkills?.length) return false;
+    const lowerSkill = skill.toLowerCase();
+    return this.auth.currentUserSkills.some(s => s.toLowerCase() === lowerSkill);
+  }
+
+  getSortedSkills(role: any): string[] {
+    const skills = getRoleSkillNames(role);
+    const userSkills = this.auth.currentUserSkills || [];
+    if (!userSkills.length) return skills;
+
+    const userSkillsSet = new Set(userSkills.map(s => s.toLowerCase()));
+    return [...skills].sort((a, b) => {
+      const aMatched = userSkillsSet.has(a.toLowerCase());
+      const bMatched = userSkillsSet.has(b.toLowerCase());
+      if (aMatched && !bMatched) return -1;
+      if (!aMatched && bMatched) return 1;
+      return 0;
+    });
+  }
 }

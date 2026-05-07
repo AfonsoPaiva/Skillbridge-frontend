@@ -46,6 +46,10 @@ export class AuthService {
     this._user$.next(user);
   }
 
+  get currentUserSkills(): string[] {
+    return this._user$.getValue()?.skills || [];
+  }
+
   /** Initialize Firebase Auth lazily — only downloads the SDK when called */
   initializeFirebaseAuth(): Promise<void> {
     if (this.firebaseAuth) return Promise.resolve();
