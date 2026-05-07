@@ -64,10 +64,16 @@ export class NavbarComponent implements OnInit, OnDestroy {
       const url = e.urlAfterRedirects;
       this.isLandingPage = url.includes('/landing') || url === '/';
       if (!this.isLandingPage) this.heroScrolled = false;
-      
-      // Refresh unread count when navigating away from messages
-      if (this.isLoggedIn && !url.includes('/messages')) {
-        this.loadUnreadCount();
+
+      if (this.isLoggedIn) {
+        if (url.includes('/messages')) {
+          // User entered the messages page — clear badge immediately
+          // (the conversation component calls markRead when messages load)
+          this.unreadCount = 0;
+        } else {
+          // User navigated away from messages — refresh count from server
+          this.loadUnreadCount();
+        }
       }
     });
   }
