@@ -59,28 +59,30 @@
         <!-- Roles -->
         <div class="detail-roles" *ngIf="project.roles?.length">
           <h2>Vagas disponíveis</h2>
-          <div class="roles-grid">
-            <mat-card class="role-card" *ngFor="let r of project.roles">
-              <mat-card-content>
-                <div class="role-card__header">
-                  <div class="role-card__skills" *ngIf="getRoleSkillNames(r).length">
-                    <span class="chip" *ngFor="let skill of getRoleSkillNames(r)">{{ skill }}</span>
+          <div class="roles-wrapper">
+            <div class="roles-grid">
+              <mat-card class="role-card" *ngFor="let r of project.roles">
+                <mat-card-content>
+                  <div class="role-card__header">
+                    <div class="role-card__skills" *ngIf="getRoleSkillNames(r).length">
+                      <span class="chip" *ngFor="let skill of getRoleSkillNames(r)">{{ skill }}</span>
+                    </div>
+                    <span class="role-card__spots">{{ r.filled }}/{{ r.spots }} preenchidas</span>
                   </div>
-                  <span class="role-card__spots">{{ r.filled }}/{{ r.spots }} preenchidas</span>
-                </div>
-                <h3>{{ r.title }}</h3>
-                <p>{{ r.description }}</p>
-                <button mat-raised-button color="primary"
-                        *ngIf="!isOwner"
-                        [disabled]="applyingRoleId === r.id || r.filled >= r.spots || appliedRoleIds.has(r.id)"
-                        (click)="apply(r.id)">
-                  <mat-spinner *ngIf="applyingRoleId === r.id" diameter="16"></mat-spinner>
-                  <span *ngIf="applyingRoleId !== r.id">
-                    {{ r.filled >= r.spots ? 'Vagas esgotadas' : appliedRoleIds.has(r.id) ? 'Candidatura enviada' : 'Candidatar-me' }}
-                  </span>
-                </button>
-              </mat-card-content>
-            </mat-card>
+                  <h3>{{ r.title }}</h3>
+                  <p>{{ r.description }}</p>
+                  <button mat-raised-button color="primary"
+                          *ngIf="!isOwner"
+                          [disabled]="applyingRoleId === r.id || r.filled >= r.spots || appliedRoleIds.has(r.id)"
+                          (click)="apply(r.id)">
+                    <mat-spinner *ngIf="applyingRoleId === r.id" diameter="16"></mat-spinner>
+                    <span *ngIf="applyingRoleId !== r.id">
+                      {{ r.filled >= r.spots ? 'Vagas esgotadas' : appliedRoleIds.has(r.id) ? 'Candidatura enviada' : 'Candidatar-me' }}
+                    </span>
+                  </button>
+                </mat-card-content>
+              </mat-card>
+            </div>
           </div>
         </div>
 

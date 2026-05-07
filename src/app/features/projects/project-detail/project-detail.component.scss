@@ -88,7 +88,40 @@
 
 .detail-roles {
   margin-top: v.$space-8;
-  h2 { font-size: 1.3rem; font-weight: v.$font-weight-semibold; margin-bottom: v.$space-4; }
+  padding: v.$space-6;
+  background: rgba(v.$color-primary, 0.03);
+  border-radius: v.$radius-lg;
+  border: 1px solid rgba(v.$color-primary, 0.08);
+
+  h2 { 
+    font-size: 1.3rem; 
+    font-weight: v.$font-weight-semibold; 
+    margin-bottom: v.$space-5;
+    display: flex;
+    align-items: center;
+    gap: v.$space-2;
+    &::before {
+      content: '';
+      display: block;
+      width: 4px;
+      height: 20px;
+      background: v.$color-primary;
+      border-radius: 4px;
+    }
+  }
+}
+
+.roles-wrapper {
+  max-height: 520px;
+  overflow-y: auto;
+  padding-right: v.$space-2;
+  
+  &::-webkit-scrollbar { width: 6px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { 
+    background: rgba(v.$color-primary, 0.15); 
+    border-radius: 10px; 
+  }
 }
 
 .roles-grid {
