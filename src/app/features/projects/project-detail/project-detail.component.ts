@@ -63,7 +63,11 @@ export class ProjectDetailComponent implements OnInit {
           });
           this.api.getMyProjectApplications(slug).subscribe({
             next: (apps: ProjectMember[]) => {
-              apps.forEach(a => { if (a.role_id) this.appliedRoleIds.add(a.role_id); });
+              apps.forEach(a => { 
+                if (a.role_id && a.status !== 'rejected') {
+                  this.appliedRoleIds.add(a.role_id); 
+                }
+              });
             },
             error: () => {}
           });
