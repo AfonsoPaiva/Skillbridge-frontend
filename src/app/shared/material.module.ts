@@ -23,6 +23,7 @@ import { MatSliderModule } from '@angular/material/slider';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { TextFieldModule } from '@angular/cdk/text-field';
 
 const MATERIAL_MODULES = [
@@ -32,7 +33,7 @@ const MATERIAL_MODULES = [
   MatTabsModule, MatMenuModule, MatTooltipModule, MatDividerModule,
   MatBadgeModule, MatRippleModule, MatStepperModule, MatCheckboxModule,
   MatSliderModule, MatToolbarModule, MatSidenavModule, MatListModule,
-  TextFieldModule
+  MatExpansionModule, TextFieldModule
 ];
 
 @NgModule({

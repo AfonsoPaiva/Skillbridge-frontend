@@ -59,18 +59,25 @@
         <!-- Roles -->
         <div class="detail-roles" *ngIf="project.roles?.length">
           <h2>Vagas disponíveis</h2>
-          <div class="roles-wrapper">
-            <div class="roles-grid">
-              <mat-card class="role-card" *ngFor="let r of project.roles">
-                <mat-card-content>
-                  <div class="role-card__header">
-                    <div class="role-card__skills" *ngIf="getRoleSkillNames(r).length">
-                      <span class="chip" *ngFor="let skill of getRoleSkillNames(r)">{{ skill }}</span>
-                    </div>
-                    <span class="role-card__spots">{{ r.filled }}/{{ r.spots }} preenchidas</span>
-                  </div>
-                  <h3>{{ r.title }}</h3>
-                  <p>{{ r.description }}</p>
+          <mat-accordion class="roles-accordion" multi>
+            <mat-expansion-panel *ngFor="let r of project.roles" class="role-panel" [class.role-panel--full]="r.filled >= r.spots">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  <span class="role-title">{{ r.title }}</span>
+                </mat-panel-title>
+                <mat-panel-description>
+                  <span class="role-spots">{{ r.filled }}/{{ r.spots }} preenchidas</span>
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+
+              <div class="role-content">
+                <div class="role-skills" *ngIf="getRoleSkillNames(r).length">
+                  <span class="chip" *ngFor="let skill of getRoleSkillNames(r)">{{ skill }}</span>
+                </div>
+                
+                <p class="role-desc">{{ r.description }}</p>
+
+                <div class="role-actions">
                   <button mat-raised-button color="primary"
                           *ngIf="!isOwner"
                           [disabled]="applyingRoleId === r.id || r.filled >= r.spots || appliedRoleIds.has(r.id)"
@@ -80,10 +87,10 @@
                       {{ r.filled >= r.spots ? 'Vagas esgotadas' : appliedRoleIds.has(r.id) ? 'Candidatura enviada' : 'Candidatar-me' }}
                     </span>
                   </button>
-                </mat-card-content>
-              </mat-card>
-            </div>
-          </div>
+                </div>
+              </div>
+            </mat-expansion-panel>
+          </mat-accordion>
         </div>
 
         <!-- No roles -->
