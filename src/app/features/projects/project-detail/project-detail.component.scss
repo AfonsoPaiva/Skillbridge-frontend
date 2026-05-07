@@ -177,6 +177,10 @@
       color: v.$color-primary;
       font-size: 12px;
       padding: 4px 10px;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
 
       &.chip--matched {
         background: rgba(v.$color-secondary, 0.15) !important;

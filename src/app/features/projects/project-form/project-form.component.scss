@@ -313,6 +313,8 @@ mat-divider { margin: v.$space-4 0 !important; }
   background: rgba(104, 0, 122, 0.08);
   border-radius: 999px;
   width: fit-content;
+  max-width: 100%;
+  overflow: hidden;
 
   > mat-icon:first-child {
     color: v.$color-primary;
@@ -322,7 +324,13 @@ mat-divider { margin: v.$space-4 0 !important; }
     flex-shrink: 0;
   }
 
-  span { font-size: 14px; color: v.$color-text; }
+  span { 
+    font-size: 14px; 
+    color: v.$color-text;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
   &__clear {
     width: 24px !important;
@@ -383,6 +391,14 @@ mat-divider { margin: v.$space-4 0 !important; }
   border-radius: 999px !important;
   text-transform: none !important;
   white-space: nowrap;
+  max-width: 200px;
+  overflow: hidden;
+  
+  ::ng-deep .mdc-button__label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 
 .no-skills-found {
