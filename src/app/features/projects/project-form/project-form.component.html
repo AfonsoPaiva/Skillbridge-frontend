@@ -138,7 +138,7 @@
           <mat-accordion class="roles-accordion" multi formArrayName="roles">
             <mat-expansion-panel *ngFor="let r of roles.controls; let i = index" 
                                  [formGroupName]="i" 
-                                 [expanded]="true"
+                                 [expanded]="false"
                                  class="role-panel-form">
               <mat-expansion-panel-header>
                 <mat-panel-title>

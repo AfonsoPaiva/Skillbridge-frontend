@@ -61,6 +61,7 @@
           <h2>Vagas disponíveis</h2>
           <mat-accordion class="roles-accordion" multi>
             <mat-expansion-panel *ngFor="let r of project.roles" class="role-panel" 
+                                 [expanded]="false"
                                  [class.role-panel--full]="r.filled >= r.spots"
                                  [class.role-panel--open]="r.filled < r.spots">
               <mat-expansion-panel-header>
