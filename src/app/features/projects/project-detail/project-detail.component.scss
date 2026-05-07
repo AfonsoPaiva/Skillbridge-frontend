@@ -117,23 +117,44 @@
   }
 
   ::ng-deep .mat-expansion-panel-header {
-    height: 72px !important;
-    padding: 0 v.$space-6;
+    height: auto !important;
+    min-height: 72px !important;
+    padding: v.$space-4 v.$space-6;
     
     &:hover { background: transparent !important; }
     &.mat-expanded { border-bottom: 1px solid v.$color-border; }
+
+    .mat-content {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      
+      @include m.md {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: v.$space-4;
+      }
+    }
+
+    .mat-expansion-panel-header-title,
+    .mat-expansion-panel-header-description {
+      margin-right: 0;
+    }
   }
 
   .role-title {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     font-weight: v.$font-weight-semibold;
     color: v.$color-text;
+    line-height: 1.4;
   }
 
   .role-spots {
     font-size: 13px;
     color: v.$color-text-soft;
     font-weight: v.$font-weight-medium;
+    white-space: nowrap;
   }
 
   .role-content {

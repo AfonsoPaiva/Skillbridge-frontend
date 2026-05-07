@@ -59,7 +59,9 @@
                   <p [attr.title]="p.description">{{ getProjectCardDescription(p.description) }}</p>
                   <div class="proj-card__skills"
                        [attr.title]="getProjectCardSkillText(p.roles) || null">
-                    <span class="chip chip--card-skill" *ngFor="let skill of getProjectCardSkillLabels(p.roles, 2)">
+                    <span class="chip chip--card-skill" 
+                          [class.chip--matched]="isMatchedSkill(skill)"
+                          *ngFor="let skill of getProjectCardSkillLabels(p.roles, 2)">
                       {{ skill }}
                     </span>
                   </div>
@@ -107,7 +109,7 @@
             <div class="profile-quick__skills" *ngIf="user.skills.length">
               <strong>Competências:</strong>
               <div class="chips-row">
-                <span class="chip" *ngFor="let s of user.skills">{{ s }}</span>
+                <span class="chip chip--matched" *ngFor="let s of user.skills">{{ s }}</span>
               </div>
             </div>
             <div class="profile-quick__empty" *ngIf="!user.skills.length">

@@ -130,4 +130,10 @@ export class DashboardComponent implements OnInit {
     const map: Record<string, string> = { open: 'accent', in_progress: 'primary', completed: '' };
     return map[status] ?? '';
   }
+
+  isMatchedSkill(skill: string): boolean {
+    if (!this.user || !this.user.skills) return false;
+    const lowerSkill = skill.toLowerCase();
+    return this.user.skills.some(s => s.toLowerCase() === lowerSkill);
+  }
 }
