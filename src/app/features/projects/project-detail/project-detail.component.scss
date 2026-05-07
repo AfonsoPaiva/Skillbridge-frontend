@@ -114,13 +114,6 @@
     border-color: rgba(v.$color-primary, 0.2) !important;
   }
 
-  // Prevent initialization flicker
-  &:not(.mat-expanded) {
-    ::ng-deep .mat-expansion-panel-content {
-      display: none;
-    }
-  }
-
   &.role-panel--full {
     background: rgba(v.$color-text-soft, 0.02);
     border-color: rgba(v.$color-border, 0.5) !important;

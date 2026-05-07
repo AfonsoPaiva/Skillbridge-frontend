@@ -161,15 +161,10 @@
     .chip--card-skill {
       flex: 0 1 auto;
       min-width: 0;
-      max-width: calc(50% - 2px);
+      max-width: 140px; 
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-
-      &:last-child {
-        flex: 0 0 auto;
-        max-width: none;
-      }
     }
   }
 }

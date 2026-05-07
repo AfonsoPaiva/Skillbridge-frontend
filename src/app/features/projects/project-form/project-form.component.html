@@ -135,7 +135,7 @@
             Como este projeto está marcado como <strong>concluído</strong>, as vagas são opcionais.
           </p>
 
-          <mat-accordion class="roles-accordion" multi formArrayName="roles">
+          <mat-accordion class="roles-accordion" multi formArrayName="roles" [@.disabled]="initAnimationsDisabled">
             <mat-expansion-panel *ngFor="let r of roles.controls; let i = index" 
                                  [formGroupName]="i" 
                                  [expanded]="false"

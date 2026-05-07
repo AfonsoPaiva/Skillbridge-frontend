@@ -40,6 +40,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
   submitting = false;
   isEdit = false;
   projectSlug: string | null = null;
+  initAnimationsDisabled = true;
   availableSkills: string[] = [];
   availableSkillSections: SkillSection[] = [];
   imagePreview: string | null = null;
@@ -122,11 +123,13 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
           if (p.image_url) this.imagePreview = p.image_url;
           (p.roles || []).forEach(r => this.addRole(r));
           this.loading = false;
+          setTimeout(() => this.initAnimationsDisabled = false, 100);
         },
         error: () => { this.loading = false; this.router.navigate(['/projects']); }
       });
     } else {
       this.addRole();
+      setTimeout(() => this.initAnimationsDisabled = false, 100);
     }
   }
 

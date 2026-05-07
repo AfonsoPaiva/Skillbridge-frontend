@@ -1084,6 +1084,15 @@ body {
   color: v.$color-primary;
   gap: v.$space-1;
   transition: all v.$transition-base;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block; // Better for text-overflow in some cases, but we use inline-flex for icons.
+  // Keep inline-flex but ensure it behaves with truncation
+  line-height: 1.2;
+  text-align: center;
+
   
   mat-icon {
     font-size: 16px;

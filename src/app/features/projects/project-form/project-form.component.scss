@@ -238,12 +238,6 @@ mat-divider { margin: v.$space-4 0 !important; }
   overflow: hidden;
   background: v.$color-surface !important;
 
-  // Prevent initialization flicker
-  &:not(.mat-expanded) {
-    ::ng-deep .mat-expansion-panel-content {
-      display: none;
-    }
-  }
 
   ::ng-deep .mat-expansion-panel-header {
     height: auto !important;

@@ -30,6 +30,7 @@ export class ProjectDetailComponent implements OnInit {
   applyingRoleId: number | null = null; // Track which specific role is being applied to
   appliedRoleIds = new Set<number>();   // Roles this user has already applied to
   deleteLoading = false;
+  initAnimationsDisabled = true;
 
   get isOwner(): boolean {
     const uid = this.auth.currentUser?.uid;
@@ -56,6 +57,10 @@ export class ProjectDetailComponent implements OnInit {
       next: (p: Project) => {
         this.project = p;
         this.loading = false;
+        
+        // Enable animations after a short delay to prevent initialization flicker
+        setTimeout(() => this.initAnimationsDisabled = false, 100);
+
         if (this.auth.isLoggedIn) {
           this.api.getProjectMembers(slug).subscribe({
             next: (m: ProjectMember[]) => this.members = m,
