@@ -24,7 +24,7 @@ export class UniversityCarouselComponent implements AfterViewInit, OnDestroy {
   //{ name: 'Universidade de Coimbra', logo: 'https://pages.uc.pt/site/assets/files/312072/logomarca_1290.1200x0.jpg', url: 'https://www.uc.pt' },
   // { name: 'Universidade de Aveiro', logo: 'https://storage-prtl-co.imgix.net/endor/organisations/772/logos/1547652569_logo_UA.png', url: 'https://www.ua.pt' },
   //{ name: 'Politécnico de Coimbra', logo: 'https://comum.rcaap.pt/server/api/core/bitstreams/4cf13649-f296-40ab-821b-a9e475b1100b/content', url: 'https://www.ipc.pt' },
-  //{ name: 'Instituto Politécnico do Cávado e do Ave', logo: 'https://maismagazine.pt/wp-content/uploads/2025/02/IPCA-Logo_v2-1024x532.jpg', url: 'https://www.ipca.pt' },
+  { name: 'Instituto Politécnico do Cávado e do Ave', logo: 'https://maismagazine.pt/wp-content/uploads/2025/02/IPCA-Logo_v2-1024x532.jpg', url: 'https://www.ipca.pt' },
   { name: 'Instituto Politécnico de Portalegre', logo: 'https://www.ipportalegre.pt/media/filer_public/3a/1f/3a1f4d80-e92d-488a-8513-5d8f3e892b84/pportalegreversao_principal-01.jpg', url: 'https://www.ipportalegre.pt/pt/' },
   { name: 'Instituto Politécnico de Tomar', logo: 'https://portugalpolytechnicuniversities.com/wp-content/uploads/2017/04/IP-TOMAR-768x761.png', url: 'https://www.ipt.pt' },
   //{ name: 'Universidade NOVA de Lisboa', logo: 'https://upload.wikimedia.org/wikipedia/commons/5/5c/Universidade_NOVA_de_Lisboa_logo_logotipo_2021.png', url: 'https://www.unl.pt' },
