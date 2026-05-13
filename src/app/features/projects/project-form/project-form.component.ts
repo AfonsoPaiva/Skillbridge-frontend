@@ -139,6 +139,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     const selectedSkills = getRoleSkillNames(data);
 
     const rg = this.fb.group({
+      id: [data?.id || null],
       title: [data?.title || '', this.getRoleTitleValidators(isCompleted)],
       description: [data?.description || '', [Validators.maxLength(this.roleDescriptionMaxLength)]],
       skill_names: [selectedSkills],
