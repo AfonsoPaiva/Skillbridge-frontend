@@ -1207,11 +1207,14 @@ body {
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
+    position: relative;
 
     // Custom scrollbar inside dialog
+    scrollbar-color: transparent transparent;
     &::-webkit-scrollbar { width: 4px; }
+    &::-webkit-scrollbar-track { background: transparent; }
     &::-webkit-scrollbar-thumb {
-      background: lighten(#603584, 35%);
+      background: transparent;
       border-radius: 2px;
     }
   }
@@ -1240,7 +1243,7 @@ body {
 
     mat-dialog-content {
       max-height: calc(var(--sb-visual-viewport-height, 100vh) - 210px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
-      padding-bottom: 8px !important;
+      padding-bottom: 24px !important;
     }
   }
 }

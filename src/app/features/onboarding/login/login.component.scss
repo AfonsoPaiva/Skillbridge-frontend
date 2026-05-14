@@ -50,6 +50,7 @@ mat-dialog-content {
   from {
     transform: translateY(100vh);
   }
+
   to {
     transform: translateY(0);
   }
@@ -140,10 +141,12 @@ mat-dialog-content {
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: v.$space-1;
+  gap: 20px;
 }
 
-.full-width { width: 100%; }
+.full-width {
+  width: 100%;
+}
 
 .forgot-password-link {
   text-align: right;
@@ -174,7 +177,9 @@ mat-dialog-content {
   gap: v.$space-2;
 
   .btn-spinner {
-    ::ng-deep circle { stroke: #fff !important; }
+    ::ng-deep circle {
+      stroke: #fff !important;
+    }
   }
 }
 
@@ -190,6 +195,7 @@ mat-dialog-content {
   background: rgba(104, 0, 122, 0.08);
   border: 1px solid v.$color-border;
   border-radius: v.$radius-sm;
+
   mat-icon {
     font-size: 18px;
     width: 18px;
@@ -206,7 +212,9 @@ mat-dialog-content {
   margin: v.$space-5 0 v.$space-4;
   color: v.$color-text-soft;
   font-size: 13px;
-  &::before, &::after {
+
+  &::before,
+  &::after {
     content: '';
     flex: 1;
     height: 1px;
@@ -233,9 +241,19 @@ mat-dialog-content {
   border-color: v.$color-border !important;
   color: v.$color-text !important;
   transition: background v.$transition-fast !important;
-  svg { flex-shrink: 0; }
-  &:hover:not([disabled]) { background: rgba(0,0,0,.04) !important; }
-  &[disabled] { opacity: .5; cursor: not-allowed; }
+
+  svg {
+    flex-shrink: 0;
+  }
+
+  &:hover:not([disabled]) {
+    background: rgba(0, 0, 0, .04) !important;
+  }
+
+  &[disabled] {
+    opacity: .5;
+    cursor: not-allowed;
+  }
 }
 
 .register-link {
@@ -244,11 +262,15 @@ mat-dialog-content {
   font-size: 14px;
   color: v.$color-text-soft;
 
-  button { font-size: 14px !important; }
+  button {
+    font-size: 14px !important;
+  }
 }
 
 @media (max-width: 480px) {
-  .social-buttons { flex-direction: column; }
+  .social-buttons {
+    flex-direction: column;
+  }
 
   .login-logo--centered {
     padding-top: 36px;
