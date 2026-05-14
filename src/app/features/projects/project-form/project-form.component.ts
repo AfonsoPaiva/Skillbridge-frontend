@@ -9,6 +9,7 @@ import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { rankedAutocomplete, sanitizeInput } from '../../../core/utils/search.utils';
 import { getRoleSkillNames } from '../../../core/utils/project-role.utils';
+import { AuthService } from '../../../core/services/auth.service';
 
 interface DisplaySkillSection extends SkillSection {
   totalSkills: number;
@@ -78,7 +79,8 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     public router: Router,
     private api: ApiService,
-    private snack: MatSnackBar
+    private snack: MatSnackBar,
+    public auth: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -114,6 +116,13 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
       this.loading = true;
       this.api.getProject(this.projectSlug).subscribe({
         next: (p: Project) => {
+          const uid = this.auth.currentUser?.uid;
+          if (!uid || uid !== p.owner?.firebase_uid) {
+            this.snack.open('Não tens permissão para aceder a esta página.', 'Fechar', { duration: 3000 });
+            this.router.navigate(['/projects', p.slug]);
+            return;
+          }
+
           this.form.patchValue({
             title: p.title,
             description: p.description,
