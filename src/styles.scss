@@ -1074,12 +1074,14 @@ body {
 
 // Custom chip styles (non-Material)
 .chip {
-  display: inline-flex;
+  display: inline-flex !important;
   align-items: center;
-  padding: v.$space-2 7px;
+  justify-content: center;
+  vertical-align: middle;
+  padding: v.$space-1 8px;
   border-radius: 999px;
   font-size: 12px;
-  font-weight: v.$font-weight-medium;
+  font-weight: v.$font-weight-semibold;
   background: lighten(v.$color-primary, 42%);
   color: v.$color-primary;
   gap: v.$space-1;
@@ -1088,12 +1090,9 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  display: inline-block; // Better for text-overflow in some cases, but we use inline-flex for icons.
-  // Keep inline-flex but ensure it behaves with truncation
-  line-height: 1.2;
+  line-height: normal;
   text-align: center;
 
-  
   mat-icon {
     font-size: 16px;
     width: 16px;
@@ -1102,6 +1101,15 @@ body {
   
   &:hover {
     background: lighten(v.$color-primary, 38%);
+  }
+}
+
+.chip--green {
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: #059669 !important;
+
+  &:hover {
+    background: rgba(16, 185, 129, 0.25) !important;
   }
 }
 

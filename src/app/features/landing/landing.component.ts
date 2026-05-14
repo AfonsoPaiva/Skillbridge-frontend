@@ -42,6 +42,12 @@ interface BeforeInstallPromptEvent extends Event {
           ])
         ], { optional: true })
       ])
+    ]),
+    trigger('fadeBarter', [
+      transition('* => *', [
+        style({ opacity: 0, transform: 'scale(0.98)' }),
+        animate('1200ms cubic-bezier(0.25, 1, 0.5, 1)', style({ opacity: 1, transform: 'scale(1)' }))
+      ])
     ])
   ]
 })
@@ -51,15 +57,36 @@ export class LandingComponent implements OnInit, AfterViewInit {
   readonly getProjectCardSkillText = getProjectCardSkillText;
   readonly getProjectCardTitle = getProjectCardTitle;
   @ViewChild('donationSection') donationSection!: ElementRef;
-  
+
   projects: Project[] = [];
   loadingProjects = true;
   platformStats = { users: 0, projects: 0 };
-  
+
   // Valores animados
   animatedUsers = 0;
   animatedProjects = 0;
-  
+
+  barterPairs = [
+    // Tecnologias & Design
+    { mySkill: 'Java', neededSkill: 'UI Design', partnerSkill: 'Figma', partnerNeededSkill: 'Frontend' },
+    // Economia/Gestão & Tradução/Letras
+    { mySkill: 'Finanças', neededSkill: 'Tradução', partnerSkill: 'Inglês Fluente', partnerNeededSkill: 'Plano de Negócios' },
+    // Saúde & Exatas/Estatística
+    { mySkill: 'Bioquímica', neededSkill: 'Estatística', partnerSkill: 'Python / R', partnerNeededSkill: 'Análise Lab' },
+    // Direito & Marketing/Comunicação
+    { mySkill: 'Direito / RGPD', neededSkill: 'Marketing', partnerSkill: 'Copywriting', partnerNeededSkill: 'Revisão Jurídica' },
+    // Arquitetura & Engenharia Civil/Mecânica
+    { mySkill: 'Modelagem 3D', neededSkill: 'Cálculo', partnerSkill: 'AutoCAD', partnerNeededSkill: 'Renderização' },
+    // Humanidades & Multimédia/Audiovisual
+    { mySkill: 'Investigação', neededSkill: 'Vídeo', partnerSkill: 'Premiere Pro', partnerNeededSkill: 'Guião Histórico' }
+  ];
+  currentBarterIndex = 0;
+  private barterInterval: any;
+
+  get currentBarter() {
+    return this.barterPairs[this.currentBarterIndex];
+  }
+
   private animationStarted = false;
   private animationFrame: any;
   installingAndroid = false;
@@ -105,18 +132,22 @@ export class LandingComponent implements OnInit, AfterViewInit {
     private router: Router,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     if (typeof window !== 'undefined') {
       window.addEventListener('beforeinstallprompt', this.onBeforeInstallPrompt);
       window.addEventListener('appinstalled', this.onAppInstalled);
+
+      this.barterInterval = setInterval(() => {
+        this.currentBarterIndex = (this.currentBarterIndex + 1) % this.barterPairs.length;
+      }, 6000);
     }
 
     // Fetch platform statistics
     this.api.getPlatformStats().subscribe({
-      next: (stats) => { 
-        this.platformStats = stats; 
+      next: (stats) => {
+        this.platformStats = stats;
       },
       error: () => { /* stats optional, fail silently */ }
     });
@@ -315,6 +346,10 @@ export class LandingComponent implements OnInit, AfterViewInit {
     if (typeof window !== 'undefined') {
       window.removeEventListener('beforeinstallprompt', this.onBeforeInstallPrompt);
       window.removeEventListener('appinstalled', this.onAppInstalled);
+    }
+
+    if (this.barterInterval) {
+      clearInterval(this.barterInterval);
     }
 
     if (this.animationFrame) {

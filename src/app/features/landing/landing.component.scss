@@ -251,8 +251,9 @@
 
   &__card {
     @include m.card(v.$radius-lg);
-    padding: v.$space-8;
-    max-width: 360px;
+    padding: v.$space-6 v.$space-8;
+    max-width: 480px;
+    width: 100%;
     text-align: center;
     box-shadow: v.$shadow-lg;
 
@@ -260,8 +261,56 @@
     flex-direction: column;
     gap: v.$space-4;
 
-    p { font-size: 14px; color: v.$color-text-soft; margin: 0; }
-    strong { display: block;  }
+    strong { display: block; }
+
+    .barter-container {
+      display: flex;
+      flex-direction: column;
+      gap: v.$space-3;
+      margin: v.$space-2 0;
+
+      p {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: v.$space-2;
+        font-size: 14px;
+        color: v.$color-text-soft;
+        margin: 0;
+        white-space: nowrap;
+      }
+    }
+
+    .barter-chip {
+      min-width: 135px;
+      justify-content: center;
+    }
+
+    @media (max-width: 500px) {
+      padding: v.$space-5 v.$space-2;
+      box-sizing: border-box;
+      max-width: 100%;
+      overflow: hidden;
+
+      .barter-container {
+        width: 100%;
+        overflow: hidden;
+
+        p {
+          font-size: 11px;
+          gap: 3px;
+          width: 100%;
+          justify-content: center;
+        }
+      }
+
+      .barter-chip {
+        min-width: 90px;
+        max-width: 110px;
+        font-size: 10px;
+        padding: 2px 5px;
+      }
+    }
   }
 
   &__icon {

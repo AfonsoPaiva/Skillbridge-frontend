@@ -54,11 +54,11 @@
   <div class="container mission">
     <div class="mission__text" @fadeUp>
       <span class="section__tag">Missão</span>
-      <h2>Democratizar o acesso a<br>portfólios de qualidade</h2>
+      <h2>Democratizar o acesso a<br>portfólios de excelência</h2>
       <p>
-        Através da <strong>economia de partilha de competências (skill barter)</strong>,
-        acreditamos que qualquer estudante — independentemente do seu fundo económico —
-        pode construir um portfólio que impressiona empregadores.
+        Através de uma <strong>economia de partilha de competências</strong>,
+        acreditamos que qualquer estudante — independentemente da sua situação económica —
+        pode construir um portfólio capaz de impressionar futuros empregadores.
       </p>
       <ul class="mission__audience">
         <li><mat-icon color="primary">check_circle</mat-icon> Estudantes do ensino superior</li>
@@ -72,12 +72,13 @@
     <div class="mission__visual" @fadeUp>
       <div class="mission__card">
         <mat-icon class="mission__icon">swap_horiz</mat-icon>
-        <strong>Skill Barter</strong>
-        <p>Eu sei <span class="chip">Java</span>, precisas de <span class="chip chip--green">UI Design</span></p>
-        <p>Tu sabes <span class="chip chip--green">Figma</span>, eu preciso de <span class="chip">Frontend</span></p>
+        <strong>Intercâmbio de Competências</strong>
+        <div class="barter-container">
+          <p>Tenho <span class="chip barter-chip" [@fadeBarter]="currentBarterIndex">{{ currentBarter.mySkill }}</span> e procuro <span class="chip chip--green barter-chip" [@fadeBarter]="currentBarterIndex">{{ currentBarter.neededSkill }}</span></p>
+          <p>Tens <span class="chip chip--green barter-chip" [@fadeBarter]="currentBarterIndex">{{ currentBarter.partnerSkill }}</span> e procuras <span class="chip barter-chip" [@fadeBarter]="currentBarterIndex">{{ currentBarter.partnerNeededSkill }}</span></p>
+        </div>
         <div class="mission__match">
-          <mat-icon color="accent">favorite</mat-icon>
-          <strong>É um Match!</strong>
+          <strong>Temos um Match!</strong>
         </div>
       </div>
     </div>
@@ -121,19 +122,11 @@
     </div>
 
     <!-- Projects grid -->
-    <div class="projects-grid" *ngIf="!loadingProjects && projects.length > 0"
-         [@staggerCards]="projects.length">
-      <mat-card class="project-card" *ngFor="let p of projects" matRipple
-                [routerLink]="['/projects', p.slug]">
+    <div class="projects-grid" *ngIf="!loadingProjects && projects.length > 0" [@staggerCards]="projects.length">
+      <mat-card class="project-card" *ngFor="let p of projects" matRipple [routerLink]="['/projects', p.slug]">
         <div class="project-card__img">
-          <img 
-            appSmartFitImg
-            [src]="p.image_url || 'assets/project-placeholder.svg'" 
-            [alt]="p.title"
-            loading="lazy"
-            decoding="async"
-            width="400"
-            height="250">
+          <img appSmartFitImg [src]="p.image_url || 'assets/project-placeholder.svg'" [alt]="p.title" loading="lazy"
+            decoding="async" width="400" height="250">
           <span class="project-card__badge" [class.open]="p.status==='open'">
             {{ getStatusLabel(p.status) }}
           </span>
@@ -141,8 +134,7 @@
         <mat-card-content class="project-card__body">
           <h3 class="project-card__title" [attr.title]="p.title">{{ getProjectCardTitle(p.title) }}</h3>
           <p class="project-card__desc" [attr.title]="p.description">{{ getProjectCardDescription(p.description) }}</p>
-          <div class="project-card__skills"
-               [attr.title]="getProjectCardSkillText(p.roles) || null">
+          <div class="project-card__skills" [attr.title]="getProjectCardSkillText(p.roles) || null">
             <span class="chip chip--card-skill" *ngFor="let skill of getProjectCardSkillLabels(p.roles, 2)">
               {{ skill }}
             </span>
@@ -175,7 +167,8 @@
     </div>
 
     <div class="app-download__actions">
-      <button mat-raised-button color="primary" class="app-download__btn" (click)="installForAndroid()" [disabled]="installingAndroid">
+      <button mat-raised-button color="primary" class="app-download__btn" (click)="installForAndroid()"
+        [disabled]="installingAndroid">
         <mat-icon>android</mat-icon>
         Android
       </button>
@@ -194,8 +187,8 @@
     <div class="donation-content">
       <h2>Apoia-me</h2>
       <p>
-        Mantenho a plataforma 100% gratuita para estudantes. 
-        O teu donativo ajuda-me a continuar a oferecer este serviço e a 
+        Mantenho a plataforma 100% gratuita para estudantes.
+        O teu donativo ajuda-me a continuar a oferecer este serviço e a
         desenvolver novas funcionalidades.
       </p>
       <div class="donation-stats">
@@ -212,11 +205,7 @@
           <span>100% gratuito</span>
         </div>
       </div>
-      <button 
-        mat-raised-button 
-        color="primary" 
-        class="donation-btn"
-        (click)="openDonationDialog()">
+      <button mat-raised-button color="primary" class="donation-btn" (click)="openDonationDialog()">
         <mat-icon>favorite</mat-icon>
         Fazer uma doação
       </button>
