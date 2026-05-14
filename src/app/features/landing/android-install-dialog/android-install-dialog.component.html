@@ -1,21 +1,26 @@
-<div mat-dialog-title class="android-install__header">
-  <mat-icon>android</mat-icon>
-  <h2>Instalar no Android</h2>
+<div mat-dialog-title class="dialog-header">
+  <div class="dialog-title-wrapper">
+    <mat-icon>android</mat-icon>
+    <h2>Instalar no Android</h2>
+  </div>
+  <button mat-icon-button (click)="close()" class="close-btn" type="button" aria-label="Fechar">
+    <mat-icon>close</mat-icon>
+  </button>
 </div>
 
-<mat-dialog-content class="android-install__content">
-  <p>
-    Não foi possível abrir a instalação automática neste momento.
+<mat-dialog-content class="dialog-content">
+  <p class="dialog-description">
+    Não foi possível abrir a instalação automática neste momento. Siga os passos manuais:
   </p>
 
-  <ol>
-    <li>Abra este site no <strong>Chrome</strong> (ou Edge).</li>
+  <ol class="step-list">
+    <li>Abra este site no <strong>Chrome</strong> <span class="hint">(ou Edge)</span>.</li>
     <li>Toque no menu <strong>⋮</strong> do navegador.</li>
     <li>Selecione <strong>Instalar aplicação</strong> ou <strong>Adicionar ao ecrã principal</strong>.</li>
     <li>Confirme em <strong>Instalar</strong>.</li>
   </ol>
 </mat-dialog-content>
 
-<mat-dialog-actions align="end">
+<mat-dialog-actions align="end" class="dialog-actions">
   <button mat-button (click)="close()">Fechar</button>
 </mat-dialog-actions>

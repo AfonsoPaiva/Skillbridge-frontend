@@ -1,38 +1,110 @@
 @use '../../../../styles/variables' as v;
+@use '../../../../styles/mixins' as m;
 
-.ios-install__header {
+// ── Dialog Header ─────────────────────────────────
+::ng-deep .mat-mdc-dialog-title.dialog-header {
+  padding: v.$space-5 v.$space-6 v.$space-4 !important;
+  margin: 0 !important;
+  border-bottom: 1px solid v.$color-border;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dialog-title-wrapper {
   display: flex;
   align-items: center;
   gap: v.$space-2;
 
+  mat-icon {
+    color: v.$color-primary;
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+
   h2 {
     margin: 0;
-    font-size: 1.2rem;
-    font-weight: v.$font-weight-semibold;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: v.$color-text;
   }
 }
 
-.ios-install__content {
-  p {
-    color: v.$color-text-soft;
-    line-height: 1.6;
-  }
+.close-btn {
+  margin: -8px -8px -8px 0;
+  color: v.$color-text-soft;
+}
 
-  ol {
-    margin: v.$space-3 0;
-    padding-left: v.$space-4;
-    display: grid;
-    gap: v.$space-2;
+// ── Dialog Content ────────────────────────────────
+::ng-deep .mat-mdc-dialog-content.dialog-content {
+  padding: v.$space-6 !important;
+  overflow-y: auto;
+}
 
-    li {
-      color: v.$color-text;
-      line-height: 1.5;
+.dialog-description {
+  margin: 0 0 v.$space-5;
+  color: v.$color-text-soft;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.step-list {
+  margin: 0 0 v.$space-5;
+  padding-left: v.$space-5;
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-3;
+
+  li {
+    color: v.$color-text;
+    font-size: 0.95rem;
+    line-height: 1.5;
+
+    strong {
+      font-weight: 600;
+      color: v.$color-primary;
+    }
+
+    .hint {
+      color: v.$color-text-soft;
+      font-size: 0.85rem;
     }
   }
 }
 
-.ios-install__note {
-  margin-top: v.$space-3;
-  color: v.$color-primary !important;
-  font-weight: v.$font-weight-medium;
+.info-box {
+  display: flex;
+  align-items: flex-start;
+  gap: v.$space-3;
+  padding: v.$space-4 v.$space-5;
+  background: lighten(v.$color-primary, 46%);
+  border-radius: v.$radius-md;
+  border: 1px solid lighten(v.$color-primary, 38%);
+  margin-top: v.$space-2;
+
+  mat-icon {
+    color: v.$color-primary;
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: v.$color-text;
+    line-height: 1.45;
+  }
+}
+
+// ── Dialog Actions ────────────────────────────────
+::ng-deep .mat-mdc-dialog-actions.dialog-actions {
+  padding: v.$space-3 v.$space-6 v.$space-4 !important;
+  margin: 0 !important;
+  border-top: 1px solid v.$color-border;
+  display: flex;
+  justify-content: flex-end;
 }
