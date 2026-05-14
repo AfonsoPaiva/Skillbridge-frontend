@@ -1074,14 +1074,13 @@ body {
 
 // Custom chip styles (non-Material)
 .chip {
-  display: inline-flex !important;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
   vertical-align: middle;
   padding: v.$space-1 8px;
   border-radius: 999px;
   font-size: 12px;
-  font-weight: v.$font-weight-semibold;
+  font-weight: v.$font-weight-medium;
   background: lighten(v.$color-primary, 42%);
   color: v.$color-primary;
   gap: v.$space-1;
@@ -1090,13 +1089,15 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  line-height: normal;
+  display: inline-block; // Essencial para o text-overflow ellipsis funcionar nos cartões!
+  line-height: 1.2;
   text-align: center;
 
   mat-icon {
     font-size: 16px;
     width: 16px;
     height: 16px;
+    vertical-align: middle;
   }
   
   &:hover {

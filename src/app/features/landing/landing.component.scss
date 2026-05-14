@@ -282,8 +282,10 @@
     }
 
     .barter-chip {
-      min-width: 135px;
+      display: inline-flex !important;
+      align-items: center;
       justify-content: center;
+      min-width: 135px;
     }
 
     @media (max-width: 500px) {
