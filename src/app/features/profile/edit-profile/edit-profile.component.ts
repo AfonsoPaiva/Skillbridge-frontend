@@ -31,6 +31,7 @@ export class EditProfileComponent implements OnInit {
   userSkills: string[] = [];
   availableSkills: string[] = [];
   availableSkillSections: SkillSection[] = [];
+  filteredSkillSections: SkillSection[] = [];
   removingSkill = '';
   
   // skills search
@@ -114,7 +115,16 @@ export class EditProfileComponent implements OnInit {
       next: (res: SkillsListResponse) => {
         this.availableSkills = res.skills || [];
         this.availableSkillSections = res.sections || [];
+        this.updateFilteredSkillSections();
       }
+    });
+
+    this.skillSearchControl.valueChanges.pipe(
+      startWith(''),
+      debounceTime(150),
+      distinctUntilChanged()
+    ).subscribe(() => {
+      this.updateFilteredSkillSections();
     });
 
     // Setup reactive local university search (fast, no per-keystroke API requests)
@@ -197,6 +207,7 @@ export class EditProfileComponent implements OnInit {
         this.form.patchValue(u);
         this.form.get('contact_links')?.patchValue(this.normalizeContactLinks(u.contact_links));
         this.userSkills = [...(u.skills || [])];
+        this.updateFilteredSkillSections();
         if (u.avatar_url) this.avatarPreview = u.avatar_url;
         this.userEmail = u.email || null;
         // if there's a university already, pre‑load its courses
@@ -243,6 +254,7 @@ export class EditProfileComponent implements OnInit {
           this.auth.setCachedProfile({ ...cached, skills: [...res.skills] });
         }
         this.skillSearchControl.setValue('', { emitEvent: false });
+        this.updateFilteredSkillSections();
       },
       error: (e: HttpErrorResponse) => this.snack.open(e?.error?.error || 'Erro ao adicionar competência.', 'Fechar', { duration: 3000 })
     });
@@ -258,6 +270,7 @@ export class EditProfileComponent implements OnInit {
           this.auth.setCachedProfile({ ...cached, skills: [...res.skills] });
         }
         this.removingSkill = '';
+        this.updateFilteredSkillSections();
       },
       error: () => { this.removingSkill = ''; }
     });
@@ -292,9 +305,9 @@ export class EditProfileComponent implements OnInit {
     return this.availableSkills.filter(s => !this.userSkills.includes(s));
   }
 
-  get filteredSkillSections(): SkillSection[] {
+  private updateFilteredSkillSections(): void {
     const query = sanitizeInput((this.skillSearchControl.value || '').toString()).toLowerCase();
-    return this.availableSkillSections
+    this.filteredSkillSections = this.availableSkillSections
       .map(section => ({
         ...section,
         skills: section.skills.filter(skill => {
@@ -304,6 +317,14 @@ export class EditProfileComponent implements OnInit {
         })
       }))
       .filter(section => section.skills.length > 0);
+  }
+
+  trackBySectionLabel(_: number, section: SkillSection): string {
+    return section.label;
+  }
+
+  trackBySkill(_: number, skill: string): string {
+    return skill;
   }
 
 

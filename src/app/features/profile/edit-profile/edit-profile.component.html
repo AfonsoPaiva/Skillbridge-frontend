@@ -178,7 +178,7 @@
 
           <!-- Current skills -->
           <mat-chip-set class="current-skills">
-            <mat-chip *ngFor="let s of userSkills"
+            <mat-chip *ngFor="let s of userSkills; trackBy: trackBySkill"
                       [highlighted]="removingSkill === s"
                       (removed)="removeSkill(s)">
               {{ s }}
@@ -208,13 +208,13 @@
           </div>
 
           <div class="skills-catalog" *ngIf="filteredSkillSections.length > 0; else noSkillResults">
-            <div class="skills-catalog__section" *ngFor="let section of filteredSkillSections">
+            <div class="skills-catalog__section" *ngFor="let section of filteredSkillSections; trackBy: trackBySectionLabel">
               <h4>{{ section.label }}</h4>
               <div class="skills-catalog__grid">
                 <button type="button"
                         mat-stroked-button
                         class="skills-catalog__btn"
-                        *ngFor="let skill of section.skills"
+                        *ngFor="let skill of section.skills; trackBy: trackBySkill"
                         (click)="addSkill(skill)">
                   {{ skill }}
                 </button>
