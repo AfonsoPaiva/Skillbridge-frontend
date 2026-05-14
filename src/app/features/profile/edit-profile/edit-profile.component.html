@@ -194,27 +194,17 @@
 
           <!-- Add skill -->
           <div class="add-skill">
-            <mat-form-field appearance="outline">
-              <mat-label>Adicionar competência</mat-label>
+            <mat-form-field appearance="outline" style="width: 100%">
+              <mat-label>Pesquisar competência</mat-label>
               <input matInput
                      [formControl]="skillSearchControl"
-                     [matAutocomplete]="skillAuto"
-                     placeholder="Pesquisar competência…"
+                     placeholder="Ex: Python, Figma…"
                      autocomplete="off">
-              <mat-icon matSuffix>search</mat-icon>
-              <mat-autocomplete #skillAuto="matAutocomplete" (optionSelected)="onSkillSelected($event)">
-                <mat-option *ngFor="let s of filteredSkills$ | async" [value]="s">
-                  {{ s }}
-                </mat-option>
-                <mat-option *ngIf="(filteredSkills$ | async)?.length === 0" disabled>
-                  Nenhuma competência encontrada.
-                </mat-option>
-              </mat-autocomplete>
+              <button *ngIf="skillSearchControl.value" mat-icon-button matSuffix type="button" (click)="skillSearchControl.setValue('')" aria-label="Limpar pesquisa">
+                <mat-icon>close</mat-icon>
+              </button>
+              <mat-icon matSuffix *ngIf="!skillSearchControl.value">search</mat-icon>
             </mat-form-field>
-            <button type="button" mat-raised-button color="primary"
-                    [disabled]="!skillSearchControl.value" (click)="addSkill()">
-              <mat-icon>add</mat-icon> Adicionar
-            </button>
           </div>
 
           <div class="skills-catalog" *ngIf="filteredSkillSections.length > 0; else noSkillResults">

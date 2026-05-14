@@ -33,10 +33,8 @@ export class EditProfileComponent implements OnInit {
   availableSkillSections: SkillSection[] = [];
   removingSkill = '';
   
-  // skills autocomplete with search
+  // skills search
   skillSearchControl = new FormControl('');
-  filteredSkills$!: Observable<string[]>;
-  private userSkillsSubject = new BehaviorSubject<string[]>([]);
 
   // university autocomplete state copied from onboarding
   universities: string[] = [];
@@ -111,12 +109,11 @@ export class EditProfileComponent implements OnInit {
       })
     });
 
-    // Load skills and setup autocomplete
+    // Load skills
     this.api.listSkills().subscribe({ 
       next: (res: SkillsListResponse) => {
         this.availableSkills = res.skills || [];
         this.availableSkillSections = res.sections || [];
-        this.setupSkillsAutocomplete();
       }
     });
 
@@ -200,7 +197,6 @@ export class EditProfileComponent implements OnInit {
         this.form.patchValue(u);
         this.form.get('contact_links')?.patchValue(this.normalizeContactLinks(u.contact_links));
         this.userSkills = [...(u.skills || [])];
-        this.userSkillsSubject.next(this.userSkills);
         if (u.avatar_url) this.avatarPreview = u.avatar_url;
         this.userEmail = u.email || null;
         // if there's a university already, pre‑load its courses
@@ -242,7 +238,6 @@ export class EditProfileComponent implements OnInit {
     this.api.addSkill(skill).subscribe({
       next: (res: { skills: string[] }) => {
         this.userSkills = res.skills;
-        this.userSkillsSubject.next(this.userSkills);
         const cached = this.auth.cachedProfile;
         if (cached) {
           this.auth.setCachedProfile({ ...cached, skills: [...res.skills] });
@@ -253,19 +248,11 @@ export class EditProfileComponent implements OnInit {
     });
   }
 
-  onSkillSelected(event: any): void {
-    const selected = event?.option?.value;
-    if (selected) {
-      this.addSkill(selected);
-    }
-  }
-
   removeSkill(skill: string): void {
     this.removingSkill = skill;
     this.api.removeSkill(skill).subscribe({
       next: (res: { skills: string[] }) => {
         this.userSkills = res.skills;
-        this.userSkillsSubject.next(this.userSkills);
         const cached = this.auth.cachedProfile;
         if (cached) {
           this.auth.setCachedProfile({ ...cached, skills: [...res.skills] });
@@ -319,31 +306,7 @@ export class EditProfileComponent implements OnInit {
       .filter(section => section.skills.length > 0);
   }
 
-  private setupSkillsAutocomplete(): void {
-    // Combine skill search input with user's current skills to filter
-    this.filteredSkills$ = combineLatest([
-      this.skillSearchControl.valueChanges.pipe(
-        startWith(''),
-        debounceTime(300), // Increased for better performance with 300+ items
-        distinctUntilChanged()
-      ),
-      this.userSkillsSubject.asObservable()
-    ]).pipe(
-      map(([query, userSkills]) => {
-        // Filter out skills already added by user
-        const available = this.availableSkills.filter(s => !userSkills.includes(s));
-        // Apply search filter with limit for performance
-        const q = sanitizeInput((query || '').toString());
-        if (q.length === 0) {
-          // Show first 30 when no search query
-          return available.slice(0, 30);
-        }
-        // Search by substring match (case-insensitive)
-        const lower = q.toLowerCase();
-        return available.filter(s => s.toLowerCase().includes(lower)).slice(0, 50);
-      })
-    );
-  }
+
 
   private resolveSkill(rawSkill: string): string {
     if (!rawSkill) return '';
