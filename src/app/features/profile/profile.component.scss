@@ -146,6 +146,8 @@
   color: v.$color-text;
   text-decoration: none;
   transition: all v.$transition-fast;
+  max-width: min(100%, 320px);
+  box-sizing: border-box;
 
   .social-link__icon {
     width: 16px;
@@ -155,6 +157,13 @@
     flex-shrink: 0;
     object-fit: contain;
     display: block;
+  }
+
+  span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
   }
 
   &:hover {
