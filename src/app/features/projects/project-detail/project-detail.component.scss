@@ -107,14 +107,14 @@
 .project-link {
   display: flex;
   align-items: center;
-  gap: v.$space-2;
-  padding: v.$space-3 v.$space-4;
+  gap: v.$space-3;
+  padding: v.$space-4 v.$space-6;
   background: v.$color-surface;
   border: 1px solid v.$color-border;
-  border-radius: v.$radius-md;
+  border-radius: v.$radius-lg;
   text-decoration: none;
   color: v.$color-text;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: v.$font-weight-medium;
   transition: all 0.2s ease;
   min-width: 0;
@@ -127,9 +127,9 @@
 
   > mat-icon:first-child {
     color: v.$color-primary;
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
     flex-shrink: 0;
   }
 
@@ -140,11 +140,11 @@
   }
 
   &__arrow {
-    font-size: 14px !important;
-    width: 14px !important;
-    height: 14px !important;
+    font-size: 18px !important;
+    width: 18px !important;
+    height: 18px !important;
     color: v.$color-text-soft;
-    margin-left: v.$space-1;
+    margin-left: v.$space-2;
     flex-shrink: 0;
     opacity: 0;
     transition: opacity 0.2s ease;
