@@ -3,29 +3,32 @@
 
 .dialog-header {
   @include m.flex-between;
-  margin-bottom: v.$space-4;
-  padding-bottom: v.$space-3;
-  border-bottom: 1px solid v.$color-border;
+  margin-bottom: v.$space-2;
+  padding-bottom: v.$space-4;
   
   h2 {
     margin: 0;
     font-size: 1.25rem;
     font-weight: v.$font-weight-bold;
   }
+
+  button {
+    color: v.$color-text-soft;
+    &:hover { color: v.$color-text; }
+  }
 }
 
 .share-content {
   display: flex;
   flex-direction: column;
-  gap: v.$space-5;
-  padding-bottom: v.$space-2;
+  padding: v.$space-2 0 v.$space-6;
 }
 
 .share-subtitle {
-  margin: 0;
+  margin: 0 0 v.$space-6;
   font-size: 15px;
   color: v.$color-text-soft;
-  line-height: 1.5;
+  text-align: center;
   
   strong {
     color: v.$color-text;
@@ -33,85 +36,144 @@
   }
 }
 
-.copy-section {
-  .full-width {
-    width: 100%;
-  }
-
-  ::ng-deep .mat-mdc-text-field-wrapper {
-    background: rgba(v.$color-primary, 0.03);
-  }
-
-  input {
-    color: v.$color-text;
-    font-family: monospace;
-    font-size: 13px;
-  }
-}
-
-.social-share {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: v.$space-3;
-  
-  @media (max-width: v.$bp-sm) {
-    grid-template-columns: 1fr;
-  }
-}
-
-.share-btn {
-  height: 44px !important;
+// ── Copy Card ──────────────────────────────────────
+.copy-card {
   display: flex;
-  justify-content: flex-start;
-  padding: 0 v.$space-4 !important;
-  border-radius: v.$radius-md !important;
-  border-color: v.$color-border !important;
-  transition: all 0.2s ease !important;
+  align-items: center;
+  justify-content: space-between;
+  background: v.$color-surface;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-md;
+  padding: 4px 4px 4px v.$space-4;
+  margin-bottom: v.$space-6;
+  transition: border-color v.$transition-fast;
 
-  ::ng-deep .mdc-button__label {
-    display: flex;
-    align-items: center;
-    gap: v.$space-2;
-    width: 100%;
+  &:hover {
+    border-color: rgba(v.$color-primary, 0.4);
   }
+
+  &__url {
+    flex: 1;
+    min-width: 0;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 13px;
+    color: v.$color-text;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: v.$space-3;
+  }
+
+  &__btn {
+    height: 36px !important;
+    padding: 0 v.$space-4 !important;
+    border-radius: v.$radius-sm !important;
+    font-size: 13px !important;
+    font-weight: v.$font-weight-medium !important;
+    letter-spacing: 0.02em !important;
+    box-shadow: none !important;
+  }
+}
+
+// ── Share Divider ──────────────────────────────────
+.share-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin-bottom: v.$space-6;
+  
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid v.$color-border;
+  }
+  
+  span {
+    padding: 0 v.$space-4;
+    color: v.$color-text-soft;
+    font-size: 13px;
+    font-weight: v.$font-weight-medium;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+// ── Social Icons ───────────────────────────────────
+.social-share {
+  display: flex;
+  justify-content: center;
+  gap: v.$space-5;
+  flex-wrap: wrap;
+
+  @media (max-width: v.$bp-sm) {
+    gap: v.$space-3;
+  }
+}
+
+.social-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: rgba(v.$color-text-soft, 0.06);
+  color: v.$color-text-soft;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.03);
 
   mat-icon {
-    margin: 0;
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+  }
+
+  svg {
+    transition: transform 0.2s ease;
   }
 
   &:hover {
-    background: rgba(v.$color-primary, 0.04) !important;
-    border-color: rgba(v.$color-primary, 0.3) !important;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+    
+    svg {
+      transform: scale(1.1);
+    }
   }
 
-  &--whatsapp:hover {
-    color: #25D366 !important;
-    border-color: #25D366 !important;
-    background: rgba(#25D366, 0.05) !important;
-    mat-icon { color: #25D366; }
+  &--whatsapp {
+    &:hover {
+      background: #25D366;
+      color: white;
+    }
   }
 
-  &--twitter:hover {
-    color: #1DA1F2 !important;
-    border-color: #1DA1F2 !important;
-    background: rgba(#1DA1F2, 0.05) !important;
-    mat-icon { color: #1DA1F2; }
+  &--linkedin {
+    &:hover {
+      background: #0A66C2;
+      color: white;
+    }
   }
 
-  &--linkedin:hover {
-    color: #0A66C2 !important;
-    border-color: #0A66C2 !important;
-    background: rgba(#0A66C2, 0.05) !important;
-    mat-icon { color: #0A66C2; }
+  &--twitter {
+    &:hover {
+      background: #000000;
+      color: white;
+      @media (prefers-color-scheme: dark) {
+        background: #FFFFFF;
+        color: #000000;
+      }
+    }
   }
-  
-  &--email:hover {
-    color: v.$color-primary !important;
-    border-color: v.$color-primary !important;
-    background: rgba(v.$color-primary, 0.05) !important;
-    mat-icon { color: v.$color-primary; }
+
+  &--email {
+    &:hover {
+      background: v.$color-primary;
+      color: white;
+    }
   }
 }
