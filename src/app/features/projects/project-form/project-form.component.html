@@ -130,14 +130,18 @@
 
           <div class="links-list" formArrayName="links">
             <div class="link-row" *ngFor="let l of links.controls; let i = index" [formGroupName]="i">
-              <mat-form-field appearance="outline" class="link-type-field">
-                <mat-label>Tipo</mat-label>
-                <mat-select formControlName="type">
-                  <mat-option *ngFor="let t of linkTypeOptions" [value]="t.value">
-                    <mat-icon>{{ t.icon }}</mat-icon> {{ t.label }}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
+              <div class="link-type-picker">
+                <span class="link-type-picker__label">Tipo</span>
+                <div class="link-type-picker__options">
+                  <button type="button" class="link-type-btn"
+                          *ngFor="let t of linkTypeOptions"
+                          [class.link-type-btn--active]="l.get('type')?.value === t.value"
+                          (click)="l.get('type')?.setValue(t.value)"
+                          [matTooltip]="t.label">
+                    <mat-icon>{{ t.icon }}</mat-icon>
+                  </button>
+                </div>
+              </div>
 
               <mat-form-field appearance="outline" class="link-label-field">
                 <mat-label>Nome</mat-label>

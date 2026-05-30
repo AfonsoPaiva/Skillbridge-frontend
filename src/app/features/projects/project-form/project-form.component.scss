@@ -212,7 +212,7 @@
 
 .link-row {
   display: grid;
-  grid-template-columns: 200px 1.5fr 2fr auto;
+  grid-template-columns: auto 1.5fr 2fr auto;
   gap: v.$space-4;
   align-items: flex-start;
   padding: v.$space-4 v.$space-5;
@@ -228,7 +228,7 @@
   @media (max-width: v.$bp-md) {
     grid-template-columns: 1fr 1fr;
     
-    .link-type-field { grid-column: 1 / -1; }
+    .link-type-picker { grid-column: 1 / -1; }
     .link-url-field { grid-column: 1 / -1; }
     .link-remove-btn { 
       grid-column: 1 / -1; 
@@ -240,6 +240,63 @@
     grid-template-columns: 1fr;
     
     .link-label-field { grid-column: 1; }
+  }
+}
+
+.link-type-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  &__label {
+    font-size: 12px;
+    color: v.$color-text-soft;
+    font-weight: v.$font-weight-medium;
+    padding-left: 2px;
+  }
+
+  &__options {
+    display: flex;
+    gap: 4px;
+    background: rgba(v.$color-text-soft, 0.05);
+    padding: 6px;
+    border-radius: v.$radius-md;
+    border: 1px solid v.$color-border;
+    height: 52px;
+    align-items: center;
+  }
+}
+
+.link-type-btn {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: v.$radius-sm;
+  color: v.$color-text-soft;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+  }
+
+  &:hover {
+    color: v.$color-text;
+    background: rgba(v.$color-text-soft, 0.1);
+  }
+
+  &--active {
+    color: v.$color-primary;
+    background: rgba(v.$color-primary, 0.15);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
   }
 }
 
