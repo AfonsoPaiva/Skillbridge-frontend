@@ -131,35 +131,38 @@
           <div class="links-list" formArrayName="links">
             <div class="link-row" *ngFor="let l of links.controls; let i = index" [formGroupName]="i">
               <div class="link-type-picker">
-                <span class="link-type-picker__label">Tipo</span>
-                <div class="link-type-picker__options">
-                  <button type="button" class="link-type-btn"
+                <span class="link-type-picker__label">Selecione o tipo de link:</span>
+                <div class="link-type-picker__chips">
+                  <button type="button" class="link-type-chip"
                           *ngFor="let t of linkTypeOptions"
-                          [class.link-type-btn--active]="l.get('type')?.value === t.value"
+                          [class.link-type-chip--active]="l.get('type')?.value === t.value"
                           (click)="l.get('type')?.setValue(t.value)"
                           [matTooltip]="t.label">
                     <mat-icon>{{ t.icon }}</mat-icon>
+                    <span>{{ t.label }}</span>
                   </button>
                 </div>
               </div>
 
-              <mat-form-field appearance="outline" class="link-label-field">
-                <mat-label>Nome</mat-label>
-                <input matInput formControlName="label" placeholder="Ex: Repositório GitHub" maxlength="60">
-                <mat-error *ngIf="l.get('label')?.errors?.['required']">Obrigatório.</mat-error>
-              </mat-form-field>
+              <div class="link-row__inputs">
+                <mat-form-field appearance="outline" class="link-label-field">
+                  <mat-label>Nome</mat-label>
+                  <input matInput formControlName="label" placeholder="Ex: Repositório GitHub" maxlength="60">
+                  <mat-error *ngIf="l.get('label')?.errors?.['required']">Obrigatório.</mat-error>
+                </mat-form-field>
 
-              <mat-form-field appearance="outline" class="link-url-field">
-                <mat-label>URL</mat-label>
-                <input matInput formControlName="url" placeholder="https://...">
-                <mat-icon matPrefix>link</mat-icon>
-                <mat-error *ngIf="l.get('url')?.errors?.['required']">Obrigatório.</mat-error>
-                <mat-error *ngIf="l.get('url')?.errors?.['pattern']">URL inválido (deve começar com http:// ou https://).</mat-error>
-              </mat-form-field>
+                <mat-form-field appearance="outline" class="link-url-field">
+                  <mat-label>URL</mat-label>
+                  <input matInput formControlName="url" placeholder="https://...">
+                  <mat-icon matPrefix>link</mat-icon>
+                  <mat-error *ngIf="l.get('url')?.errors?.['required']">Obrigatório.</mat-error>
+                  <mat-error *ngIf="l.get('url')?.errors?.['pattern']">URL inválido (deve começar com http:// ou https://).</mat-error>
+                </mat-form-field>
 
-              <button type="button" mat-icon-button color="warn" (click)="removeLink(i)" matTooltip="Remover link" class="link-remove-btn">
-                <mat-icon>delete</mat-icon>
-              </button>
+                <button type="button" mat-icon-button color="warn" (click)="removeLink(i)" matTooltip="Remover link" class="link-remove-btn">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
             </div>
 
             <p class="links-empty" *ngIf="links.length === 0">
