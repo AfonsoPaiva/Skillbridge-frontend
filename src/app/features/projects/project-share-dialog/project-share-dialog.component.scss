@@ -1,10 +1,13 @@
 @use '../../../../styles/variables' as v;
 @use '../../../../styles/mixins' as m;
 
-.dialog-header {
-  @include m.flex-between;
-  margin-bottom: v.$space-2;
-  padding-bottom: v.$space-4;
+::ng-deep .mat-mdc-dialog-title.dialog-header {
+  padding: v.$space-5 v.$space-6 v.$space-4 !important;
+  margin: 0 !important;
+  border-bottom: 1px solid v.$color-border;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   
   h2 {
     margin: 0;
@@ -17,6 +20,7 @@
     &:hover { color: v.$color-text; }
   }
 }
+
 
 .share-content {
   display: flex;
