@@ -34,11 +34,18 @@ export interface Project {
   description: string;
   status: string;
   image_url: string;
+  links?: ProjectLink[];
   owner_id: number;
   owner?: User;
   roles?: ProjectRole[];
   members?: ProjectMember[];
   created_at: string;
+}
+
+export interface ProjectLink {
+  label: string;
+  url: string;
+  type: string; // github, youtube, gallery, pdf, website, other
 }
 
 export interface ProjectRole {

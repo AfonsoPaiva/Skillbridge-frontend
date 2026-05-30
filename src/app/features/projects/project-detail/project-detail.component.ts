@@ -212,4 +212,16 @@ export class ProjectDetailComponent implements OnInit {
       return 0;
     });
   }
+
+  getLinkTypeIcon(type: string): string {
+    const icons: Record<string, string> = {
+      github: 'code',
+      youtube: 'play_circle',
+      gallery: 'photo_library',
+      pdf: 'picture_as_pdf',
+      website: 'language',
+      other: 'link'
+    };
+    return icons[type] || 'link';
+  }
 }

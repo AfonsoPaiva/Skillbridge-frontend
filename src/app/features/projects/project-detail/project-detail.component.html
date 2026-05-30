@@ -54,6 +54,22 @@
 
         <p class="detail-main__desc">{{ project.description }}</p>
 
+        <!-- Links -->
+        <div class="detail-links" *ngIf="project.links?.length">
+          <h2>Links</h2>
+          <div class="links-grid">
+            <a *ngFor="let link of project.links" 
+               [href]="link.url" 
+               target="_blank" 
+               rel="noopener noreferrer" 
+               class="project-link">
+              <mat-icon>{{ getLinkTypeIcon(link.type) }}</mat-icon>
+              <span class="project-link__label">{{ link.label }}</span>
+              <mat-icon class="project-link__arrow">open_in_new</mat-icon>
+            </a>
+          </div>
+        </div>
+
         <mat-divider></mat-divider>
 
         <!-- Roles -->

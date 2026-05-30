@@ -190,6 +190,78 @@
   }
 }
 
+// ── Links section ─────────────────────────────────
+.links-section {
+  &__header {
+    @include m.flex-between;
+    margin-bottom: v.$space-4;
+    h2 { font-size: 1.2rem; font-weight: v.$font-weight-semibold; }
+  }
+}
+
+.links-list {
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-3;
+}
+
+.link-row {
+  display: grid;
+  grid-template-columns: 160px 1fr 1.5fr auto;
+  gap: v.$space-3;
+  align-items: flex-start;
+  padding: v.$space-3 v.$space-4;
+  background: v.$color-surface;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-md;
+  transition: border-color v.$transition-fast;
+
+  &:hover {
+    border-color: rgba(v.$color-primary, 0.2);
+  }
+
+  @media (max-width: v.$bp-md) {
+    grid-template-columns: 1fr 1fr;
+    
+    .link-type-field { grid-column: 1 / -1; }
+    .link-url-field { grid-column: 1 / -1; }
+    .link-remove-btn { 
+      grid-column: 1 / -1; 
+      justify-self: end; 
+    }
+  }
+
+  @media (max-width: v.$bp-sm) {
+    grid-template-columns: 1fr;
+    
+    .link-label-field { grid-column: 1; }
+  }
+}
+
+.link-remove-btn {
+  margin-top: v.$space-2;
+}
+
+.links-empty {
+  display: flex;
+  align-items: center;
+  gap: v.$space-2;
+  padding: v.$space-4;
+  color: v.$color-text-soft;
+  font-size: 14px;
+  background: rgba(v.$color-primary, 0.03);
+  border: 1px dashed v.$color-border;
+  border-radius: v.$radius-md;
+
+  mat-icon {
+    color: v.$color-primary;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+}
+
 mat-divider { margin: v.$space-4 0 !important; }
 
 // ── Roles section ─────────────────────────────────

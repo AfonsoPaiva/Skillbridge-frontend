@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@ang
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../../core/services/api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Project, SkillSection } from '../../../core/models/models';
+import { Project, ProjectLink, SkillSection } from '../../../core/models/models';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -70,8 +70,21 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     { value: 'completed', label: 'Concluído' }
   ];
 
+  linkTypeOptions = [
+    { value: 'github', label: 'GitHub', icon: 'code' },
+    { value: 'youtube', label: 'YouTube', icon: 'play_circle' },
+    { value: 'gallery', label: 'Galeria de imagens', icon: 'photo_library' },
+    { value: 'pdf', label: 'PDF / Documento', icon: 'picture_as_pdf' },
+    { value: 'website', label: 'Website', icon: 'language' },
+    { value: 'other', label: 'Outro', icon: 'link' }
+  ];
+
   get roles(): FormArray {
     return this.form.get('roles') as FormArray;
+  }
+
+  get links(): FormArray {
+    return this.form.get('links') as FormArray;
   }
 
   constructor(
@@ -89,6 +102,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
       description: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(this.projectDescriptionMaxLength)]],
       status: ['open', Validators.required],
       image_url: [''],
+      links: this.fb.array([]),
       roles: this.fb.array([])
     });
 
@@ -130,6 +144,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
             image_url: p.image_url
           });
           if (p.image_url) this.imagePreview = p.image_url;
+          (p.links || []).forEach(l => this.addLink(l));
           (p.roles || []).forEach(r => this.addRole(r));
           this.loading = false;
           setTimeout(() => this.initAnimationsDisabled = false, 100);
@@ -206,6 +221,23 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     this.rawImageSrc = null;
     this.showImageEditor = false;
     this.selectedImageFile = null;
+  }
+
+  addLink(data?: ProjectLink): void {
+    const lg = this.fb.group({
+      label: [data?.label || '', [Validators.required, Validators.maxLength(60)]],
+      url: [data?.url || '', [Validators.required, Validators.pattern(/^https?:\/\/.+/)]],
+      type: [data?.type || 'other', Validators.required]
+    });
+    this.links.push(lg);
+  }
+
+  removeLink(i: number): void {
+    this.links.removeAt(i);
+  }
+
+  getLinkTypeIcon(type: string): string {
+    return this.linkTypeOptions.find(o => o.value === type)?.icon || 'link';
   }
 
   resetEditor(): void {
