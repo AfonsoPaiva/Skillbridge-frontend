@@ -147,7 +147,8 @@
               <div class="link-row__inputs">
                 <mat-form-field appearance="outline" class="link-label-field">
                   <mat-label>Nome</mat-label>
-                  <input matInput formControlName="label" placeholder="Ex: Repositório GitHub" maxlength="60">
+                  <input matInput formControlName="label" placeholder="Ex: Repositório GitHub" maxlength="25">
+                  <mat-hint align="end">{{ (l.get('label')?.value?.length || 0) }}/25</mat-hint>
                   <mat-error *ngIf="l.get('label')?.errors?.['required']">Obrigatório.</mat-error>
                 </mat-form-field>
 

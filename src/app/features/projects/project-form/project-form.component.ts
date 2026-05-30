@@ -225,7 +225,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
 
   addLink(data?: ProjectLink): void {
     const lg = this.fb.group({
-      label: [data?.label || '', [Validators.required, Validators.maxLength(60)]],
+      label: [data?.label || '', [Validators.required, Validators.maxLength(25)]],
       url: [data?.url || '', [Validators.required, Validators.pattern(/^https?:\/\/.+/)]],
       type: [data?.type || 'other', Validators.required]
     });

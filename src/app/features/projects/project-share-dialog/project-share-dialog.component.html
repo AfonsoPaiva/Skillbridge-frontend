@@ -1,0 +1,44 @@
+<div mat-dialog-title class="dialog-header">
+  <h2>Partilhar Projeto</h2>
+  <button mat-icon-button (click)="close()" matTooltip="Fechar">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<mat-dialog-content>
+  <div class="share-content">
+    <p class="share-subtitle">Partilha o projeto <strong>{{ data.project.title }}</strong> com a tua rede.</p>
+
+    <!-- Copy link section -->
+    <div class="copy-section">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Link do projeto</mat-label>
+        <input matInput [value]="projectUrl" readonly #linkInput>
+        <button mat-icon-button matSuffix (click)="copyLink()" matTooltip="Copiar link">
+          <mat-icon>content_copy</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+
+    <!-- Social share buttons -->
+    <div class="social-share">
+      <button mat-stroked-button class="share-btn share-btn--email" (click)="shareEmail()">
+        <mat-icon>email</mat-icon>
+        Email
+      </button>
+      <button mat-stroked-button class="share-btn share-btn--whatsapp" (click)="shareWhatsApp()">
+        <img src="assets/icons/whatsapp.svg" alt="WhatsApp" class="social-icon" *ngIf="false">
+        <mat-icon>chat</mat-icon> <!-- Fallback icon -->
+        WhatsApp
+      </button>
+      <button mat-stroked-button class="share-btn share-btn--twitter" (click)="shareTwitter()">
+        <mat-icon>flutter_dash</mat-icon> <!-- Twitter/X placeholder icon -->
+        X (Twitter)
+      </button>
+      <button mat-stroked-button class="share-btn share-btn--linkedin" (click)="shareLinkedIn()">
+        <mat-icon>work</mat-icon> <!-- LinkedIn placeholder icon -->
+        LinkedIn
+      </button>
+    </div>
+  </div>
+</mat-dialog-content>

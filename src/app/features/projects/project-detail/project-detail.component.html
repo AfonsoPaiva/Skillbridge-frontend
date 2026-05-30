@@ -29,13 +29,18 @@
               · {{ project.created_at | date:'dd/MM/yyyy' }}
             </p>
           </div>
-          <div class="detail-main__actions" *ngIf="isOwner">
-            <a [routerLink]="['/projects', project.slug, 'editar']" mat-stroked-button color="primary">
-              <mat-icon>edit</mat-icon> Editar
-            </a>
-            <button mat-stroked-button color="warn" (click)="deleteProject()" [disabled]="deleteLoading">
-              <mat-icon>delete</mat-icon> Eliminar
+          <div class="detail-main__actions">
+            <button mat-stroked-button (click)="openShareDialog()">
+              <mat-icon>share</mat-icon> Partilhar
             </button>
+            <ng-container *ngIf="isOwner">
+              <a [routerLink]="['/projects', project.slug, 'editar']" mat-stroked-button color="primary">
+                <mat-icon>edit</mat-icon> Editar
+              </a>
+              <button mat-stroked-button color="warn" (click)="deleteProject()" [disabled]="deleteLoading">
+                <mat-icon>delete</mat-icon> Eliminar
+              </button>
+            </ng-container>
           </div>
         </div>
 

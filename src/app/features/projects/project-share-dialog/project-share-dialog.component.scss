@@ -1,0 +1,117 @@
+@use '../../../../styles/variables' as v;
+@use '../../../../styles/mixins' as m;
+
+.dialog-header {
+  @include m.flex-between;
+  margin-bottom: v.$space-4;
+  padding-bottom: v.$space-3;
+  border-bottom: 1px solid v.$color-border;
+  
+  h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: v.$font-weight-bold;
+  }
+}
+
+.share-content {
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-5;
+  padding-bottom: v.$space-2;
+}
+
+.share-subtitle {
+  margin: 0;
+  font-size: 15px;
+  color: v.$color-text-soft;
+  line-height: 1.5;
+  
+  strong {
+    color: v.$color-text;
+    font-weight: v.$font-weight-semibold;
+  }
+}
+
+.copy-section {
+  .full-width {
+    width: 100%;
+  }
+
+  ::ng-deep .mat-mdc-text-field-wrapper {
+    background: rgba(v.$color-primary, 0.03);
+  }
+
+  input {
+    color: v.$color-text;
+    font-family: monospace;
+    font-size: 13px;
+  }
+}
+
+.social-share {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: v.$space-3;
+  
+  @media (max-width: v.$bp-sm) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.share-btn {
+  height: 44px !important;
+  display: flex;
+  justify-content: flex-start;
+  padding: 0 v.$space-4 !important;
+  border-radius: v.$radius-md !important;
+  border-color: v.$color-border !important;
+  transition: all 0.2s ease !important;
+
+  ::ng-deep .mdc-button__label {
+    display: flex;
+    align-items: center;
+    gap: v.$space-2;
+    width: 100%;
+  }
+
+  mat-icon {
+    margin: 0;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  &:hover {
+    background: rgba(v.$color-primary, 0.04) !important;
+    border-color: rgba(v.$color-primary, 0.3) !important;
+  }
+
+  &--whatsapp:hover {
+    color: #25D366 !important;
+    border-color: #25D366 !important;
+    background: rgba(#25D366, 0.05) !important;
+    mat-icon { color: #25D366; }
+  }
+
+  &--twitter:hover {
+    color: #1DA1F2 !important;
+    border-color: #1DA1F2 !important;
+    background: rgba(#1DA1F2, 0.05) !important;
+    mat-icon { color: #1DA1F2; }
+  }
+
+  &--linkedin:hover {
+    color: #0A66C2 !important;
+    border-color: #0A66C2 !important;
+    background: rgba(#0A66C2, 0.05) !important;
+    mat-icon { color: #0A66C2; }
+  }
+  
+  &--email:hover {
+    color: v.$color-primary !important;
+    border-color: v.$color-primary !important;
+    background: rgba(v.$color-primary, 0.05) !important;
+    mat-icon { color: v.$color-primary; }
+  }
+}

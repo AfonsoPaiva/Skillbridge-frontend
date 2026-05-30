@@ -8,6 +8,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { HttpErrorResponse } from '@angular/common/http';
 import { getRoleSkillNames } from '../../../core/utils/project-role.utils';
+import { ProjectShareDialogComponent } from '../project-share-dialog/project-share-dialog.component';
 
 @Component({
   selector: 'app-project-detail',
@@ -114,6 +115,16 @@ export class ProjectDetailComponent implements OnInit {
   getStatusLabel(status: string): string {
     const map: Record<string, string> = { open: 'Aberto', in_progress: 'Em progresso', completed: 'Concluído', full: 'Vagas cheias' };
     return map[status] ?? status;
+  }
+
+  openShareDialog(): void {
+    if (!this.project) return;
+    this.dialog.open(ProjectShareDialogComponent, {
+      width: '450px',
+      maxWidth: '95vw',
+      data: { project: this.project },
+      autoFocus: false
+    });
   }
 
   deleteProject(): void {
