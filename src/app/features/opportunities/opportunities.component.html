@@ -8,74 +8,113 @@
       </div>
     </div>
 
-    <!-- Filters -->
-    <div class="filters" @fadeUp>
-      <mat-form-field appearance="outline" class="search-field">
-        <mat-label>Pesquisar vagas</mat-label>
-        <input matInput [(ngModel)]="search" (ngModelChange)="applyFilters()" placeholder="Título, descrição ou tags..."
-          autocomplete="off" maxlength="100">
-        <mat-icon matSuffix>search</mat-icon>
-      </mat-form-field>
+    <mat-tab-group animationDuration="0ms" class="opportunities-tabs">
+      <mat-tab label="Todas as Oportunidades">
+        <div class="tab-content">
+          <!-- Filters -->
+          <div class="filters" @fadeUp>
+            <mat-form-field appearance="outline" class="search-field">
+              <mat-label>Pesquisar vagas</mat-label>
+              <input matInput [(ngModel)]="search" (ngModelChange)="applyFilters()" placeholder="Título, descrição ou tags..."
+                autocomplete="off" maxlength="100">
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
 
-      <div class="status-btns">
-        <button *ngFor="let s of typeOptions" mat-stroked-button [class.active]="typeFilter === s.value"
-          (click)="onTypeChange(s.value)">
-          {{ s.label }}
-        </button>
-      </div>
-    </div>
+            <div class="status-btns">
+              <button *ngFor="let s of typeOptions" mat-stroked-button [class.active]="typeFilter === s.value"
+                (click)="onTypeChange(s.value)">
+                {{ s.label }}
+              </button>
+            </div>
+          </div>
 
-    <!-- Skeleton -->
-    <div class="grid" *ngIf="loading">
-      <!-- Re-using some generic skeleton if any exists, else just simple boxes -->
-      <mat-card class="pcard skeleton-card" *ngFor="let _ of [1,2,3,4]">
-        <div class="pcard__img skeleton-box"></div>
-        <mat-card-content class="pcard__body">
-          <div class="skeleton-box skeleton-title"></div>
-          <div class="skeleton-box skeleton-text"></div>
-        </mat-card-content>
-      </mat-card>
-    </div>
+          <!-- Skeleton -->
+          <ng-container *ngIf="loading">
+            <ng-container *ngTemplateOutlet="skeletonGrid"></ng-container>
+          </ng-container>
 
-    <!-- List -->
-    <div class="grid" *ngIf="!loading && filtered.length > 0" [@list]="filtered.length">
-      <mat-card class="pcard" *ngFor="let v of filtered">
+          <!-- List -->
+          <div class="grid" *ngIf="!loading && filtered.length > 0" [@list]="filtered.length">
+            <ng-container *ngFor="let v of filtered">
+              <ng-container *ngTemplateOutlet="vacancyCard; context: { vacancy: v }"></ng-container>
+            </ng-container>
+          </div>
 
-        <!-- Company Initials Block instead of an Image -->
-        <div class="pcard__img company-logo-block">
-          <div class="initials">{{ getInitials(v.recruiter?.company_name) }}</div>
-          <span class="pcard__badge" data-status="open">{{ getTypeLabel(v.type) }}</span>
+          <!-- Empty -->
+          <div class="empty" *ngIf="!loading && filtered.length === 0" @fadeUp>
+            <mat-icon>search_off</mat-icon>
+            <h3>Nenhuma vaga encontrada</h3>
+            <p *ngIf="search || typeFilter !== 'all'">Tenta ajustar os filtros de pesquisa.</p>
+            <p *ngIf="!search && typeFilter === 'all'">De momento não existem vagas ativas.</p>
+          </div>
         </div>
+      </mat-tab>
 
-        <mat-card-content class="pcard__body">
-          <h3 [attr.title]="v.title">{{ v.title }}</h3>
-          <p class="company-name">{{ v.recruiter?.company_name }}</p>
-          <p class="description" [attr.title]="v.description">{{ v.description }}</p>
+      <mat-tab label="Recomendadas">
+        <div class="tab-content">
+          <!-- Skeleton -->
+          <ng-container *ngIf="loading">
+            <ng-container *ngTemplateOutlet="skeletonGrid"></ng-container>
+          </ng-container>
 
-          <div class="pcard__skills">
-            <span class="chip chip--card-skill" *ngFor="let tag of v.tags.slice(0, 3)">
-              {{ tag }}
-            </span>
-            <span class="chip chip--card-skill" *ngIf="v.tags.length > 3">
-              +{{ v.tags.length - 3 }}
-            </span>
+          <!-- List -->
+          <div class="grid" *ngIf="!loading && recommended.length > 0" [@list]="recommended.length">
+            <ng-container *ngFor="let v of recommended">
+              <ng-container *ngTemplateOutlet="vacancyCard; context: { vacancy: v }"></ng-container>
+            </ng-container>
           </div>
 
-          <div class="pcard__actions">
-            <button mat-raised-button color="primary" class="apply-btn" (click)="applyToVacancy(v)">
-              <mat-icon>launch</mat-icon> Candidatar-me
-            </button>
+          <!-- Empty -->
+          <div class="empty" *ngIf="!loading && recommended.length === 0" @fadeUp>
+            <mat-icon>star_border</mat-icon>
+            <h3>Nenhuma vaga recomendada</h3>
+            <p>De momento não existem vagas com competências semelhantes às dos estágios.</p>
           </div>
-        </mat-card-content>
-      </mat-card>
-    </div>
-
-    <!-- Empty -->
-    <div class="empty" *ngIf="!loading && filtered.length === 0" @fadeUp>
-      <mat-icon>search_off</mat-icon>
-      <h3>Nenhuma vaga encontrada</h3>
-      <p *ngIf="search || typeFilter !== 'all'">Tenta ajustar os filtros de pesquisa.</p>
-      <p *ngIf="!search && typeFilter === 'all'">De momento não existem vagas ativas.</p>
-    </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
   </div>
 </div>
+
+<!-- Reusable Templates -->
+<ng-template #skeletonGrid>
+  <div class="grid">
+    <mat-card class="pcard skeleton-card" *ngFor="let _ of [1,2,3,4]">
+      <div class="pcard__img skeleton-box"></div>
+      <mat-card-content class="pcard__body">
+        <div class="skeleton-box skeleton-title"></div>
+        <div class="skeleton-box skeleton-text"></div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</ng-template>
+
+<ng-template #vacancyCard let-v="vacancy">
+  <mat-card class="pcard">
+    <div class="pcard__img company-logo-block">
+      <div class="initials">{{ getInitials(v.recruiter?.company_name) }}</div>
+      <span class="pcard__badge" data-status="open">{{ getTypeLabel(v.type) }}</span>
+    </div>
+
+    <mat-card-content class="pcard__body">
+      <h3 [attr.title]="v.title">{{ v.title }}</h3>
+      <p class="company-name">{{ v.recruiter?.company_name }}</p>
+      <p class="description" [attr.title]="v.description">{{ v.description }}</p>
+
+      <div class="pcard__skills">
+        <span class="chip chip--card-skill" *ngFor="let tag of v.tags.slice(0, 3)">
+          {{ tag }}
+        </span>
+        <span class="chip chip--card-skill" *ngIf="v.tags.length > 3">
+          +{{ v.tags.length - 3 }}
+        </span>
+      </div>
+
+      <div class="pcard__actions">
+        <button mat-raised-button color="primary" class="apply-btn" (click)="applyToVacancy(v)">
+          <mat-icon>launch</mat-icon> Candidatar-me
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</ng-template>

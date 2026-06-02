@@ -40,6 +40,7 @@ const DIALOG_CONFIG = {
 export class OpportunitiesComponent implements OnInit {
   vacancies: Vacancy[] = [];
   filtered: Vacancy[] = [];
+  recommended: Vacancy[] = [];
   loading = true;
   search = '';
   typeFilter = 'all';
@@ -67,12 +68,28 @@ export class OpportunitiesComponent implements OnInit {
       next: (res) => {
         this.vacancies = res.vacancies || [];
         this.applyFilters();
+        this.computeRecommended();
         this.loading = false;
       },
       error: () => {
         this.loading = false;
       }
     });
+  }
+
+  computeRecommended(): void {
+    const internshipTags = new Set<string>();
+    this.vacancies.forEach(v => {
+      if (v.type === 'summer_internship' || v.type === 'curricular_internship') {
+        v.tags.forEach(t => internshipTags.add(t));
+      }
+    });
+
+    this.recommended = this.vacancies.filter(v => 
+      v.type !== 'summer_internship' && 
+      v.type !== 'curricular_internship' &&
+      v.tags.some(t => internshipTags.has(t))
+    );
   }
 
   applyFilters(): void {
