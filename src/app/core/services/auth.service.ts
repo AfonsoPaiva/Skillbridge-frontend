@@ -15,6 +15,8 @@ export interface AuthUser {
   displayName: string | null;
   token: string;
   expiresAt?: number; // timestamp when token expires
+  recruiterId?: string; // set when user is a recruiter (from Firebase custom claims)
+  role?: string; // 'recruiter' if recruiter (from Firebase custom claims)
 }
 
 @Injectable({ providedIn: 'root' })
@@ -36,6 +38,11 @@ export class AuthService {
 
   get isLoggedIn(): boolean {
     return !!this._currentUser$.getValue();
+  }
+
+  get isRecruiter(): boolean {
+    const user = this._currentUser$.getValue();
+    return !!user?.recruiterId;
   }
 
   get cachedProfile(): User | null {
@@ -94,7 +101,9 @@ export class AuthService {
             email: firebaseUser.email,
             displayName: firebaseUser.displayName,
             token,
-            expiresAt
+            expiresAt,
+            recruiterId: tokenResult.claims['recruiter_id'] as string | undefined,
+            role: tokenResult.claims['role'] as string | undefined,
           });
 
           this.scheduleTokenRefresh(expiresAt);

@@ -1,0 +1,82 @@
+<div class="recruiter-page">
+  <div class="recruiter-page__container">
+    <!-- Logo -->
+    <div class="recruiter-page__logo">
+      <img src="https://storage.googleapis.com/skillbridge-uploads/Logo%20Vertical.png" alt="SkillBridge" />
+    </div>
+
+    <!-- Success state -->
+    <div *ngIf="submitted" class="recruiter-page__success">
+      <mat-icon class="success-icon">check_circle</mat-icon>
+      <h1>Pedido recebido!</h1>
+      <p>Vamos analisar o seu pedido e enviar-lhe um email em breve.</p>
+    </div>
+
+    <!-- Form state -->
+    <ng-container *ngIf="!submitted">
+      <h1>Publicar vagas no SkillBridge</h1>
+      <p class="recruiter-page__subtitle">
+        Conecte a sua empresa com estudantes e recém-licenciados talentosos. Preencha o formulário abaixo para criar a sua conta de recrutador.
+      </p>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="recruiter-form">
+        <!-- Full name -->
+        <mat-form-field appearance="outline">
+          <mat-label>Nome completo *</mat-label>
+          <input matInput formControlName="full_name" placeholder="João Silva">
+          <mat-error *ngIf="form.get('full_name')?.errors?.['required']">O nome é obrigatório.</mat-error>
+        </mat-form-field>
+
+        <!-- Company name -->
+        <mat-form-field appearance="outline">
+          <mat-label>Nome da empresa *</mat-label>
+          <input matInput formControlName="company_name" placeholder="Empresa, Lda.">
+          <mat-error *ngIf="form.get('company_name')?.errors?.['required']">O nome da empresa é obrigatório.</mat-error>
+        </mat-form-field>
+
+        <!-- Email -->
+        <mat-form-field appearance="outline">
+          <mat-label>Email profissional *</mat-label>
+          <input matInput formControlName="email" type="email" placeholder="nome@empresa.pt">
+          <mat-error *ngIf="form.get('email')?.errors?.['required']">O email é obrigatório.</mat-error>
+          <mat-error *ngIf="form.get('email')?.errors?.['email']">Email inválido.</mat-error>
+        </mat-form-field>
+        <p class="field-error" *ngIf="form.get('email')?.touched && isPersonalEmail">
+          Por favor usa o teu email profissional.
+        </p>
+
+        <!-- Company URL -->
+        <mat-form-field appearance="outline">
+          <mat-label>Website da empresa *</mat-label>
+          <input matInput formControlName="company_url" placeholder="https://empresa.pt">
+          <mat-icon matPrefix>language</mat-icon>
+          <mat-error *ngIf="form.get('company_url')?.errors?.['required']">O website é obrigatório.</mat-error>
+          <mat-error *ngIf="form.get('company_url')?.errors?.['pattern']">URL inválido (deve começar com http:// ou https://).</mat-error>
+        </mat-form-field>
+
+        <!-- Vacancy description (optional) -->
+        <mat-form-field appearance="outline">
+          <mat-label>Descrição breve da vaga pretendida</mat-label>
+          <textarea matInput formControlName="vacancy_description" rows="3"
+                    placeholder="Descreva brevemente o tipo de vaga que pretende publicar..."
+                    maxlength="300"></textarea>
+          <mat-hint align="end">{{ (form.get('vacancy_description')?.value?.length || 0) }}/300</mat-hint>
+        </mat-form-field>
+
+        <!-- Error message -->
+        <p class="form-error" *ngIf="errorMessage">
+          <mat-icon>error_outline</mat-icon>
+          {{ errorMessage }}
+        </p>
+
+        <!-- Submit -->
+        <button type="submit" mat-raised-button color="primary"
+                [disabled]="submitting || form.invalid || isPersonalEmail"
+                class="submit-btn">
+          <mat-spinner *ngIf="submitting" diameter="18"></mat-spinner>
+          <span *ngIf="!submitting">Submeter pedido</span>
+        </button>
+      </form>
+    </ng-container>
+  </div>
+</div>

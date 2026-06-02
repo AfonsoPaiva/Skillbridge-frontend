@@ -1,0 +1,21 @@
+<div class="auth-page">
+  <div class="auth-page__container">
+    <div class="auth-page__logo">
+      <img src="https://storage.googleapis.com/skillbridge-uploads/Logo%20Vertical.png" alt="SkillBridge" />
+    </div>
+
+    <div *ngIf="loading" class="auth-page__loading">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>A autenticar...</p>
+    </div>
+
+    <div *ngIf="error" class="auth-page__error">
+      <mat-icon>error_outline</mat-icon>
+      <h2>Erro de autenticação</h2>
+      <p>{{ error }}</p>
+      <button mat-raised-button color="primary" routerLink="/recrutadores">
+        Voltar à página de recrutadores
+      </button>
+    </div>
+  </div>
+</div>

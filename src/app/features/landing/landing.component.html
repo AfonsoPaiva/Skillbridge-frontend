@@ -14,13 +14,20 @@
       O foco não é o lucro financeiro — é o <strong>lucro curricular</strong>.
     </p>
     <div class="hero__cta">
-      <a (click)="openOnboarding()" mat-raised-button color="primary" class="cta-btn cta-btn--primary">
-        <mat-icon>{{ auth.isLoggedIn ? 'dashboard' : 'rocket_launch' }}</mat-icon>
-        {{ auth.isLoggedIn ? 'Aceder à sua dashboard' : 'Começar agora' }}
-      </a>
-      <a routerLink="/projects" mat-stroked-button color="primary" class="cta-btn">
-        Ver projetos
-      </a>
+      <div class="hero__cta-main">
+        <a (click)="openOnboarding()" mat-raised-button color="primary" class="cta-btn cta-btn--primary">
+          <mat-icon>{{ auth.isLoggedIn ? 'dashboard' : 'rocket_launch' }}</mat-icon>
+          {{ auth.isLoggedIn ? 'Aceder à sua dashboard' : 'Começar agora' }}
+        </a>
+        <a routerLink="/projects" mat-stroked-button color="primary" class="cta-btn">
+          Ver projetos
+        </a>
+      </div>
+      <div class="hero__cta-secondary">
+        <a routerLink="/oportunidades" mat-stroked-button color="primary" class="cta-btn">
+          Ver vagas
+        </a>
+      </div>
     </div>
   </div>
   <div class="hero__scroll-hint">

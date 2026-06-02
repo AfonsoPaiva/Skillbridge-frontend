@@ -1,0 +1,78 @@
+<div class="vacancy-form-container">
+  <div class="vacancy-form-header">
+    <h2>{{ vacancy ? 'Editar Vaga' : 'Nova Vaga' }}</h2>
+    <button mat-icon-button (click)="cancel()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="vacancy-form">
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Título da Vaga *</mat-label>
+        <input matInput formControlName="title" placeholder="Ex: Desenvolvedor Frontend Junior" maxlength="100">
+        <mat-hint align="end">{{ form.get('title')?.value?.length || 0 }}/100</mat-hint>
+        <mat-error *ngIf="form.get('title')?.hasError('required')">O título é obrigatório</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row split">
+      <mat-form-field appearance="outline">
+        <mat-label>Tipo de Vaga *</mat-label>
+        <mat-select formControlName="type">
+          <mat-option *ngFor="let t of vacancyTypes" [value]="t.value">
+            {{ t.label }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get('type')?.hasError('required')">Selecione um tipo</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Data Limite (opcional)</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="deadline">
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Tags / Competências (separadas por vírgula) *</mat-label>
+        <input matInput formControlName="tags" placeholder="Ex: Angular, TypeScript, Figma">
+        <mat-error *ngIf="form.get('tags')?.hasError('required')">Adicione pelo menos uma tag</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Link de Candidatura *</mat-label>
+        <input matInput formControlName="application_url" placeholder="https://forms.gle/...">
+        <mat-icon matPrefix>link</mat-icon>
+        <mat-error *ngIf="form.get('application_url')?.hasError('required')">O link é obrigatório</mat-error>
+        <mat-error *ngIf="form.get('application_url')?.hasError('pattern')">Deve começar com http:// ou https://</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Descrição *</mat-label>
+        <textarea matInput formControlName="description" rows="5" maxlength="500"
+                  placeholder="Descreva as responsabilidades, requisitos e o que oferecem..."></textarea>
+        <mat-hint align="end">{{ form.get('description')?.value?.length || 0 }}/500</mat-hint>
+        <mat-error *ngIf="form.get('description')?.hasError('required')">A descrição é obrigatória</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div *ngIf="error" class="error-message">
+      <mat-icon>error</mat-icon> {{ error }}
+    </div>
+
+    <div class="form-actions">
+      <button type="button" mat-button (click)="cancel()">Cancelar</button>
+      <button type="submit" mat-raised-button color="primary" [disabled]="submitting || form.invalid">
+        <mat-spinner diameter="20" *ngIf="submitting"></mat-spinner>
+        <span *ngIf="!submitting">Guardar Vaga</span>
+      </button>
+    </div>
+  </form>
+</div>

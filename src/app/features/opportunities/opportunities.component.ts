@@ -1,0 +1,126 @@
+import { Component, OnInit } from '@angular/core';
+import { RecruiterService } from '../../core/services/recruiter.service';
+import { AuthService } from '../../core/services/auth.service';
+import { MatDialog } from '@angular/material/dialog';
+import { Vacancy } from '../../core/models/models';
+import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
+
+const DIALOG_CONFIG = {
+  width: '540px',
+  maxWidth: '95vw',
+  maxHeight: '90vh',
+  panelClass: ['onboarding-dialog', 'slide-in-dialog'],
+  autoFocus: false,
+  restoreFocus: false
+};
+
+@Component({
+  selector: 'app-opportunities',
+  templateUrl: './opportunities.component.html',
+  styleUrls: ['./opportunities.component.scss'],
+  animations: [
+    trigger('fadeUp', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(20px)' }),
+        animate('0.4s ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ])
+    ]),
+    trigger('list', [
+      transition('* => *', [
+        query(':enter', [
+          style({ opacity: 0, transform: 'translateY(20px)' }),
+          stagger(50, [
+            animate('0.4s ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+          ])
+        ], { optional: true })
+      ])
+    ])
+  ]
+})
+export class OpportunitiesComponent implements OnInit {
+  vacancies: Vacancy[] = [];
+  filtered: Vacancy[] = [];
+  loading = true;
+  search = '';
+  typeFilter = 'all';
+
+  readonly typeOptions = [
+    { value: 'all', label: 'Todas as Vagas' },
+    { value: 'summer_internship', label: 'Estágio de Verão' },
+    { value: 'curricular_internship', label: 'Estágio Curricular' },
+    { value: 'junior_position', label: 'Posição Junior' }
+  ];
+
+  constructor(
+    public auth: AuthService,
+    private recruiterService: RecruiterService,
+    private dialog: MatDialog
+  ) {}
+
+  ngOnInit(): void {
+    this.loadVacancies();
+  }
+
+  loadVacancies(): void {
+    this.loading = true;
+    this.recruiterService.listPublicVacancies().subscribe({
+      next: (res) => {
+        this.vacancies = res.vacancies || [];
+        this.applyFilters();
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+      }
+    });
+  }
+
+  applyFilters(): void {
+    let result = this.vacancies;
+
+    if (this.search) {
+      const lower = this.search.toLowerCase();
+      result = result.filter(v => 
+        v.title.toLowerCase().includes(lower) || 
+        v.description.toLowerCase().includes(lower) ||
+        v.tags.some(t => t.toLowerCase().includes(lower))
+      );
+    }
+
+    if (this.typeFilter !== 'all') {
+      result = result.filter(v => v.type === this.typeFilter);
+    }
+
+    this.filtered = result;
+  }
+
+  onTypeChange(type: string): void {
+    this.typeFilter = type;
+    this.applyFilters();
+  }
+
+  getTypeLabel(type: string): string {
+    const opt = this.typeOptions.find(o => o.value === type);
+    return opt ? opt.label : type;
+  }
+
+  async applyToVacancy(vacancy: Vacancy): Promise<void> {
+    if (!this.auth.isLoggedIn) {
+      const { LoginComponent } = await import('../../features/onboarding/login/login.component');
+      this.dialog.open(LoginComponent, { ...DIALOG_CONFIG, width: '420px' });
+      return;
+    }
+
+    // Is logged in, proceed to application URL in new tab
+    window.open(vacancy.application_url, '_blank');
+  }
+
+  getInitials(companyName: string | undefined): string {
+    if (!companyName) return 'V';
+    const parts = companyName.trim().split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return companyName.substring(0, 2).toUpperCase();
+  }
+}

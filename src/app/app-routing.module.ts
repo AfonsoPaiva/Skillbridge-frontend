@@ -95,6 +95,32 @@ const routes: Routes = [
       import('./features/legal/privacy-policy/privacy-policy.module').then(m => m.PrivacyPolicyModule)
   },
   {
+    path: 'recrutadores',
+    data: {
+      title: 'Recrutamento — SkillBridge',
+      description: 'Conecte a sua empresa com estudantes e recém-licenciados talentosos.',
+      robots: 'index, follow',
+      hideChrome: true
+    },
+    loadChildren: () =>
+      import('./features/recruiters/recruiters.module').then(m => m.RecruitersModule)
+  },
+  {
+    path: 'recruiter',
+    data: {
+      hideChrome: true,
+      robots: 'noindex, nofollow'
+    },
+    loadChildren: () =>
+      import('./features/recruiters/recruiters.module').then(m => m.RecruitersModule)
+  },
+  {
+    path: 'publicar-vaga',
+    redirectTo: 'recrutadores',
+    pathMatch: 'full'
+  },
+  { path: 'oportunidades', loadChildren: () => import('./features/opportunities/opportunities.module').then(m => m.OpportunitiesModule) },
+  {
     path: '**',
     redirectTo: 'landing'
   }

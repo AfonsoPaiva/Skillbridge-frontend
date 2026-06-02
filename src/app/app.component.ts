@@ -40,11 +40,11 @@ export const routeAnimation = trigger('routeAnimation', [
 @Component({
   selector: 'app-root',
   template: `
-    <app-navbar></app-navbar>
+    <app-navbar *ngIf="!hideChrome"></app-navbar>
     <main [@routeAnimation]="getRouteState(outlet)">
       <router-outlet #outlet="outlet"></router-outlet>
     </main>
-    <app-footer *ngIf="!hideFooter"></app-footer>
+    <app-footer *ngIf="!hideFooter && !hideChrome"></app-footer>
   `,
   styles: [`
     :host {
@@ -66,6 +66,7 @@ export class AppComponent implements OnInit {
   private readonly defaultDescription = 'Plataforma portuguesa que liga estudantes através da partilha de competências para criar projetos reais e enriquecer portfólios.';
 
   hideFooter = false;
+  hideChrome = false;
   constructor(
     private auth: AuthService, 
     private router: Router, 
@@ -101,10 +102,12 @@ export class AppComponent implements OnInit {
     // Handle pending OAuth redirect (embedded browsers or popup-blocked fallback)
     this.handlePendingAuthRedirect();
     
-    // Hide footer on messages routes
+    // Hide footer on messages routes and check hideChrome
     this.router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd)
     ).subscribe((event) => {
+      const leafData = this.getLeafRouteData();
+      this.hideChrome = !!leafData['hideChrome'];
       this.hideFooter = event.url.includes('/messages');
       this.applySeo(event.urlAfterRedirects);
       this.trackPageView(event.urlAfterRedirects);

@@ -25,6 +25,8 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { TextFieldModule } from '@angular/cdk/text-field';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 const MATERIAL_MODULES = [
   MatButtonModule, MatIconModule, MatInputModule, MatFormFieldModule,
@@ -33,7 +35,7 @@ const MATERIAL_MODULES = [
   MatTabsModule, MatMenuModule, MatTooltipModule, MatDividerModule,
   MatBadgeModule, MatRippleModule, MatStepperModule, MatCheckboxModule,
   MatSliderModule, MatToolbarModule, MatSidenavModule, MatListModule,
-  MatExpansionModule, TextFieldModule
+  MatExpansionModule, TextFieldModule, MatDatepickerModule, MatNativeDateModule
 ];
 
 @NgModule({

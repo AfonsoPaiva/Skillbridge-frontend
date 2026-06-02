@@ -19,6 +19,7 @@
     <!-- Desktop nav -->
     <nav class="navbar__links">
       <a routerLink="/projects" routerLinkActive="active" mat-button>Projetos</a>
+      <a routerLink="/oportunidades" routerLinkActive="active" mat-button>Oportunidades</a>
       <ng-container *ngIf="isLoggedIn">
         <a routerLink="/dashboard" routerLinkActive="active" mat-button>Dashboard</a>
         <a routerLink="/messages" mat-icon-button matTooltip="Mensagens" class="messages-btn">
@@ -54,6 +55,7 @@
   <!-- Mobile dropdown -->
   <div class="navbar__mobile" [class.open]="menuOpen" (click)="menuOpen=false">
     <a routerLink="/projects" mat-button>Projetos</a>
+    <a routerLink="/oportunidades" mat-button>Oportunidades</a>
     <ng-container *ngIf="isLoggedIn">
       <a routerLink="/dashboard" mat-button>Dashboard</a>
       <a routerLink="/messages" mat-button>

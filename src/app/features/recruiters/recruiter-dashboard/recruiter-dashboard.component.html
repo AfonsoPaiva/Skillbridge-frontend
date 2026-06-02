@@ -1,0 +1,91 @@
+<div class="dashboard-page">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="dashboard-page__loading">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>A carregar dashboard...</p>
+  </div>
+
+  <ng-container *ngIf="!loading && recruiter">
+    <!-- Header -->
+    <div class="dashboard-header">
+      <div class="dashboard-header__content">
+        <div class="dashboard-header__info">
+          <h1>Dashboard de Recrutamento</h1>
+          <p>{{ recruiter?.company_name }} &bull; {{ recruiter?.full_name }}</p>
+        </div>
+        <div class="dashboard-header__actions">
+          <button mat-stroked-button (click)="logout()">
+            <mat-icon>logout</mat-icon> Sair
+          </button>
+          <button mat-raised-button color="primary" (click)="newVacancy()" *ngIf="!showForm">
+            <mat-icon>add</mat-icon> Nova Vaga
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-container">
+      <!-- Form View -->
+      <div *ngIf="showForm" class="dashboard-form">
+        <app-vacancy-form 
+          [vacancy]="editingVacancy"
+          (saved)="onVacancySaved()"
+          (cancelled)="onFormCancelled()">
+        </app-vacancy-form>
+      </div>
+
+      <!-- List View -->
+      <div *ngIf="!showForm" class="dashboard-list">
+        <div class="empty-state" *ngIf="vacancies.length === 0">
+          <mat-icon>work_outline</mat-icon>
+          <h2>Ainda não publicaste nenhuma vaga</h2>
+          <p>Cria a tua primeira vaga para encontrares o talento certo para a tua equipa.</p>
+          <button mat-raised-button color="primary" (click)="newVacancy()">
+            Criar Vaga
+          </button>
+        </div>
+
+        <div class="vacancies-grid" *ngIf="vacancies.length > 0">
+          <mat-card *ngFor="let vacancy of vacancies" class="vacancy-card">
+            <mat-card-header>
+              <mat-card-title>{{ vacancy.title }}</mat-card-title>
+              <mat-card-subtitle>{{ vacancyTypeLabels[vacancy.type] || vacancy.type }}</mat-card-subtitle>
+              <span class="status-badge" [ngClass]="getStatusClass(vacancy.status)">
+                {{ getStatusLabel(vacancy.status) }}
+              </span>
+            </mat-card-header>
+
+            <mat-card-content>
+              <div class="vacancy-stats">
+                <div class="stat">
+                  <mat-icon>visibility</mat-icon>
+                  <span>{{ vacancy.views }} visualizações</span>
+                </div>
+                <div class="stat">
+                  <mat-icon>event</mat-icon>
+                  <span>Publicada a {{ vacancy.published_at | date:'dd/MM/yyyy' }}</span>
+                </div>
+                <div class="stat" *ngIf="vacancy.status === 'active'">
+                  <mat-icon>timer</mat-icon>
+                  <span>Expira a {{ vacancy.expires_at | date:'dd/MM/yyyy' }}</span>
+                </div>
+              </div>
+            </mat-card-content>
+
+            <mat-card-actions align="end">
+              <button mat-button color="primary" (click)="editVacancy(vacancy)" *ngIf="vacancy.status === 'active'">
+                Editar
+              </button>
+              <button mat-button color="primary" (click)="renewVacancy(vacancy)" *ngIf="vacancy.status === 'expired'">
+                Renovar Vaga
+              </button>
+              <button mat-button color="warn" (click)="archiveVacancy(vacancy)" *ngIf="vacancy.status !== 'archived'">
+                Arquivar
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

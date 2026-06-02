@@ -188,3 +188,42 @@ export interface UniversitySearchResult {
   total_cursos: number;
   cursos?: string[];
 }
+
+// ── Recruiter ────────────────────────────────────
+
+export interface Recruiter {
+  id: string;
+  full_name: string;
+  company_name: string;
+  email: string;
+  company_url: string;
+  vacancy_description?: string;
+  status: string; // pending_manual | pending_auto | approved | rejected
+  created_at: string;
+  approved_at?: string;
+}
+
+export interface RecruiterApplyInput {
+  full_name: string;
+  company_name: string;
+  email: string;
+  company_url: string;
+  vacancy_description?: string;
+}
+
+export interface Vacancy {
+  id: string;
+  recruiter_id: string;
+  title: string;
+  type: string; // summer_internship | curricular_internship | junior_position
+  tags: string[];
+  description: string;
+  application_url: string;
+  deadline?: string;
+  views: number;
+  status: string; // active | expired | archived
+  published_at: string;
+  expires_at: string;
+  recruiter?: Recruiter;
+}
+
