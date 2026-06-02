@@ -13,6 +13,13 @@ export class RecruiterLandingComponent {
   submitted = false;
   errorMessage = '';
 
+  // Login view state
+  isLoginView = false;
+  loginEmail = this.fb.control('', [Validators.required, Validators.email]);
+  loginSubmitting = false;
+  loginSubmitted = false;
+  loginErrorMessage = '';
+
   private readonly blockedDomains = [
     'gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com', 'sapo.pt',
     'mail.com', 'live.com', 'icloud.com', 'protonmail.com', 'aol.com',
@@ -59,6 +66,35 @@ export class RecruiterLandingComponent {
         } else {
           this.errorMessage = 'Erro ao enviar pedido. Tenta novamente.';
         }
+      }
+    });
+  }
+
+  toggleLoginView(): void {
+    this.isLoginView = !this.isLoginView;
+    this.loginSubmitted = false;
+    this.loginErrorMessage = '';
+  }
+
+  requestLogin(): void {
+    if (this.loginEmail.invalid) {
+      this.loginEmail.markAsTouched();
+      return;
+    }
+
+    this.loginSubmitting = true;
+    this.loginErrorMessage = '';
+
+    const emailValue = this.loginEmail.value || '';
+
+    this.recruiterService.requestLoginLink(emailValue).subscribe({
+      next: () => {
+        this.loginSubmitted = true;
+        this.loginSubmitting = false;
+      },
+      error: () => {
+        this.loginSubmitting = false;
+        this.loginErrorMessage = 'Erro ao pedir o link. Tenta novamente.';
       }
     });
   }

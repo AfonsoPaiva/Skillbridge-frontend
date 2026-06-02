@@ -24,6 +24,11 @@ export class RecruiterService {
     return this.http.post<{ message: string }>(`${this.base}/recruiters/apply`, data);
   }
 
+  /** Request login link for approved recruiters (public) */
+  requestLoginLink(email: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.base}/recruiters/request-link`, { email });
+  }
+
   /** List active vacancies (public — for students) */
   listPublicVacancies(tag?: string, type?: string): Observable<{ vacancies: Vacancy[]; count: number }> {
     let url = `${this.base}/vacancies`;

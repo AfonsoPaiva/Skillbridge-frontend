@@ -12,8 +12,8 @@
       <p>Vamos analisar o seu pedido e enviar-lhe um email em breve.</p>
     </div>
 
-    <!-- Form state -->
-    <ng-container *ngIf="!submitted">
+    <!-- Registration / Application Form state -->
+    <ng-container *ngIf="!submitted && !isLoginView">
       <h1>Publicar vagas no SkillBridge</h1>
       <p class="recruiter-page__subtitle">
         Conecte a sua empresa com estudantes e recém-licenciados talentosos. Preencha o formulário abaixo para criar a sua conta de recrutador.
@@ -76,7 +76,58 @@
           <mat-spinner *ngIf="submitting" diameter="18"></mat-spinner>
           <span *ngIf="!submitting">Submeter pedido</span>
         </button>
+
+        <p class="login-prompt">
+          Já tens conta? <a href="javascript:void(0)" (click)="toggleLoginView()">Pedir link de acesso</a>
+        </p>
       </form>
     </ng-container>
+
+    <!-- Login Request View -->
+    <ng-container *ngIf="isLoginView && !loginSubmitted">
+      <h1>Acesso Recrutadores</h1>
+      <p class="recruiter-page__subtitle">
+        Insere o teu email profissional para receberes um novo link de acesso à tua conta.
+      </p>
+
+      <div class="recruiter-form">
+        <!-- Login Email -->
+        <mat-form-field appearance="outline">
+          <mat-label>Email profissional</mat-label>
+          <input matInput [formControl]="loginEmail" type="email" placeholder="nome@empresa.pt" (keyup.enter)="requestLogin()">
+          <mat-error *ngIf="loginEmail.errors?.['required']">O email é obrigatório.</mat-error>
+          <mat-error *ngIf="loginEmail.errors?.['email']">Email inválido.</mat-error>
+        </mat-form-field>
+
+        <!-- Error message -->
+        <p class="form-error" *ngIf="loginErrorMessage">
+          <mat-icon>error_outline</mat-icon>
+          {{ loginErrorMessage }}
+        </p>
+
+        <!-- Submit -->
+        <button type="button" mat-raised-button color="primary"
+                [disabled]="loginSubmitting || loginEmail.invalid"
+                (click)="requestLogin()"
+                class="submit-btn">
+          <mat-spinner *ngIf="loginSubmitting" diameter="18"></mat-spinner>
+          <span *ngIf="!loginSubmitting">Enviar Link</span>
+        </button>
+
+        <p class="login-prompt">
+          Ainda não és recrutador? <a href="javascript:void(0)" (click)="toggleLoginView()">Criar conta</a>
+        </p>
+      </div>
+    </ng-container>
+
+    <!-- Login Success State -->
+    <div *ngIf="loginSubmitted" class="recruiter-page__success">
+      <mat-icon class="success-icon">mark_email_read</mat-icon>
+      <h1>Verifica o teu email</h1>
+      <p>Se o email estiver registado e aprovado, receberás um link de acesso em breve.</p>
+      <button type="button" mat-stroked-button (click)="toggleLoginView()" style="margin-top: 16px;">
+        Voltar
+      </button>
+    </div>
   </div>
 </div>

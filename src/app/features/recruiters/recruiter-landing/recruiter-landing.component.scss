@@ -108,3 +108,20 @@ h1 {
     font-size: 20px;
   }
 }
+
+.login-prompt {
+  text-align: center;
+  font-size: 14px;
+  color: v.$color-text-soft;
+  margin-top: v.$space-4;
+
+  a {
+    color: v.$color-primary;
+    text-decoration: none;
+    font-weight: v.$font-weight-medium;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
