@@ -96,6 +96,68 @@
         </div>
       </mat-tab>
 
+      <!-- Tab: Oportunidades recomendadas -->
+      <mat-tab label="Oportunidades">
+        <div class="tab-content">
+          <!-- loading -->
+          <div class="projects-grid" *ngIf="loadingVacancies">
+            <app-card-skeleton *ngFor="let _ of [1,2,3,4,5,6]"></app-card-skeleton>
+          </div>
+
+          <!-- list: recommended vacancies based on skills -->
+          <div *ngIf="!loadingVacancies && recommendedVacancies.length > 0">
+            <h2 class="section-title">Oportunidades para ti</h2>
+            <div class="projects-grid" [@list]="recommendedVacancies.length">
+              <mat-card class="proj-card" *ngFor="let v of recommendedVacancies" matRipple (click)="applyToVacancy(v)">
+                <div class="proj-card__img company-logo-block">
+                  <div class="initials">{{ getInitials(v.recruiter?.company_name) }}</div>
+                  <span class="proj-card__status" data-status="open">{{ getTypeLabel(v.type) }}</span>
+                </div>
+                <mat-card-content class="proj-card__body">
+                  <h3 [attr.title]="v.title">{{ v.title }}</h3>
+                  <p class="company-name" style="font-size: 13px; color: var(--color-primary); font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 4px;">
+                    <mat-icon style="font-size: 16px; width: 16px; height: 16px;">business</mat-icon> 
+                    {{ v.recruiter?.company_name }}
+                  </p>
+                  <p [attr.title]="v.description">{{ v.description }}</p>
+                  <div class="proj-card__skills">
+                    <span class="chip chip--card-skill" [class.chip--matched]="isMatchedSkill(tag)" *ngFor="let tag of v.tags.slice(0, 3)">
+                      {{ tag }}
+                    </span>
+                    <span class="chip chip--card-skill" *ngIf="v.tags.length > 3">
+                      +{{ v.tags.length - 3 }}
+                    </span>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            </div>
+          </div>
+
+          <!-- no matching vacancies based on skills -->
+          <div class="empty-state" *ngIf="!loadingVacancies && recommendedVacancies.length === 0 && user && user.skills && user.skills.length > 0">
+            <mat-icon>work_off</mat-icon>
+            <h3>Nenhuma vaga compatível</h3>
+            <p>Ainda não há ofertas que correspondam às tuas competências.</p>
+            <a routerLink="/oportunidades" mat-raised-button color="primary">Ver todas as oportunidades</a>
+          </div>
+
+          <!-- no skills added yet -->
+          <div class="empty-state" *ngIf="!loadingVacancies && vacancies.length > 0 && user && (!user.skills || user.skills.length === 0)">
+            <mat-icon>info</mat-icon>
+            <h3>Adiciona competências ao teu perfil</h3>
+            <p>Para receber recomendações de oportunidades de estágio e emprego, adiciona as tuas competências.</p>
+            <a routerLink="/perfil/eu/editar" mat-raised-button color="primary">Adicionar competências</a>
+          </div>
+
+          <!-- completely empty -->
+          <div class="empty-state" *ngIf="!loadingVacancies && vacancies.length === 0">
+            <mat-icon>work_off</mat-icon>
+            <h3>Nenhuma oportunidade disponível</h3>
+            <p>De momento não existem vagas partilhadas pelas empresas.</p>
+          </div>
+        </div>
+      </mat-tab>
+
       <!-- Tab: O meu perfil rápido -->
       <mat-tab label="O meu perfil">
         <div class="tab-content profile-quick" *ngIf="!loadingUser && user" @fadeUp>

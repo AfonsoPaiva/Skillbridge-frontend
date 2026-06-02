@@ -98,6 +98,16 @@
       max-height: 100%;
       display: block;
     }
+
+    &.company-logo-block {
+      background: linear-gradient(135deg, v.$color-primary 0%, #00d4ff 100%);
+      .initials {
+        font-size: 4rem;
+        font-weight: v.$font-weight-extrabold;
+        color: white;
+        letter-spacing: 2px;
+      }
+    }
   }
 
   &__status {

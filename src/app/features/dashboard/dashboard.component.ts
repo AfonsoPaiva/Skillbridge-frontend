@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
-import { User, Project } from '../../core/models/models';
+import { RecruiterService } from '../../core/services/recruiter.service';
+import { User, Project, Vacancy } from '../../core/models/models';
 import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
 import { Subscription } from 'rxjs';
 import {
@@ -34,7 +35,7 @@ import {
     ])
   ]
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   readonly getProjectCardDescription = getProjectCardDescription;
   readonly getProjectCardSkillLabels = getProjectCardSkillLabels;
   readonly getProjectCardSkillText = getProjectCardSkillText;
@@ -43,12 +44,19 @@ export class DashboardComponent implements OnInit {
   user: User | null = null;
   projects: Project[] = [];
   recommendedProjects: Project[] = [];
+  vacancies: Vacancy[] = [];
+  recommendedVacancies: Vacancy[] = [];
   loadingUser = true;
   loadingProjects = true;
+  loadingVacancies = true;
   activeTab = 0;
   private userSub?: Subscription;
 
-  constructor(public auth: AuthService, private api: ApiService) {}
+  constructor(
+    public auth: AuthService, 
+    private api: ApiService,
+    private recruiterService: RecruiterService
+  ) {}
 
   ngOnInit(): void {
     // Use cached user profile for instant header load
@@ -56,6 +64,7 @@ export class DashboardComponent implements OnInit {
       this.user = u;
       this.loadingUser = false;
       this.filterRecommendedProjects();
+      this.filterRecommendedVacancies();
     });
 
     // Always revalidate profile from API so role/skills changes reflect immediately
@@ -72,6 +81,15 @@ export class DashboardComponent implements OnInit {
       },
       error: () => { this.loadingProjects = false; }
     });
+
+    this.recruiterService.listPublicVacancies().subscribe({
+      next: (res) => {
+        this.vacancies = res.vacancies || [];
+        this.loadingVacancies = false;
+        this.filterRecommendedVacancies();
+      },
+      error: () => { this.loadingVacancies = false; }
+    });
   }
 
   private refreshProfile(): void {
@@ -85,6 +103,7 @@ export class DashboardComponent implements OnInit {
         this.auth.setCachedProfile(user);
         this.loadingUser = false;
         this.filterRecommendedProjects();
+        this.filterRecommendedVacancies();
       },
       error: () => {
         this.loadingUser = false;
@@ -114,6 +133,23 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  filterRecommendedVacancies(): void {
+    if (!this.user || !this.user.skills || this.user.skills.length === 0) {
+      this.recommendedVacancies = [];
+      return;
+    }
+
+    const userSkills = new Set(this.user.skills.map(skill => skill.toLowerCase()));
+
+    // If the user meant "as mesmas skills das ofertas de estagios",
+    // maybe they meant ONLY internship offers that match the user's skills?
+    // Let's filter all vacancies that match the user's skills.
+    this.recommendedVacancies = this.vacancies.filter(v => {
+      if (!v.tags || v.tags.length === 0) return false;
+      return v.tags.some(tag => userSkills.has(tag.toLowerCase()));
+    });
+  }
+
   getGreeting(): string {
     const h = new Date().getHours();
     if (h < 12) return 'Bom dia';
@@ -135,5 +171,27 @@ export class DashboardComponent implements OnInit {
     if (!this.user || !this.user.skills) return false;
     const lowerSkill = skill.toLowerCase();
     return this.user.skills.some(s => s.toLowerCase() === lowerSkill);
+  }
+
+  getTypeLabel(type: string): string {
+    const map: Record<string, string> = {
+      summer_internship: 'Estágio de Verão',
+      curricular_internship: 'Estágio Curricular',
+      junior_position: 'Posição Junior'
+    };
+    return map[type] || type;
+  }
+
+  getInitials(companyName: string | undefined): string {
+    if (!companyName) return 'V';
+    const parts = companyName.trim().split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return companyName.substring(0, 2).toUpperCase();
+  }
+
+  applyToVacancy(v: Vacancy): void {
+    window.open(v.application_url, '_blank');
   }
 }
