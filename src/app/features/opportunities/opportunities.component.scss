@@ -253,14 +253,3 @@
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
-
-::ng-deep .opportunities-tabs {
-  .mat-mdc-tab-body-wrapper {
-    padding-top: v.$space-6;
-  }
-}
-
-.tab-content {
-  display: flex;
-  flex-direction: column;
-}
