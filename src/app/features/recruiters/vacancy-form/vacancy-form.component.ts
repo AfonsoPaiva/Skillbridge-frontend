@@ -1,7 +1,11 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { RecruiterService } from '../../../core/services/recruiter.service';
-import { Vacancy } from '../../../core/models/models';
+import { Vacancy, SkillSection, SkillsListResponse } from '../../../core/models/models';
+import { ApiService } from '../../../core/services/api.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { startWith, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { sanitizeInput } from '../../../core/utils/search.utils';
 
 @Component({
   selector: 'app-vacancy-form',
@@ -17,6 +21,14 @@ export class VacancyFormComponent implements OnInit {
   submitting = false;
   error = '';
 
+  // Skills
+  vacancySkills: string[] = [];
+  availableSkills: string[] = [];
+  availableSkillSections: SkillSection[] = [];
+  filteredSkillSections: SkillSection[] = [];
+  removingSkill = '';
+  skillSearchControl = new FormControl('');
+
   readonly vacancyTypes = [
     { value: 'summer_internship', label: 'Estágio de Verão' },
     { value: 'curricular_internship', label: 'Estágio Curricular' },
@@ -25,12 +37,13 @@ export class VacancyFormComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private recruiterService: RecruiterService
+    private recruiterService: RecruiterService,
+    private api: ApiService,
+    private snack: MatSnackBar
   ) {
     this.form = this.fb.group({
       title: ['', [Validators.required, Validators.maxLength(100)]],
       type: ['', Validators.required],
-      tags: ['', Validators.required], // Comma separated string internally handled as array
       description: ['', [Validators.required, Validators.maxLength(500)]],
       application_url: ['', [Validators.required, Validators.pattern(/^https?:\/\/.+/)]],
       deadline: [null]
@@ -39,15 +52,82 @@ export class VacancyFormComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.vacancy) {
+      this.vacancySkills = [...this.vacancy.tags];
       this.form.patchValue({
         title: this.vacancy.title,
         type: this.vacancy.type,
-        tags: this.vacancy.tags.join(', '),
         description: this.vacancy.description,
         application_url: this.vacancy.application_url,
         deadline: this.vacancy.deadline ? new Date(this.vacancy.deadline) : null
       });
     }
+
+    // Load skills
+    this.api.listSkills().subscribe({ 
+      next: (res: SkillsListResponse) => {
+        this.availableSkills = res.skills || [];
+        this.availableSkillSections = res.sections || [];
+        this.updateFilteredSkillSections();
+      }
+    });
+
+    this.skillSearchControl.valueChanges.pipe(
+      startWith(''),
+      debounceTime(150),
+      distinctUntilChanged()
+    ).subscribe(() => {
+      this.updateFilteredSkillSections();
+    });
+  }
+
+  addSkill(skillName?: string): void {
+    const rawSkill = (skillName ?? this.skillSearchControl.value ?? '').toString().trim();
+    const skill = this.resolveSkill(rawSkill);
+    if (!skill || this.vacancySkills.includes(skill)) return;
+
+    this.vacancySkills.push(skill);
+    this.skillSearchControl.setValue('', { emitEvent: false });
+    this.updateFilteredSkillSections();
+  }
+
+  removeSkill(skill: string): void {
+    this.vacancySkills = this.vacancySkills.filter(s => s !== skill);
+    this.updateFilteredSkillSections();
+  }
+
+  private updateFilteredSkillSections(): void {
+    const query = sanitizeInput((this.skillSearchControl.value || '').toString()).toLowerCase();
+    this.filteredSkillSections = this.availableSkillSections
+      .map(section => ({
+        ...section,
+        skills: section.skills.filter(skill => {
+          if (this.vacancySkills.includes(skill)) return false;
+          if (!query) return true;
+          return skill.toLowerCase().includes(query);
+        })
+      }))
+      .filter(section => section.skills.length > 0);
+  }
+
+  trackBySectionLabel(_: number, section: SkillSection): string {
+    return section.label;
+  }
+
+  trackBySkill(_: number, skill: string): string {
+    return skill;
+  }
+
+  private resolveSkill(rawSkill: string): string {
+    if (!rawSkill) return '';
+    const exact = this.availableSkills.find(s => s === rawSkill);
+    if (exact) return exact;
+
+    const normalized = rawSkill.toLowerCase();
+    const caseInsensitive = this.availableSkills.find(s => s.toLowerCase() === normalized);
+    if (caseInsensitive) return caseInsensitive;
+
+    this.snack.open('Seleciona uma competência válida da lista.', 'Fechar', { duration: 3000 });
+    return '';
   }
 
   submit(): void {
@@ -60,15 +140,9 @@ export class VacancyFormComponent implements OnInit {
     this.error = '';
 
     const formVal = this.form.value;
-    
-    // Parse tags into array
-    const tagsArray = formVal.tags
-      .split(',')
-      .map((t: string) => t.trim())
-      .filter((t: string) => t.length > 0);
 
-    if (tagsArray.length === 0) {
-      this.error = 'Adiciona pelo menos uma tag.';
+    if (this.vacancySkills.length === 0) {
+      this.error = 'Adiciona pelo menos uma competência.';
       this.submitting = false;
       return;
     }
@@ -82,7 +156,7 @@ export class VacancyFormComponent implements OnInit {
 
     const payload = {
       ...formVal,
-      tags: tagsArray,
+      tags: this.vacancySkills,
       deadline: deadlineStr || null
     };
 

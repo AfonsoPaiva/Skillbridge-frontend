@@ -35,12 +35,59 @@
       </mat-form-field>
     </div>
 
-    <div class="form-row">
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Tags / Competências (separadas por vírgula) *</mat-label>
-        <input matInput formControlName="tags" placeholder="Ex: Angular, TypeScript, Figma">
-        <mat-error *ngIf="form.get('tags')?.hasError('required')">Adicione pelo menos uma tag</mat-error>
-      </mat-form-field>
+    <div class="skills-section">
+      <h2><mat-icon>build</mat-icon> Competências</h2>
+      <p class="text-soft">As competências necessárias para esta vaga.</p>
+
+      <mat-chip-set class="current-skills">
+        <mat-chip *ngFor="let s of vacancySkills; trackBy: trackBySkill"
+                  [highlighted]="removingSkill === s"
+                  (removed)="removeSkill(s)">
+          {{ s }}
+          <button matChipRemove [disabled]="removingSkill === s">
+            <mat-icon>{{ removingSkill === s ? 'hourglass_empty' : 'cancel' }}</mat-icon>
+          </button>
+        </mat-chip>
+      </mat-chip-set>
+
+      <p class="text-soft empty-skills" *ngIf="vacancySkills.length === 0">
+        <mat-icon>info</mat-icon> Ainda não adicionaste competências.
+      </p>
+
+      <div class="add-skill">
+        <mat-form-field appearance="outline" style="width: 100%">
+          <mat-label>Pesquisar competência</mat-label>
+          <input matInput
+                 [formControl]="skillSearchControl"
+                 placeholder="Ex: Python, Figma…"
+                 autocomplete="off">
+          <button *ngIf="skillSearchControl.value" mat-icon-button matSuffix type="button" (click)="skillSearchControl.setValue('')" aria-label="Limpar pesquisa">
+            <mat-icon>close</mat-icon>
+          </button>
+          <mat-icon matSuffix *ngIf="!skillSearchControl.value">search</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <div class="skills-catalog" *ngIf="filteredSkillSections.length > 0; else noSkillResults">
+        <div class="skills-catalog__section" *ngFor="let section of filteredSkillSections; trackBy: trackBySectionLabel">
+          <h4>{{ section.label }}</h4>
+          <div class="skills-catalog__grid">
+            <button type="button"
+                    mat-stroked-button
+                    class="skills-catalog__btn"
+                    *ngFor="let skill of section.skills; trackBy: trackBySkill"
+                    (click)="addSkill(skill)">
+              {{ skill }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #noSkillResults>
+        <p class="text-soft empty-skills" *ngIf="availableSkills.length > 0">
+          <mat-icon>search_off</mat-icon> Nenhuma competência disponível para esta pesquisa.
+        </p>
+      </ng-template>
     </div>
 
     <div class="form-row">
