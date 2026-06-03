@@ -984,9 +984,12 @@ body {
   background: v.$color-surface !important;
   border-radius: v.$radius-md !important;
   box-shadow: v.$shadow-lg !important;
+  padding-bottom: v.$space-2 !important; // Extra padding at the bottom
   
   .mat-calendar {
     width: 320px !important;
+    height: auto !important;
+    min-height: 380px !important;
   }
 
   .mat-calendar-body-selected {
