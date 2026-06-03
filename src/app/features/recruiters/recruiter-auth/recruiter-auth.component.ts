@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { RecruiterService } from '../../../core/services/recruiter.service';
 import { environment } from '../../../../environments/environment';
 import { getFirebaseAuthDomain } from '../../../core/utils/firebase-auth-domain.utils';
 
@@ -12,20 +13,45 @@ import { getFirebaseAuthDomain } from '../../../core/utils/firebase-auth-domain.
 export class RecruiterAuthComponent implements OnInit {
   loading = true;
   error = '';
+  expired = false;
+  requestingNewLink = false;
+  newLinkSent = false;
+  recruiterEmail = '';
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private auth: AuthService
+    private auth: AuthService,
+    private recruiterService: RecruiterService
   ) {}
 
   ngOnInit(): void {
-    this.handleEmailSignIn();
+    this.handleTokenAuth();
   }
 
-  private async handleEmailSignIn(): Promise<void> {
+  private async handleTokenAuth(): Promise<void> {
+    const token = this.route.snapshot.queryParamMap.get('token');
+
+    if (!token) {
+      this.error = 'Link de autenticação inválido.';
+      this.loading = false;
+      return;
+    }
+
     try {
-      const [{ initializeApp, getApps }, { getAuth, isSignInWithEmailLink, signInWithEmailLink }] =
+      // 1. Verify the token with the backend
+      const response = await this.recruiterService.verifyToken(token).toPromise();
+
+      if (!response || !response.custom_token) {
+        this.error = 'Erro na autenticação. Tente novamente.';
+        this.loading = false;
+        return;
+      }
+
+      this.recruiterEmail = response.recruiter?.email || '';
+
+      // 2. Sign in to Firebase with the custom token
+      const [{ initializeApp, getApps }, { getAuth, signInWithCustomToken }] =
         await Promise.all([
           import('firebase/app'),
           import('firebase/auth')
@@ -40,32 +66,7 @@ export class RecruiterAuthComponent implements OnInit {
       });
 
       const fbAuth = getAuth(app);
-      const currentUrl = window.location.href;
-
-      // Check if this is a valid email sign-in link
-      if (!isSignInWithEmailLink(fbAuth, currentUrl)) {
-        this.error = 'Link de autenticação inválido.';
-        this.loading = false;
-        return;
-      }
-
-      // Get email from URL params or prompt
-      let email = this.route.snapshot.queryParamMap.get('email');
-      if (!email) {
-        email = window.localStorage.getItem('recruiterEmailForSignIn');
-      }
-      if (!email) {
-        email = window.prompt('Por favor insira o seu email profissional para completar a autenticação:');
-      }
-
-      if (!email) {
-        this.error = 'Email necessário para completar a autenticação.';
-        this.loading = false;
-        return;
-      }
-
-      // Complete sign-in
-      const result = await signInWithEmailLink(fbAuth, email, currentUrl);
+      const result = await signInWithCustomToken(fbAuth, response.custom_token);
 
       if (!result.user) {
         this.error = 'Erro na autenticação.';
@@ -73,12 +74,12 @@ export class RecruiterAuthComponent implements OnInit {
         return;
       }
 
-      // Get token with custom claims
+      // 3. Get token with custom claims
       const idToken = await result.user.getIdToken(true);
       const tokenResult = await result.user.getIdTokenResult(true);
       const expiresAt = new Date(tokenResult.expirationTime).getTime();
 
-      // Store auth session
+      // 4. Store auth session
       this.auth.setUser({
         uid: result.user.uid,
         email: result.user.email,
@@ -89,10 +90,7 @@ export class RecruiterAuthComponent implements OnInit {
         role: tokenResult.claims['role'] as string | undefined,
       });
 
-      // Clean up
-      window.localStorage.removeItem('recruiterEmailForSignIn');
-
-      // Check for renewal redirect
+      // 5. Navigate to dashboard
       const renewVacancyId = this.route.snapshot.queryParamMap.get('renew');
       if (renewVacancyId) {
         this.router.navigate(['/recruiter/dashboard'], {
@@ -104,14 +102,38 @@ export class RecruiterAuthComponent implements OnInit {
 
     } catch (err: any) {
       console.error('Recruiter auth error:', err);
-      if (err?.code === 'auth/invalid-action-code') {
-        this.error = 'Este link já foi utilizado ou expirou. Solicite um novo acesso.';
-      } else if (err?.code === 'auth/expired-action-code') {
-        this.error = 'Link expirado. Solicite um novo acesso.';
+
+      if (err?.error?.expired) {
+        this.expired = true;
+        this.error = 'Este link expirou. Solicite um novo link de acesso.';
+      } else if (err?.status === 401) {
+        this.error = 'Link inválido ou expirado. Solicite um novo acesso.';
+      } else if (err?.status === 403) {
+        this.error = 'A sua conta não está aprovada.';
       } else {
         this.error = 'Erro na autenticação. Tente novamente.';
       }
       this.loading = false;
     }
+  }
+
+  requestNewLink(): void {
+    if (!this.recruiterEmail) {
+      // Redirect to the recruiter landing page where they can request a link
+      this.router.navigate(['/recrutadores']);
+      return;
+    }
+
+    this.requestingNewLink = true;
+    this.recruiterService.requestLoginLink(this.recruiterEmail).subscribe({
+      next: () => {
+        this.newLinkSent = true;
+        this.requestingNewLink = false;
+      },
+      error: () => {
+        this.requestingNewLink = false;
+        this.router.navigate(['/recrutadores']);
+      }
+    });
   }
 }

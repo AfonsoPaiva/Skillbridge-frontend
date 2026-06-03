@@ -40,9 +40,13 @@
 
     <!-- List -->
     <div class="grid" *ngIf="!loading && filtered.length > 0" [@list]="filtered.length">
-      <mat-card class="pcard" *ngFor="let v of filtered">
-        <div class="pcard__img company-logo-block">
-          <div class="initials">{{ getInitials(v.recruiter?.company_name) }}</div>
+      <mat-card class="pcard" *ngFor="let v of filtered" [routerLink]="['/opportunities', v.id]" style="cursor: pointer;">
+        <div class="pcard__img">
+          <!-- Logo in top-left square -->
+          <div class="company-logo-square">
+            <img *ngIf="v.recruiter?.logo_url" [src]="v.recruiter?.logo_url" alt="{{ v.recruiter?.company_name }} logo">
+            <div *ngIf="!v.recruiter?.logo_url" class="initials">{{ getInitials(v.recruiter?.company_name) }}</div>
+          </div>
           <span class="pcard__badge" data-status="open">{{ getTypeLabel(v.type) }}</span>
         </div>
 
@@ -58,12 +62,6 @@
             <span class="chip chip--card-skill" *ngIf="v.tags.length > 3">
               +{{ v.tags.length - 3 }}
             </span>
-          </div>
-
-          <div class="pcard__actions">
-            <button mat-raised-button color="primary" class="apply-btn" (click)="applyToVacancy(v)">
-              <mat-icon>launch</mat-icon> Candidatar-me
-            </button>
           </div>
         </mat-card-content>
       </mat-card>

@@ -1,0 +1,57 @@
+<div class="opportunity-detail-page">
+  <div class="container">
+    
+    <button mat-icon-button (click)="goBack()" class="back-btn" aria-label="Voltar">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+
+    <div *ngIf="loading" class="skeleton-container" @fadeUp>
+      <div class="skeleton-box skeleton-header"></div>
+      <div class="skeleton-box skeleton-body"></div>
+    </div>
+
+    <div *ngIf="error" class="error-container" @fadeUp>
+      <mat-icon>error_outline</mat-icon>
+      <h2>Ops! Vaga não encontrada.</h2>
+      <p>A vaga que procuras pode ter expirado ou foi removida.</p>
+      <button mat-stroked-button (click)="goBack()">Voltar às oportunidades</button>
+    </div>
+
+    <div *ngIf="!loading && !error && vacancy" class="detail-card" @fadeUp>
+      <div class="detail-header">
+        <div class="company-logo-square">
+          <img *ngIf="vacancy.recruiter?.logo_url" [src]="vacancy.recruiter?.logo_url" alt="{{ vacancy.recruiter?.company_name }} logo">
+          <div *ngIf="!vacancy.recruiter?.logo_url" class="initials">{{ getInitials(vacancy.recruiter?.company_name) }}</div>
+        </div>
+        <div class="header-info">
+          <h1>{{ vacancy.title }}</h1>
+          <p class="company-name">{{ vacancy.recruiter?.company_name }}</p>
+          <span class="badge">{{ getTypeLabel(vacancy.type) }}</span>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <div class="detail-body">
+        <div class="description-section">
+          <h3>Sobre a vaga</h3>
+          <p class="description">{{ vacancy.description }}</p>
+        </div>
+
+        <div class="tags-section" *ngIf="vacancy.tags?.length">
+          <h3>Competências desejadas</h3>
+          <div class="skills-list">
+            <span class="chip" *ngFor="let tag of vacancy.tags">{{ tag }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-actions">
+        <button mat-raised-button color="primary" class="apply-btn" (click)="applyToVacancy()">
+          <mat-icon>launch</mat-icon> Candidatar-me
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

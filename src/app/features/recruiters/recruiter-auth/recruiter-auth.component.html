@@ -9,12 +9,29 @@
       <p>A autenticar...</p>
     </div>
 
-    <div *ngIf="error" class="auth-page__error">
-      <mat-icon>error_outline</mat-icon>
-      <h2>Erro de autenticação</h2>
+    <div *ngIf="error && !newLinkSent" class="auth-page__error">
+      <mat-icon>{{ expired ? 'schedule' : 'error_outline' }}</mat-icon>
+      <h2>{{ expired ? 'Link expirado' : 'Erro de autenticação' }}</h2>
       <p>{{ error }}</p>
-      <button mat-raised-button color="primary" routerLink="/recrutadores">
-        Voltar à página de recrutadores
+
+      <div class="auth-page__actions">
+        <button *ngIf="expired || !recruiterEmail" mat-raised-button color="primary" routerLink="/recrutadores">
+          Pedir novo link de acesso
+        </button>
+        <button *ngIf="!expired && recruiterEmail" mat-raised-button color="primary"
+                (click)="requestNewLink()" [disabled]="requestingNewLink">
+          <mat-spinner *ngIf="requestingNewLink" diameter="18"></mat-spinner>
+          <span *ngIf="!requestingNewLink">Reenviar link de acesso</span>
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="newLinkSent" class="auth-page__success">
+      <mat-icon>mark_email_read</mat-icon>
+      <h2>Link enviado!</h2>
+      <p>Enviámos um novo link de acesso para o seu email. Verifique a sua caixa de entrada.</p>
+      <button mat-stroked-button routerLink="/recrutadores" style="margin-top: 16px;">
+        Voltar
       </button>
     </div>
   </div>

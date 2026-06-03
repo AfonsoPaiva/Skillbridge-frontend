@@ -135,4 +135,74 @@ export class RecruiterDashboardComponent implements OnInit {
   getStatusClass(status: string): string {
     return `status--${status}`;
   }
+
+  // --- Logo Management ---
+  uploadingLogo = false;
+  scrapingLogo = false;
+
+  getInitials(companyName: string | undefined): string {
+    if (!companyName) return 'C';
+    const parts = companyName.trim().split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return companyName.substring(0, 2).toUpperCase();
+  }
+
+  onLogoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      if (file.size > 10 * 1024 * 1024) {
+        this.snackBar.open('O ficheiro é demasiado grande. Máximo 10MB.', 'OK');
+        return;
+      }
+
+      this.uploadingLogo = true;
+      this.recruiterService.uploadLogo(file).subscribe({
+        next: (res) => {
+          this.updateProfileLogo(res.url);
+          this.uploadingLogo = false;
+        },
+        error: () => {
+          this.snackBar.open('Erro ao fazer upload da imagem.', 'OK');
+          this.uploadingLogo = false;
+        }
+      });
+    }
+  }
+
+  scrapeLogo(): void {
+    if (!this.recruiter?.company_url) {
+      this.snackBar.open('O website da empresa não está definido.', 'OK');
+      return;
+    }
+
+    this.scrapingLogo = true;
+    this.recruiterService.scrapeCompanyLogo(this.recruiter.company_url).subscribe({
+      next: (res) => {
+        this.updateProfileLogo(res.logo_url);
+        this.scrapingLogo = false;
+      },
+      error: () => {
+        this.snackBar.open('Não foi possível encontrar um logo automaticamente.', 'OK');
+        this.scrapingLogo = false;
+      }
+    });
+  }
+
+  private updateProfileLogo(url: string): void {
+    this.recruiterService.updateProfile({ logo_url: url }).subscribe({
+      next: (res) => {
+        if (this.recruiter) {
+          this.recruiter.logo_url = res.logo_url;
+        }
+        this.snackBar.open('Logótipo atualizado com sucesso.', 'OK');
+      },
+      error: () => {
+        this.snackBar.open('Erro ao guardar o logótipo.', 'OK');
+      }
+    });
+  }
 }
+

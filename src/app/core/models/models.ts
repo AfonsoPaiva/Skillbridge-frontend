@@ -197,6 +197,7 @@ export interface Recruiter {
   company_name: string;
   email: string;
   company_url: string;
+  logo_url?: string;
   vacancy_description?: string;
   status: string; // pending_manual | pending_auto | approved | rejected
   created_at: string;

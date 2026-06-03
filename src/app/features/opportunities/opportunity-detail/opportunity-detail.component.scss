@@ -1,0 +1,217 @@
+@use '../../../../styles/variables' as v;
+@use '../../../../styles/mixins' as m;
+
+.opportunity-detail-page {
+  padding: calc(64px + max(0px, env(safe-area-inset-top))) 0 v.$space-16;
+  min-height: 100vh;
+  background-color: v.$color-bg;
+}
+
+.back-btn {
+  margin-bottom: v.$space-4;
+  color: v.$color-text-soft;
+}
+
+.detail-card {
+  background: v.$color-surface;
+  border-radius: v.$radius-lg;
+  box-shadow: v.$shadow-md;
+  overflow: hidden;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.detail-header {
+  display: flex;
+  align-items: flex-start;
+  gap: v.$space-6;
+  padding: v.$space-8;
+  
+  @include m.sm {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .company-logo-square {
+    flex-shrink: 0;
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, v.$color-primary 0%, #00d4ff 100%);
+    border-radius: v.$radius-md;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: v.$shadow-sm;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: v.$radius-md;
+    }
+
+    .initials {
+      font-size: 2.5rem;
+      font-weight: v.$font-weight-extrabold;
+      color: white;
+      letter-spacing: 1px;
+    }
+  }
+
+  .header-info {
+    flex: 1;
+
+    h1 {
+      font-size: 2rem;
+      font-weight: v.$font-weight-bold;
+      margin: 0 0 v.$space-2 0;
+      color: v.$color-text;
+    }
+
+    .company-name {
+      font-size: 1.1rem;
+      color: v.$color-primary;
+      font-weight: v.$font-weight-medium;
+      margin: 0 0 v.$space-3 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      @include m.sm {
+        justify-content: center;
+      }
+
+      &::before {
+        content: 'business';
+        font-family: 'Material Icons';
+        font-size: 18px;
+      }
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.85rem;
+      font-weight: v.$font-weight-semibold;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: rgba(v.$color-secondary, 0.1);
+      color: darken(v.$color-secondary, 10%);
+    }
+  }
+}
+
+.detail-body {
+  padding: v.$space-8;
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-8;
+
+  h3 {
+    font-size: 1.25rem;
+    font-weight: v.$font-weight-semibold;
+    margin-bottom: v.$space-4;
+    color: v.$color-text;
+  }
+
+  .description {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: v.$color-text-soft;
+    white-space: pre-wrap;
+    margin: 0;
+  }
+
+  .skills-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: v.$space-2;
+
+    .chip {
+      padding: 6px 16px;
+      border-radius: 999px;
+      background: v.$color-bg;
+      border: 1px solid v.$color-border;
+      color: v.$color-text-soft;
+      font-size: 0.9rem;
+      font-weight: v.$font-weight-medium;
+    }
+  }
+}
+
+.detail-actions {
+  padding: v.$space-6 v.$space-8;
+  background: rgba(v.$color-primary, 0.03);
+  display: flex;
+  justify-content: flex-end;
+
+  @include m.sm {
+    justify-content: center;
+  }
+
+  .apply-btn {
+    padding: 0 v.$space-8;
+    height: 48px;
+    border-radius: v.$radius-sm;
+    font-size: 1rem;
+    font-weight: v.$font-weight-medium;
+    
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: v.$space-16 0;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: v.$color-text-soft;
+    margin-bottom: v.$space-4;
+  }
+
+  h2 {
+    margin: 0 0 v.$space-2 0;
+    color: v.$color-text;
+  }
+
+  p {
+    color: v.$color-text-soft;
+    margin-bottom: v.$space-6;
+  }
+}
+
+.skeleton-container {
+  max-width: 800px;
+  margin: 0 auto;
+  
+  .skeleton-header {
+    height: 200px;
+    border-radius: v.$radius-lg;
+    margin-bottom: v.$space-6;
+  }
+  
+  .skeleton-body {
+    height: 400px;
+    border-radius: v.$radius-lg;
+  }
+}
+
+.skeleton-box {
+  background: linear-gradient(90deg, rgba(v.$color-primary, 0.03) 25%, rgba(v.$color-primary, 0.08) 50%, rgba(v.$color-primary, 0.03) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

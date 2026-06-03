@@ -58,3 +58,38 @@
     margin-bottom: v.$space-6;
   }
 }
+
+.auth-page__actions {
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-3;
+  align-items: center;
+
+  button {
+    min-width: 200px;
+  }
+}
+
+.auth-page__success {
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: #4caf50;
+    margin-bottom: v.$space-4;
+  }
+
+  h2 {
+    font-size: 20px;
+    font-weight: v.$font-weight-semibold;
+    color: v.$color-text;
+    margin-bottom: v.$space-2;
+  }
+
+  p {
+    color: v.$color-text-soft;
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: v.$space-4;
+  }
+}

@@ -5,10 +5,12 @@ import { MaterialModule } from '../../shared/material.module';
 
 import { OpportunitiesRoutingModule } from './opportunities-routing.module';
 import { OpportunitiesComponent } from './opportunities.component';
+import { OpportunityDetailComponent } from './opportunity-detail/opportunity-detail.component';
 
 @NgModule({
   declarations: [
-    OpportunitiesComponent
+    OpportunitiesComponent,
+    OpportunityDetailComponent
   ],
   imports: [
     CommonModule,
