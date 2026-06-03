@@ -148,10 +148,14 @@ export class RecruiterDashboardComponent implements OnInit {
   }
 
   saveCompany(): void {
-    this.recruiterService.updateProfile({ company_url: this.companyUrlForm }).subscribe({
+    this.recruiterService.updateProfile({ 
+      company_url: this.companyUrlForm,
+      logo_url: this.recruiter?.logo_url 
+    }).subscribe({
       next: (res) => {
         if (this.recruiter) {
-          this.recruiter.company_url = res.company_url;
+          // Fallback to local value if backend hasn't been updated yet to return it
+          this.recruiter.company_url = res.company_url || this.companyUrlForm;
         }
         this.snackBar.open('Perfil atualizado com sucesso.', 'OK');
         this.showCompanyForm = false;
@@ -168,7 +172,6 @@ export class RecruiterDashboardComponent implements OnInit {
 
   // --- Logo Management ---
   uploadingLogo = false;
-  scrapingLogo = false;
 
   getInitials(companyName: string | undefined): string {
     if (!companyName) return 'C';
@@ -202,37 +205,6 @@ export class RecruiterDashboardComponent implements OnInit {
     }
   }
 
-  scrapeLogo(): void {
-    if (!this.recruiter?.company_url) {
-      this.snackBar.open('O website da empresa não está definido.', 'OK');
-      return;
-    }
-
-    this.scrapingLogo = true;
-    try {
-      let urlStr = this.recruiter.company_url;
-      if (!urlStr.startsWith('http://') && !urlStr.startsWith('https://')) {
-        urlStr = 'https://' + urlStr;
-      }
-      const domain = new URL(urlStr).hostname.replace('www.', '');
-      const clientId = environment.brandfetchClientId;
-      const logoUrl = `https://cdn.brandfetch.io/${domain}?c=${clientId}`;
-
-      const img = new Image();
-      img.onload = () => {
-        this.updateProfileLogo(logoUrl);
-        this.scrapingLogo = false;
-      };
-      img.onerror = () => {
-        this.snackBar.open('Não foi possível encontrar um logo automaticamente.', 'OK');
-        this.scrapingLogo = false;
-      };
-      img.src = logoUrl;
-    } catch (e) {
-      this.snackBar.open('URL do website inválido.', 'OK');
-      this.scrapingLogo = false;
-    }
-  }
 
   private updateProfileLogo(url: string): void {
     this.recruiterService.updateProfile({ logo_url: url }).subscribe({

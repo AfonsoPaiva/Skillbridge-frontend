@@ -59,10 +59,6 @@
                     <mat-icon>upload</mat-icon> {{ uploadingLogo ? 'A enviar...' : 'Upload Manual' }}
                   </button>
                   <input type="file" #fileInput hidden accept="image/png, image/jpeg, image/webp" (change)="onLogoSelected($event)">
-                  
-                  <button mat-stroked-button (click)="scrapeLogo()" [disabled]="scrapingLogo">
-                    <mat-icon>travel_explore</mat-icon> {{ scrapingLogo ? 'A procurar...' : 'Procurar do Website' }}
-                  </button>
                 </div>
               </div>
             </div>
