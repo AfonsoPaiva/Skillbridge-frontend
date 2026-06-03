@@ -48,8 +48,8 @@
           <mat-card-content style="padding-top: 20px;">
             <div class="company-logo-section" style="margin-bottom: 30px;">
               <div class="logo-preview">
-                <img *ngIf="(brandfetchUrl || recruiter.logo_url) && !logoError" [src]="brandfetchUrl || recruiter.logo_url" alt="Logo da Empresa" (error)="onLogoError()">
-                <div *ngIf="!(brandfetchUrl || recruiter.logo_url) || logoError" class="initials">{{ getInitials(recruiter.company_name) }}</div>
+                <img *ngIf="recruiter.logo_url && !logoError" [src]="recruiter.logo_url" alt="Logo da Empresa" (error)="onLogoError()">
+                <div *ngIf="!recruiter.logo_url || logoError" class="initials">{{ getInitials(recruiter.company_name) }}</div>
               </div>
               <div class="logo-actions">
                 <h3>Logótipo da Empresa</h3>
@@ -57,9 +57,6 @@
                 <div class="btn-group">
                   <button mat-stroked-button (click)="fileInput.click()" [disabled]="uploadingLogo">
                     <mat-icon>upload</mat-icon> {{ uploadingLogo ? 'A enviar...' : 'Upload Manual' }}
-                  </button>
-                  <button mat-stroked-button (click)="fetchBrandfetchLogo()" type="button">
-                    <mat-icon>search</mat-icon> Pesquisa Automática
                   </button>
                   <input type="file" #fileInput hidden accept="image/png, image/jpeg, image/webp" (change)="onLogoSelected($event)">
                 </div>
