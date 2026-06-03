@@ -8,5 +8,6 @@ export const environment = {
   firebaseVapidKey: 'BDQBzZVFjzZ_iu9f9prxrCBYmO4Y3_2d6WqOhXdeO5gOFy-b3VUUTbN4Tx6sWGBHNBJiKwaKH_jNWfz6kNA2p6Q',
   apiUrl: 'https://backendskillbridge-742354947031.europe-west1.run.app/api',
   stripePublishableKey: 'pk_live_51T5ZPbRhy1hjUWSqhNuABcC00PzHZ71kL9GaOqr3jzSSvcFjB4WdOyeo56HjumDtXR7iXCyoGCmL5zc2Cb8zFnm100MSgYYceG',
-  stripeDonationURL: 'https://donate.stripe.com/test_aFacN44fz2pf5N1fPAenS00'
+  stripeDonationURL: 'https://donate.stripe.com/test_aFacN44fz2pf5N1fPAenS00',
+  brandfetchClientId: '1idXfPT7JxWl4PoFrZj'
 };

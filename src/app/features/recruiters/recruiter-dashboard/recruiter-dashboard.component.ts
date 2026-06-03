@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { RecruiterService } from '../../../core/services/recruiter.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Recruiter, Vacancy } from '../../../core/models/models';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-recruiter-dashboard',
@@ -179,16 +180,29 @@ export class RecruiterDashboardComponent implements OnInit {
     }
 
     this.scrapingLogo = true;
-    this.recruiterService.scrapeCompanyLogo(this.recruiter.company_url).subscribe({
-      next: (res) => {
-        this.updateProfileLogo(res.logo_url);
+    try {
+      let urlStr = this.recruiter.company_url;
+      if (!urlStr.startsWith('http://') && !urlStr.startsWith('https://')) {
+        urlStr = 'https://' + urlStr;
+      }
+      const domain = new URL(urlStr).hostname.replace('www.', '');
+      const clientId = environment.brandfetchClientId;
+      const logoUrl = `https://cdn.brandfetch.io/${domain}?c=${clientId}`;
+
+      const img = new Image();
+      img.onload = () => {
+        this.updateProfileLogo(logoUrl);
         this.scrapingLogo = false;
-      },
-      error: () => {
+      };
+      img.onerror = () => {
         this.snackBar.open('Não foi possível encontrar um logo automaticamente.', 'OK');
         this.scrapingLogo = false;
-      }
-    });
+      };
+      img.src = logoUrl;
+    } catch (e) {
+      this.snackBar.open('URL do website inválido.', 'OK');
+      this.scrapingLogo = false;
+    }
   }
 
   private updateProfileLogo(url: string): void {

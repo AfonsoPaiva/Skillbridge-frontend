@@ -66,11 +66,6 @@ export class RecruiterService {
     });
   }
 
-  scrapeCompanyLogo(url: string): Observable<{ logo_url: string }> {
-    return this.http.post<{ logo_url: string }>(`${this.base}/recruiter/scrape-logo`, { url }, {
-      headers: this.authHeaders()
-    });
-  }
 
   uploadLogo(file: File): Observable<{ url: string }> {
     const formData = new FormData();
