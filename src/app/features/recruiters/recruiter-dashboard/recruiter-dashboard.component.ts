@@ -16,8 +16,10 @@ export class RecruiterDashboardComponent implements OnInit {
   vacancies: Vacancy[] = [];
   loading = true;
   showForm = false;
+  showCompanyForm = false;
   editingVacancy: Vacancy | null = null;
   renewVacancyId: string | null = null;
+  companyUrlForm: string = '';
 
   readonly vacancyTypeLabels: Record<string, string> = {
     'summer_internship': 'Estágio de Verão',
@@ -74,11 +76,13 @@ export class RecruiterDashboardComponent implements OnInit {
   newVacancy(): void {
     this.editingVacancy = null;
     this.showForm = true;
+    this.showCompanyForm = false;
   }
 
   editVacancy(vacancy: Vacancy): void {
     this.editingVacancy = vacancy;
     this.showForm = true;
+    this.showCompanyForm = false;
   }
 
   onVacancySaved(): void {
@@ -135,6 +139,31 @@ export class RecruiterDashboardComponent implements OnInit {
 
   getStatusClass(status: string): string {
     return `status--${status}`;
+  }
+
+  editCompany(): void {
+    this.companyUrlForm = this.recruiter?.company_url || '';
+    this.showCompanyForm = true;
+    this.showForm = false;
+  }
+
+  saveCompany(): void {
+    this.recruiterService.updateProfile({ company_url: this.companyUrlForm }).subscribe({
+      next: (res) => {
+        if (this.recruiter) {
+          this.recruiter.company_url = res.company_url;
+        }
+        this.snackBar.open('Perfil atualizado com sucesso.', 'OK');
+        this.showCompanyForm = false;
+      },
+      error: () => {
+        this.snackBar.open('Erro ao atualizar perfil.', 'OK');
+      }
+    });
+  }
+
+  cancelCompany(): void {
+    this.showCompanyForm = false;
   }
 
   // --- Logo Management ---

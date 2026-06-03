@@ -10,36 +10,28 @@
     <div class="dashboard-header">
       <div class="dashboard-header__content">
         
-        <div class="company-logo-section">
-          <div class="logo-preview">
-            <img *ngIf="recruiter?.logo_url" [src]="recruiter?.logo_url" alt="Logo da Empresa">
-            <div *ngIf="!recruiter?.logo_url" class="initials">{{ getInitials(recruiter?.company_name) }}</div>
+        <div class="dashboard-header__company-info" style="display: flex; align-items: center; gap: 20px;">
+          <div class="logo-preview" style="width: 80px; height: 80px; border-radius: 8px; overflow: hidden; background: #eee; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <img *ngIf="recruiter?.logo_url" [src]="recruiter?.logo_url" alt="Logo da Empresa" style="width: 100%; height: 100%; object-fit: contain;">
+            <div *ngIf="!recruiter?.logo_url" class="initials" style="font-size: 24px; font-weight: bold; color: #666;">{{ getInitials(recruiter?.company_name) }}</div>
           </div>
-          <div class="logo-actions">
-            <h3>Logótipo da Empresa</h3>
-            <p>O logótipo aparece nas vagas.</p>
-            <div class="btn-group">
-              <button mat-stroked-button (click)="fileInput.click()" [disabled]="uploadingLogo">
-                <mat-icon>upload</mat-icon> {{ uploadingLogo ? 'A enviar...' : 'Upload Manual' }}
-              </button>
-              <input type="file" #fileInput hidden accept="image/png, image/jpeg, image/webp" (change)="onLogoSelected($event)">
-              
-              <button mat-stroked-button (click)="scrapeLogo()" [disabled]="scrapingLogo">
-                <mat-icon>travel_explore</mat-icon> {{ scrapingLogo ? 'A procurar...' : 'Procurar do Website' }}
-              </button>
-            </div>
+          <div class="dashboard-header__info">
+            <h1>Dashboard de Recrutamento</h1>
+            <p>{{ recruiter?.company_name }} &bull; {{ recruiter?.full_name }}</p>
+            <p *ngIf="recruiter?.company_url" style="font-size: 0.9em; opacity: 0.8; margin-top: 4px;">
+              <a [href]="recruiter?.company_url" target="_blank" style="color: inherit; text-decoration: underline;">{{ recruiter?.company_url }}</a>
+            </p>
           </div>
         </div>
 
-        <div class="dashboard-header__info">
-          <h1>Dashboard de Recrutamento</h1>
-          <p>{{ recruiter?.company_name }} &bull; {{ recruiter?.full_name }}</p>
-        </div>
         <div class="dashboard-header__actions">
+          <button mat-stroked-button (click)="editCompany()" *ngIf="!showCompanyForm && !showForm">
+            <mat-icon>edit</mat-icon> Editar Empresa
+          </button>
           <button mat-stroked-button (click)="logout()">
             <mat-icon>logout</mat-icon> Sair
           </button>
-          <button mat-raised-button color="primary" (click)="newVacancy()" *ngIf="!showForm">
+          <button mat-raised-button color="primary" (click)="newVacancy()" *ngIf="!showForm && !showCompanyForm">
             <mat-icon>add</mat-icon> Nova Vaga
           </button>
         </div>
@@ -47,6 +39,47 @@
     </div>
 
     <div class="dashboard-container">
+      <!-- Company Profile Form View -->
+      <div *ngIf="showCompanyForm" class="dashboard-form">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>Editar Perfil da Empresa</mat-card-title>
+          </mat-card-header>
+          <mat-card-content style="padding-top: 20px;">
+            <div class="company-logo-section" style="margin-bottom: 30px;">
+              <div class="logo-preview">
+                <img *ngIf="recruiter?.logo_url" [src]="recruiter?.logo_url" alt="Logo da Empresa">
+                <div *ngIf="!recruiter?.logo_url" class="initials">{{ getInitials(recruiter?.company_name) }}</div>
+              </div>
+              <div class="logo-actions">
+                <h3>Logótipo da Empresa</h3>
+                <p>O logótipo aparece nas vagas.</p>
+                <div class="btn-group">
+                  <button mat-stroked-button (click)="fileInput.click()" [disabled]="uploadingLogo">
+                    <mat-icon>upload</mat-icon> {{ uploadingLogo ? 'A enviar...' : 'Upload Manual' }}
+                  </button>
+                  <input type="file" #fileInput hidden accept="image/png, image/jpeg, image/webp" (change)="onLogoSelected($event)">
+                  
+                  <button mat-stroked-button (click)="scrapeLogo()" [disabled]="scrapingLogo">
+                    <mat-icon>travel_explore</mat-icon> {{ scrapingLogo ? 'A procurar...' : 'Procurar do Website' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <mat-form-field appearance="outline" style="width: 100%;">
+              <mat-label>Website da Empresa</mat-label>
+              <input matInput [(ngModel)]="companyUrlForm" placeholder="https://www.empresa.com">
+              <mat-icon matPrefix>link</mat-icon>
+            </mat-form-field>
+          </mat-card-content>
+          <mat-card-actions align="end" style="padding-bottom: 16px; padding-right: 16px;">
+            <button mat-button (click)="cancelCompany()">Cancelar</button>
+            <button mat-raised-button color="primary" (click)="saveCompany()">Guardar Alterações</button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+
       <!-- Form View -->
       <div *ngIf="showForm" class="dashboard-form">
         <app-vacancy-form 
@@ -57,7 +90,7 @@
       </div>
 
       <!-- List View -->
-      <div *ngIf="!showForm" class="dashboard-list">
+      <div *ngIf="!showForm && !showCompanyForm" class="dashboard-list">
         <div class="empty-state" *ngIf="vacancies.length === 0">
           <mat-icon>work_outline</mat-icon>
           <h2>Ainda não publicaste nenhuma vaga</h2>

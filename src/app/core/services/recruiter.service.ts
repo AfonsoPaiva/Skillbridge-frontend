@@ -60,7 +60,7 @@ export class RecruiterService {
     });
   }
 
-  updateProfile(data: { logo_url: string }): Observable<Recruiter> {
+  updateProfile(data: { logo_url?: string; company_url?: string }): Observable<Recruiter> {
     return this.http.put<Recruiter>(`${this.base}/recruiter/profile`, data, {
       headers: this.authHeaders()
     });
