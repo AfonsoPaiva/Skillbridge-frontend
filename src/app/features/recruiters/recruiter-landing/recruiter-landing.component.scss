@@ -2,26 +2,114 @@
 
 .recruiter-page {
   min-height: 100vh;
+  padding: v.$space-4;
+  background: v.$color-bg;
+  position: relative;
+}
+
+.back-btn {
+  position: absolute;
+  top: v.$space-4;
+  left: v.$space-4;
+  z-index: 10;
+}
+
+.recruiter-page__wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: calc(100vh - (v.$space-4 * 2));
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: v.$space-6;
-  background: v.$color-bg;
+  gap: v.$space-10;
+}
+
+.recruiter-info {
+  flex: 1;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+
+  h2 {
+    font-size: 32px;
+    font-weight: v.$font-weight-extrabold;
+    color: v.$color-text;
+    line-height: 1.2;
+    margin-bottom: v.$space-4;
+  }
+
+  .recruiter-info__lead {
+    font-size: 18px;
+    color: v.$color-text-soft;
+    line-height: 1.6;
+    margin-bottom: v.$space-8;
+  }
+}
+
+.advantage-list {
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-6;
+}
+
+.advantage-item {
+  display: flex;
+  align-items: flex-start;
+  gap: v.$space-4;
+
+  .icon-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(v.$color-primary, 0.1);
+    color: v.$color-primary;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    mat-icon {
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  h3 {
+    font-size: 18px;
+    font-weight: v.$font-weight-semibold;
+    margin-bottom: v.$space-1;
+    color: v.$color-text;
+  }
+
+  p {
+    font-size: 14px;
+    color: v.$color-text-soft;
+    line-height: 1.5;
+    margin: 0;
+  }
 }
 
 .recruiter-page__container {
-  width: 100%;
-  max-width: 520px;
+  flex: 1;
+  max-width: 480px;
+  background: v.$color-surface;
+  padding: v.$space-8;
+  border-radius: v.$radius-lg;
+  box-shadow: v.$shadow-md;
 }
 
 .recruiter-page__logo {
-  text-align: center;
   margin-bottom: v.$space-8;
 
   img {
-    width: 100px;
+    width: 120px;
     height: auto;
   }
+}
+
+.mobile-only {
+  display: none;
 }
 
 h1 {
@@ -97,15 +185,46 @@ h1 {
   }
 }
 
-@media (max-width: v.$bp-sm) {
-  .recruiter-page {
-    padding: v.$space-4;
-    align-items: flex-start;
+@media (max-width: v.$bp-md) {
+  .recruiter-page__wrapper {
+    flex-direction: column;
     padding-top: v.$space-10;
+    gap: v.$space-6;
   }
 
-  h1 {
-    font-size: 20px;
+  .recruiter-info {
+    max-width: 100%;
+    text-align: center;
+    
+    .recruiter-page__logo {
+      display: none;
+    }
+
+    h2 {
+      font-size: 26px;
+    }
+  }
+
+  .advantage-item {
+    text-align: left;
+  }
+
+  .recruiter-page__container {
+    width: 100%;
+    max-width: 100%;
+    padding: v.$space-6 v.$space-4;
+    box-shadow: none;
+    background: transparent;
+  }
+  
+  .mobile-only {
+    display: block;
+    text-align: center;
+  }
+
+  .back-btn {
+    top: v.$space-2;
+    left: v.$space-2;
   }
 }
 
