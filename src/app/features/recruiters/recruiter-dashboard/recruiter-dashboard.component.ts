@@ -20,6 +20,7 @@ export class RecruiterDashboardComponent implements OnInit {
   editingVacancy: Vacancy | null = null;
   renewVacancyId: string | null = null;
   companyUrlForm: string = '';
+  brandfetchUrl: string = '';
 
   readonly vacancyTypeLabels: Record<string, string> = {
     'summer_internship': 'Estágio de Verão',
@@ -143,14 +144,31 @@ export class RecruiterDashboardComponent implements OnInit {
 
   editCompany(): void {
     this.companyUrlForm = this.recruiter?.company_url || '';
+    this.brandfetchUrl = this.recruiter?.logo_url || '';
     this.showCompanyForm = true;
     this.showForm = false;
+  }
+
+  fetchBrandfetchLogo(): void {
+    if (!this.companyUrlForm) {
+      this.snackBar.open('Insere o website da empresa primeiro.', 'OK');
+      return;
+    }
+    try {
+      const url = new URL(this.companyUrlForm.startsWith('http') ? this.companyUrlForm : `https://${this.companyUrlForm}`);
+      const domain = url.hostname.replace(/^www\./, '');
+      const clientId = environment.brandfetchClientId;
+      this.brandfetchUrl = `https://asset.brandfetch.io/${domain}/logo?c=${clientId}`;
+      this.snackBar.open('Logótipo obtido do Brandfetch!', 'OK');
+    } catch (e) {
+      this.snackBar.open('URL inválido.', 'OK');
+    }
   }
 
   saveCompany(): void {
     this.recruiterService.updateProfile({ 
       company_url: this.companyUrlForm,
-      logo_url: this.recruiter?.logo_url 
+      logo_url: this.brandfetchUrl || this.recruiter?.logo_url 
     }).subscribe({
       next: (res) => {
         if (this.recruiter) {
@@ -207,6 +225,7 @@ export class RecruiterDashboardComponent implements OnInit {
 
 
   private updateProfileLogo(url: string): void {
+    this.brandfetchUrl = url;
     this.recruiterService.updateProfile({ logo_url: url }).subscribe({
       next: (res) => {
         if (this.recruiter) {
