@@ -112,6 +112,20 @@ export class RecruiterDashboardComponent implements OnInit {
     });
   }
 
+  permanentlyDeleteVacancy(vacancy: Vacancy): void {
+    if (!confirm(`Tens a certeza absoluta que queres apagar permanentemente a vaga "${vacancy.title}"?`)) return;
+
+    this.recruiterService.permanentlyDeleteVacancy(vacancy.id).subscribe({
+      next: () => {
+        this.snackBar.open('Vaga eliminada permanentemente.', 'OK');
+        this.loadData();
+      },
+      error: () => {
+        this.snackBar.open('Erro ao eliminar vaga.', 'OK');
+      }
+    });
+  }
+
   renewVacancy(vacancy: Vacancy): void {
     this.recruiterService.updateVacancy(vacancy.id, { status: 'active' }).subscribe({
       next: () => {
@@ -178,6 +192,20 @@ export class RecruiterDashboardComponent implements OnInit {
 
   cancelCompany(): void {
     this.showCompanyForm = false;
+  }
+
+  deleteAccount(): void {
+    if (!confirm('Tem a certeza absoluta que deseja apagar a sua conta de recrutador? Esta ação é irreversível e todas as suas vagas e dados serão eliminados para sempre.')) return;
+
+    this.recruiterService.deleteProfile().subscribe({
+      next: () => {
+        this.snackBar.open('Conta eliminada com sucesso.', 'OK');
+        this.logout();
+      },
+      error: () => {
+        this.snackBar.open('Erro ao eliminar conta.', 'OK');
+      }
+    });
   }
 
   // --- Logo Management ---

@@ -969,34 +969,6 @@ body {
   box-shadow: v.$shadow-lg !important;
 }
 
-.mat-calendar {
-  .mat-calendar-header {
-    color: v.$color-text !important;
-  }
-  
-  .mat-calendar-body-label {
-    color: v.$color-text-soft !important;
-  }
-  
-  .mat-calendar-body-cell-content {
-    color: v.$color-text !important;
-    border-radius: 50% !important;
-    
-    &:hover {
-      background-color: rgba(104, 0, 122, 0.08) !important;
-    }
-  }
-  
-  .mat-calendar-body-selected {
-    background-color: v.$color-primary !important;
-    color: white !important;
-  }
-  
-  .mat-calendar-body-today:not(.mat-calendar-body-selected) {
-    border-color: v.$color-primary !important;
-  }
-}
-
 // ── Table ─────────────────────────────────────────────────
 .mat-mdc-table {
   background: v.$color-surface !important;

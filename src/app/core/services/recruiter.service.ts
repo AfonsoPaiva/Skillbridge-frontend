@@ -60,6 +60,12 @@ export class RecruiterService {
     });
   }
 
+  deleteProfile(): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.base}/recruiter/profile`, {
+      headers: this.authHeaders()
+    });
+  }
+
   updateProfile(data: { logo_url?: string; company_url?: string }): Observable<Recruiter> {
     return this.http.put<Recruiter>(`${this.base}/recruiter/profile`, data, {
       headers: this.authHeaders()
@@ -99,6 +105,13 @@ export class RecruiterService {
   /** Archive a vacancy */
   deleteVacancy(id: string): Observable<{ message: string }> {
     return this.http.delete<{ message: string }>(`${this.base}/recruiter/vacancies/${id}`, {
+      headers: this.authHeaders()
+    });
+  }
+
+  /** Permanently delete a vacancy */
+  permanentlyDeleteVacancy(id: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.base}/recruiter/vacancies/${id}/permanent`, {
       headers: this.authHeaders()
     });
   }

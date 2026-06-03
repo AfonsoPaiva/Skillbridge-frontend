@@ -12,9 +12,9 @@
   gap: v.$space-4;
   margin-bottom: v.$space-6;
 
-  h1 { 
-    font-size: clamp(1.6rem, 5vw, 2.8rem); 
-    font-weight: v.$font-weight-bold; 
+  h1 {
+    font-size: clamp(1.6rem, 5vw, 2.8rem);
+    font-weight: v.$font-weight-bold;
     line-height: 1.15;
     letter-spacing: -0.02em;
     margin: 0;
@@ -37,7 +37,12 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    mat-icon { font-size: 14px; width: 14px; height: 14px; }
+
+    mat-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+    }
   }
 }
 
@@ -65,8 +70,13 @@
   align-items: stretch;
   gap: v.$space-5;
 
-  @include m.md { grid-template-columns: repeat(2, 1fr); }
-  @include m.lg { grid-template-columns: repeat(3, 1fr); }
+  @include m.md {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include m.lg {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .proj-card {
@@ -100,7 +110,6 @@
     }
 
     &.company-logo-block {
-      background: linear-gradient(135deg, v.$color-primary 0%, #00d4ff 100%);
       .initials {
         font-size: 4rem;
         font-weight: v.$font-weight-extrabold;
@@ -112,18 +121,20 @@
 
   &__status {
     position: absolute;
-    top: v.$space-2; right: v.$space-2;
+    top: v.$space-2;
+    right: v.$space-2;
     font-size: 11px;
     font-weight: v.$font-weight-semibold;
     padding: 2px 10px;
     border-radius: 999px;
-    background: rgba(255,255,255,0.9);
+    background: rgba(255, 255, 255, 0.9);
     color: v.$color-text-soft;
 
     &[data-status="open"] {
       background: lighten(v.$color-secondary, 38%);
       color: darken(v.$color-secondary, 10%);
     }
+
     &[data-status="in_progress"] {
       background: lighten(v.$color-primary, 40%);
       color: v.$color-primary;
@@ -146,7 +157,7 @@
       @include m.truncate(3);
     }
 
-    p  {
+    p {
       font-size: 13px;
       line-height: 1.5;
       min-height: calc(1.5em * 2);
@@ -171,7 +182,7 @@
     .chip--card-skill {
       flex: 0 1 auto;
       min-width: 0;
-      max-width: 140px; 
+      max-width: 140px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -198,11 +209,11 @@
     align-items: center;
     justify-content: center;
   }
-  
+
   h3 {
     margin-bottom: v.$space-2;
   }
-  
+
   p {
     color: v.$color-text-soft;
     margin-bottom: v.$space-6;
@@ -226,7 +237,8 @@
 
   &__avatar {
     img {
-      width: 96px; height: 96px;
+      width: 96px;
+      height: 96px;
       border-radius: 50%;
       object-fit: cover;
       border: 3px solid v.$color-primary;
@@ -234,13 +246,25 @@
   }
 
   &__info {
-    h2 { font-size: 1.4rem; font-weight: v.$font-weight-bold; margin-bottom: 4px; }
-    > p { margin-bottom: v.$space-3; }
+    h2 {
+      font-size: 1.4rem;
+      font-weight: v.$font-weight-bold;
+      margin-bottom: 4px;
+    }
+
+    >p {
+      margin-bottom: v.$space-3;
+    }
   }
 
   &__skills {
     margin-top: v.$space-4;
-    strong { font-size: 14px; display: block; margin-bottom: v.$space-2; }
+
+    strong {
+      font-size: 14px;
+      display: block;
+      margin-bottom: v.$space-2;
+    }
   }
 
   &__empty {

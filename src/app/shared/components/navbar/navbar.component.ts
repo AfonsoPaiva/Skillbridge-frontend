@@ -49,6 +49,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Initialize state based on current URL
+    const url = this.router.url;
+    this.isLandingPage = url.includes('/landing') || url === '/';
+    this.onScroll(); // initial scroll check
+
     this.auth.currentUser$.subscribe(u => {
       this.isLoggedIn = !!u;
       if (this.isLoggedIn && !u?.recruiterId) {
@@ -58,11 +63,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
         this.unreadCount = 0;
       }
     });
+
     this.router.events.pipe(
       filter((e): e is NavigationEnd => e instanceof NavigationEnd)
     ).subscribe(e => {
-      const url = e.urlAfterRedirects;
-      this.isLandingPage = url.includes('/landing') || url === '/';
+      const currentUrl = e.urlAfterRedirects;
+      this.isLandingPage = currentUrl.includes('/landing') || currentUrl === '/';
       if (!this.isLandingPage) this.heroScrolled = false;
 
       if (this.isLoggedIn) {
