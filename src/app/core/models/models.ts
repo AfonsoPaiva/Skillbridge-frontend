@@ -220,11 +220,25 @@ export interface Vacancy {
   tags: string[];
   description: string;
   application_url: string;
+  region?: string; // e.g. "Porto, Portugal"
+  work_mode?: string; // hybrid | remote | onsite
+  employment_type?: string; // full_time | part_time
   deadline?: string;
   views: number;
   status: string; // active | expired | archived
   published_at: string;
   expires_at: string;
   recruiter?: Recruiter;
+}
+
+export interface ScrapedJob {
+  title: string;
+  type: string;
+  description: string;
+  application_url: string;
+  region: string;
+  work_mode: string;
+  employment_type: string;
+  selected?: boolean; // frontend-only: whether the user selected this job for import
 }
 

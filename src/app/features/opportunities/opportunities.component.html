@@ -65,6 +65,10 @@
               </span>
             </div>
             <div class="vcard__actions-right">
+              <span class="vcard__region" *ngIf="v.region" title="Região">
+                <mat-icon>location_on</mat-icon>
+                {{ v.region }}
+              </span>
               <span class="vcard__deadline" title="Data limite">
                 <mat-icon>event</mat-icon>
                 {{ (v.deadline || v.expires_at) | date:'dd/MM/yyyy' }}

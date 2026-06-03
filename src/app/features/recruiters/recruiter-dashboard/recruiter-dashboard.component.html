@@ -25,13 +25,16 @@
         </div>
 
         <div class="dashboard-header__actions">
-          <button mat-stroked-button (click)="editCompany()" *ngIf="!showCompanyForm && !showForm">
+          <button mat-stroked-button (click)="editCompany()" *ngIf="!showCompanyForm && !showForm && !showAutoImport">
             <mat-icon>edit</mat-icon> Editar Empresa
           </button>
           <button mat-stroked-button (click)="logout()">
             <mat-icon>logout</mat-icon> Sair
           </button>
-          <button mat-raised-button color="primary" (click)="newVacancy()" *ngIf="!showForm && !showCompanyForm">
+          <button mat-stroked-button color="accent" (click)="openAutoImport()" *ngIf="!showForm && !showCompanyForm && !showAutoImport">
+            <mat-icon>auto_awesome</mat-icon> Importar Vagas
+          </button>
+          <button mat-raised-button color="primary" (click)="newVacancy()" *ngIf="!showForm && !showCompanyForm && !showAutoImport">
             <mat-icon>add</mat-icon> Nova Vaga
           </button>
         </div>
@@ -79,6 +82,97 @@
         </mat-card>
       </div>
 
+      <!-- Auto Import Dialog -->
+      <div *ngIf="showAutoImport" class="dashboard-form">
+        <mat-card class="auto-import-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon style="margin-right: 8px; vertical-align: middle;">auto_awesome</mat-icon>
+              Importar Vagas Automaticamente
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content style="padding-top: 20px;">
+            <p class="import-description">
+              Introduz o URL da página de carreiras da tua empresa. O sistema irá procurar posições de
+              <strong>Junior</strong>, <strong>Estágio</strong>, <strong>Internship</strong>, e <strong>Verão</strong>
+              localizadas em <strong>Portugal</strong> e importá-las automaticamente.
+            </p>
+
+            <div class="import-url-row">
+              <mat-form-field appearance="outline" style="flex: 1;">
+                <mat-label>URL da Página de Carreiras</mat-label>
+                <input matInput [(ngModel)]="scrapeUrl"
+                       placeholder="Ex: https://careers.criticalmanufacturing.com/#jobs"
+                       [disabled]="scraping">
+                <mat-icon matPrefix>link</mat-icon>
+              </mat-form-field>
+              <button mat-raised-button color="primary" (click)="scrapeVacancies()"
+                      [disabled]="!scrapeUrl || scraping"
+                      class="scrape-btn">
+                <mat-spinner diameter="18" *ngIf="scraping"></mat-spinner>
+                <mat-icon *ngIf="!scraping">search</mat-icon>
+                <span>{{ scraping ? 'A procurar...' : 'Procurar Vagas' }}</span>
+              </button>
+            </div>
+
+            <!-- Scraped Results -->
+            <div *ngIf="scrapedJobs.length > 0" class="scraped-results">
+              <div class="scraped-header">
+                <h3>
+                  <mat-icon>checklist</mat-icon>
+                  {{ scrapedJobs.length }} vaga(s) encontrada(s)
+                </h3>
+                <div class="select-actions">
+                  <button mat-button (click)="selectAllScraped(true)">Selecionar Todas</button>
+                  <button mat-button (click)="selectAllScraped(false)">Desmarcar Todas</button>
+                </div>
+              </div>
+
+              <div class="scraped-list">
+                <div class="scraped-job" *ngFor="let job of scrapedJobs; let i = index"
+                     [class.selected]="job.selected" (click)="toggleJobSelection(i)">
+                  <mat-checkbox [checked]="job.selected" (click)="$event.stopPropagation()"
+                                (change)="toggleJobSelection(i)"></mat-checkbox>
+                  <div class="scraped-job__info">
+                    <h4>{{ job.title }}</h4>
+                    <div class="scraped-job__meta">
+                      <span class="meta-badge type">{{ getVacancyTypeLabel(job.type) }}</span>
+                      <span class="meta-badge region" *ngIf="job.region">
+                        <mat-icon>location_on</mat-icon> {{ job.region }}
+                      </span>
+                      <span class="meta-badge work-mode" *ngIf="job.work_mode">
+                        <mat-icon>{{ getWorkModeIcon(job.work_mode) }}</mat-icon> {{ getWorkModeLabel(job.work_mode) }}
+                      </span>
+                      <span class="meta-badge employment" *ngIf="job.employment_type">
+                        <mat-icon>schedule</mat-icon> {{ getEmploymentTypeLabel(job.employment_type) }}
+                      </span>
+                    </div>
+                    <p class="scraped-job__desc" *ngIf="job.description">{{ job.description | slice:0:150 }}{{ job.description.length > 150 ? '...' : '' }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- No results message -->
+            <div *ngIf="scrapeMessage" class="scrape-message">
+              <mat-icon>info</mat-icon>
+              <p>{{ scrapeMessage }}</p>
+            </div>
+          </mat-card-content>
+
+          <mat-card-actions align="end" style="padding: 16px; display: flex; justify-content: space-between;">
+            <button mat-button (click)="cancelAutoImport()">Cancelar</button>
+            <button mat-raised-button color="primary"
+                    [disabled]="getSelectedScrapedCount() === 0 || importing"
+                    (click)="importSelectedVacancies()">
+              <mat-spinner diameter="18" *ngIf="importing"></mat-spinner>
+              <mat-icon *ngIf="!importing">cloud_download</mat-icon>
+              {{ importing ? 'A importar...' : 'Importar ' + getSelectedScrapedCount() + ' Vaga(s)' }}
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+
       <!-- Form View -->
       <div *ngIf="showForm" class="dashboard-form">
         <app-vacancy-form 
@@ -89,7 +183,7 @@
       </div>
 
       <!-- List View -->
-      <div *ngIf="!showForm && !showCompanyForm" class="dashboard-list">
+      <div *ngIf="!showForm && !showCompanyForm && !showAutoImport" class="dashboard-list">
         <div class="empty-state" *ngIf="vacancies.length === 0">
           <mat-icon>work_outline</mat-icon>
           <h2>Ainda não publicaste nenhuma vaga</h2>
@@ -111,6 +205,18 @@
 
             <mat-card-content>
               <div class="vacancy-stats">
+                <div class="stat" *ngIf="vacancy.region">
+                  <mat-icon>location_on</mat-icon>
+                  <span>{{ vacancy.region }}</span>
+                </div>
+                <div class="stat" *ngIf="vacancy.work_mode">
+                  <mat-icon>{{ getWorkModeIcon(vacancy.work_mode) }}</mat-icon>
+                  <span>{{ getWorkModeLabel(vacancy.work_mode) }}</span>
+                </div>
+                <div class="stat" *ngIf="vacancy.employment_type">
+                  <mat-icon>schedule</mat-icon>
+                  <span>{{ getEmploymentTypeLabel(vacancy.employment_type) }}</span>
+                </div>
                 <div class="stat">
                   <mat-icon>visibility</mat-icon>
                   <span>{{ vacancy.views }} visualizações</span>
@@ -146,3 +252,4 @@
     </div>
   </ng-container>
 </div>
+

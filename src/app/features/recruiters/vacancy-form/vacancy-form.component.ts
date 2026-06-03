@@ -35,6 +35,20 @@ export class VacancyFormComponent implements OnInit {
     { value: 'junior_position', label: 'Posição Junior' }
   ];
 
+  readonly workModes = [
+    { value: '', label: 'Não especificado' },
+    { value: 'hybrid', label: 'Híbrido' },
+    { value: 'remote', label: 'Remoto' },
+    { value: 'onsite', label: 'Presencial' }
+  ];
+
+  readonly employmentTypes = [
+    { value: '', label: 'Não especificado' },
+    { value: 'full_time', label: 'Full-time' },
+    { value: 'part_time', label: 'Part-time' },
+    { value: 'contract', label: 'Contrato' }
+  ];
+
   constructor(
     private fb: FormBuilder,
     private recruiterService: RecruiterService,
@@ -46,6 +60,9 @@ export class VacancyFormComponent implements OnInit {
       type: ['', Validators.required],
       description: ['', [Validators.required, Validators.maxLength(500)]],
       application_url: ['', [Validators.required, Validators.pattern(/^https?:\/\/.+/)]],
+      region: [''],
+      work_mode: [''],
+      employment_type: [''],
       deadline: [null]
     });
   }
@@ -58,6 +75,9 @@ export class VacancyFormComponent implements OnInit {
         type: this.vacancy.type,
         description: this.vacancy.description,
         application_url: this.vacancy.application_url,
+        region: this.vacancy.region || '',
+        work_mode: this.vacancy.work_mode || '',
+        employment_type: this.vacancy.employment_type || '',
         deadline: this.vacancy.deadline ? new Date(this.vacancy.deadline) : null
       });
     }

@@ -35,6 +35,34 @@
       </mat-form-field>
     </div>
 
+    <div class="form-row split">
+      <mat-form-field appearance="outline">
+        <mat-label>Região</mat-label>
+        <input matInput formControlName="region" placeholder="Ex: Porto, Portugal">
+        <mat-icon matPrefix>location_on</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Modalidade</mat-label>
+        <mat-select formControlName="work_mode">
+          <mat-option *ngFor="let wm of workModes" [value]="wm.value">
+            {{ wm.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" style="max-width: 300px;">
+        <mat-label>Tipo de Contrato</mat-label>
+        <mat-select formControlName="employment_type">
+          <mat-option *ngFor="let et of employmentTypes" [value]="et.value">
+            {{ et.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
     <div class="skills-section">
       <h2><mat-icon>build</mat-icon> Competências</h2>
       <p class="text-soft">As competências necessárias para esta vaga.</p>
