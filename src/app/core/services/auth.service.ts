@@ -202,7 +202,7 @@ export class AuthService {
 
   /** Prefetch and cache user profile */
   prefetchUserProfile(api: ApiService): void {
-    if (!this.getToken()) {
+    if (!this.getToken() || this.isRecruiter) {
       this._user$.next(null);
       return;
     }

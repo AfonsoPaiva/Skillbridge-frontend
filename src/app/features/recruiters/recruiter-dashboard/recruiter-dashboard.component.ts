@@ -21,6 +21,7 @@ export class RecruiterDashboardComponent implements OnInit {
   renewVacancyId: string | null = null;
   companyUrlForm: string = '';
   brandfetchUrl: string = '';
+  logoError: boolean = false;
 
   readonly vacancyTypeLabels: Record<string, string> = {
     'summer_internship': 'Estágio de Verão',
@@ -145,6 +146,7 @@ export class RecruiterDashboardComponent implements OnInit {
   editCompany(): void {
     this.companyUrlForm = this.recruiter?.company_url || '';
     this.brandfetchUrl = this.recruiter?.logo_url || '';
+    this.logoError = false;
     this.showCompanyForm = true;
     this.showForm = false;
   }
@@ -157,12 +159,17 @@ export class RecruiterDashboardComponent implements OnInit {
     try {
       const url = new URL(this.companyUrlForm.startsWith('http') ? this.companyUrlForm : `https://${this.companyUrlForm}`);
       const domain = url.hostname.replace(/^www\./, '');
-      const clientId = environment.brandfetchClientId;
-      this.brandfetchUrl = `https://asset.brandfetch.io/${domain}/logo?c=${clientId}`;
-      this.snackBar.open('Logótipo obtido do Brandfetch!', 'OK');
+      this.brandfetchUrl = `https://logo.clearbit.com/${domain}`;
+      this.logoError = false;
+      this.snackBar.open('Logótipo obtido com sucesso!', 'OK');
     } catch (e) {
       this.snackBar.open('URL inválido.', 'OK');
     }
+  }
+
+  onLogoError(): void {
+    this.logoError = true;
+    this.brandfetchUrl = '';
   }
 
   saveCompany(): void {
