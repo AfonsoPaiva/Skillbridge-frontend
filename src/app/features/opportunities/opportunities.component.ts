@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { RecruiterService } from '../../core/services/recruiter.service';
 import { AuthService } from '../../core/services/auth.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -54,7 +55,8 @@ export class OpportunitiesComponent implements OnInit {
   constructor(
     public auth: AuthService,
     private recruiterService: RecruiterService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -104,15 +106,15 @@ export class OpportunitiesComponent implements OnInit {
     return opt ? opt.label : type;
   }
 
-  async applyToVacancy(vacancy: Vacancy): Promise<void> {
+  async viewDetails(vacancyId: string): Promise<void> {
     if (!this.auth.isLoggedIn) {
-      const { LoginComponent } = await import('../../features/onboarding/login/login.component');
-      this.dialog.open(LoginComponent, { ...DIALOG_CONFIG, width: '420px' });
+      const { OnboardingComponent } = await import('../../features/onboarding/onboarding.component');
+      this.dialog.open(OnboardingComponent, { ...DIALOG_CONFIG });
       return;
     }
 
-    // Is logged in, proceed to application URL in new tab
-    window.open(vacancy.application_url, '_blank');
+    // Is logged in, proceed to details page
+    this.router.navigate(['/oportunidades', vacancyId]);
   }
 
   getInitials(companyName: string | undefined): string {

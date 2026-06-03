@@ -40,28 +40,31 @@
 
     <!-- List -->
     <div class="grid" *ngIf="!loading && filtered.length > 0" [@list]="filtered.length">
-      <mat-card class="pcard" *ngFor="let v of filtered" [routerLink]="['/opportunities', v.id]" style="cursor: pointer;">
-        <div class="pcard__img">
-          <!-- Logo in top-left square -->
-          <div class="company-logo-square">
-            <img *ngIf="v.recruiter?.logo_url" [src]="v.recruiter?.logo_url" alt="{{ v.recruiter?.company_name }} logo">
-            <div *ngIf="!v.recruiter?.logo_url" class="initials">{{ getInitials(v.recruiter?.company_name) }}</div>
+      <mat-card class="vcard" *ngFor="let v of filtered" (click)="viewDetails(v.id)" style="cursor: pointer;">
+        <mat-card-content class="vcard__body">
+          <div class="vcard__header">
+            <div class="company-logo-square">
+              <img *ngIf="v.recruiter?.logo_url" [src]="v.recruiter?.logo_url" alt="{{ v.recruiter?.company_name }} logo">
+              <div *ngIf="!v.recruiter?.logo_url" class="initials">{{ getInitials(v.recruiter?.company_name) }}</div>
+            </div>
+            <div class="header-info">
+              <h3 [attr.title]="v.title">{{ v.title }}</h3>
+              <p class="company-name">{{ v.recruiter?.company_name }}</p>
+            </div>
           </div>
-          <span class="pcard__badge" data-status="open">{{ getTypeLabel(v.type) }}</span>
-        </div>
-
-        <mat-card-content class="pcard__body">
-          <h3 [attr.title]="v.title">{{ v.title }}</h3>
-          <p class="company-name">{{ v.recruiter?.company_name }}</p>
+          
           <p class="description" [attr.title]="v.description">{{ v.description }}</p>
 
-          <div class="pcard__skills">
-            <span class="chip chip--card-skill" *ngFor="let tag of v.tags.slice(0, 3)">
-              {{ tag }}
-            </span>
-            <span class="chip chip--card-skill" *ngIf="v.tags.length > 3">
-              +{{ v.tags.length - 3 }}
-            </span>
+          <div class="vcard__footer">
+            <div class="vcard__skills">
+              <span class="chip chip--card-skill" *ngFor="let tag of v.tags.slice(0, 3)">
+                {{ tag }}
+              </span>
+              <span class="chip chip--card-skill" *ngIf="v.tags.length > 3">
+                +{{ v.tags.length - 3 }}
+              </span>
+            </div>
+            <span class="vcard__badge" data-status="open">{{ getTypeLabel(v.type) }}</span>
           </div>
         </mat-card-content>
       </mat-card>
