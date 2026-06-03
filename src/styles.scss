@@ -84,6 +84,7 @@ $skillbridge-theme: mat.define-light-theme((
   density: 0
 ));
 
+@include mat.core();
 @include mat.all-component-themes($skillbridge-theme);
 @include mat.all-component-typographies($skillbridge-theme);
 
@@ -92,6 +93,22 @@ $skillbridge-theme: mat.define-light-theme((
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+// Ensure CDK visually hidden is always present
+.cdk-visually-hidden {
+  border: 0 !important;
+  clip: rect(0 0 0 0) !important;
+  height: 1px !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  position: absolute !important;
+  width: 1px !important;
+  white-space: nowrap !important;
+  outline: 0 !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
 }
 
 html {
@@ -967,6 +984,19 @@ body {
   background: v.$color-surface !important;
   border-radius: v.$radius-md !important;
   box-shadow: v.$shadow-lg !important;
+  
+  .mat-calendar {
+    width: 320px !important;
+  }
+
+  .mat-calendar-body-selected {
+    background-color: v.$color-primary !important;
+    color: white !important;
+  }
+
+  .mat-calendar-body-today:not(.mat-calendar-body-selected) {
+    border-color: v.$color-primary !important;
+  }
 }
 
 // ── Table ─────────────────────────────────────────────────
