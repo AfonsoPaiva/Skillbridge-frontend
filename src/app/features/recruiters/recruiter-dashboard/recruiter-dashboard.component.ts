@@ -162,6 +162,10 @@ export class RecruiterDashboardComponent implements OnInit {
         if (this.recruiter) {
           // Fallback to local value if backend hasn't been updated yet to return it
           this.recruiter.company_url = res.company_url || this.companyUrlForm;
+          if (res.logo_url) {
+            this.recruiter.logo_url = res.logo_url;
+            this.logoError = false;
+          }
         }
         this.snackBar.open('Perfil atualizado com sucesso.', 'OK');
         this.showCompanyForm = false;

@@ -34,36 +34,36 @@
   gap: v.$space-4;
 }
 
+.logo-preview {
+  width: 80px;
+  height: 80px;
+  background: #eee;
+  border-radius: v.$radius-md;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .initials {
+    font-size: 24px;
+    font-weight: v.$font-weight-bold;
+    color: #666;
+  }
+}
+
 .company-logo-section {
   display: flex;
   align-items: center;
   gap: v.$space-4;
   flex: 1 1 100%;
   margin-bottom: v.$space-2;
-
-  .logo-preview {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, v.$color-primary 0%, #00d4ff 100%);
-    border-radius: v.$radius-md;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: v.$shadow-sm;
-
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: v.$radius-md;
-    }
-
-    .initials {
-      font-size: 2rem;
-      font-weight: v.$font-weight-extrabold;
-      color: white;
-    }
-  }
 
   .logo-actions {
     h3 {
