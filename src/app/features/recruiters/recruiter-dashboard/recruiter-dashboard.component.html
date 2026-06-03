@@ -12,14 +12,14 @@
         
         <div class="dashboard-header__company-info" style="display: flex; align-items: center; gap: 20px;">
           <div class="logo-preview" style="width: 80px; height: 80px; border-radius: 8px; overflow: hidden; background: #eee; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-            <img *ngIf="recruiter?.logo_url && !logoError" [src]="recruiter?.logo_url" alt="Logo da Empresa" style="width: 100%; height: 100%; object-fit: contain;" (error)="onLogoError()">
-            <div *ngIf="!recruiter?.logo_url || logoError" class="initials" style="font-size: 24px; font-weight: bold; color: #666;">{{ getInitials(recruiter?.company_name) }}</div>
+            <img *ngIf="recruiter.logo_url && !logoError" [src]="recruiter.logo_url" alt="Logo da Empresa" style="width: 100%; height: 100%; object-fit: contain;" (error)="onLogoError()">
+            <div *ngIf="!recruiter.logo_url || logoError" class="initials" style="font-size: 24px; font-weight: bold; color: #666;">{{ getInitials(recruiter.company_name) }}</div>
           </div>
           <div class="dashboard-header__info">
             <h1>Dashboard de Recrutamento</h1>
-            <p>{{ recruiter?.company_name }} &bull; {{ recruiter?.full_name }}</p>
-            <p *ngIf="recruiter?.company_url" style="font-size: 0.9em; opacity: 0.8; margin-top: 4px;">
-              <a [href]="recruiter?.company_url" target="_blank" style="color: inherit; text-decoration: underline;">{{ recruiter?.company_url }}</a>
+            <p>{{ recruiter.company_name }} &bull; {{ recruiter.full_name }}</p>
+            <p *ngIf="recruiter.company_url" style="font-size: 0.9em; opacity: 0.8; margin-top: 4px;">
+              <a [href]="recruiter.company_url" target="_blank" style="color: inherit; text-decoration: underline;">{{ recruiter.company_url }}</a>
             </p>
           </div>
         </div>
@@ -48,8 +48,8 @@
           <mat-card-content style="padding-top: 20px;">
             <div class="company-logo-section" style="margin-bottom: 30px;">
               <div class="logo-preview">
-                <img *ngIf="(brandfetchUrl || recruiter?.logo_url) && !logoError" [src]="brandfetchUrl || recruiter?.logo_url" alt="Logo da Empresa" (error)="onLogoError()">
-                <div *ngIf="!(brandfetchUrl || recruiter?.logo_url) || logoError" class="initials">{{ getInitials(recruiter?.company_name) }}</div>
+                <img *ngIf="(brandfetchUrl || recruiter.logo_url) && !logoError" [src]="brandfetchUrl || recruiter.logo_url" alt="Logo da Empresa" (error)="onLogoError()">
+                <div *ngIf="!(brandfetchUrl || recruiter.logo_url) || logoError" class="initials">{{ getInitials(recruiter.company_name) }}</div>
               </div>
               <div class="logo-actions">
                 <h3>Logótipo da Empresa</h3>

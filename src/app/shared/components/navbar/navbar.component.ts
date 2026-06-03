@@ -51,7 +51,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.auth.currentUser$.subscribe(u => {
       this.isLoggedIn = !!u;
-      if (this.isLoggedIn && !u.recruiterId) {
+      if (this.isLoggedIn && !u?.recruiterId) {
         this.startUnreadPolling();
       } else {
         this.stopUnreadPolling();
