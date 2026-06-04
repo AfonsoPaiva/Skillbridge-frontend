@@ -125,8 +125,8 @@
       }
 
       &.deadline-badge {
-        background: rgba(v.$color-accent, 0.1);
-        color: darken(v.$color-accent, 10%);
+        background: rgba(v.$color-primary, 0.1);
+        color: v.$color-primary;
         border: none;
       }
     }
