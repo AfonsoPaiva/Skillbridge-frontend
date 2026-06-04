@@ -40,7 +40,18 @@
           </button>
         </mat-menu>
       </ng-container>
-      <ng-container *ngIf="!isRegularUser">
+      <ng-container *ngIf="isLoggedIn && !isRegularUser">
+        <a routerLink="/recruiter-dashboard" routerLinkActive="active" mat-button>Dashboard</a>
+        <button mat-icon-button [matMenuTriggerFor]="recruiterMenu" class="avatar-btn">
+          <mat-icon>business</mat-icon>
+        </button>
+        <mat-menu #recruiterMenu="matMenu">
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon> Sair
+          </button>
+        </mat-menu>
+      </ng-container>
+      <ng-container *ngIf="!isLoggedIn">
         <button mat-stroked-button color="primary" (click)="openLogin()">Entrar</button>
         <button mat-raised-button color="primary" (click)="openOnboarding()">Registar</button>
       </ng-container>
@@ -65,7 +76,11 @@
       <a routerLink="/perfil/eu" mat-button>O meu perfil</a>
       <button mat-button color="warn" (click)="logout()">Sair</button>
     </ng-container>
-    <ng-container *ngIf="!isRegularUser">
+    <ng-container *ngIf="isLoggedIn && !isRegularUser">
+      <a routerLink="/recruiter-dashboard" mat-button>Dashboard</a>
+      <button mat-button color="warn" (click)="logout()">Sair</button>
+    </ng-container>
+    <ng-container *ngIf="!isLoggedIn">
       <button mat-stroked-button color="primary" (click)="openLogin()">Entrar</button>
       <button mat-raised-button color="primary" (click)="openOnboarding()">Registar</button>
     </ng-container>
