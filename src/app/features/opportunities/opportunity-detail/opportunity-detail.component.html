@@ -26,7 +26,13 @@
         <div class="header-info">
           <h1>{{ vacancy.title }}</h1>
           <p class="company-name">{{ vacancy.recruiter?.company_name }}</p>
-          <span class="badge">{{ getTypeLabel(vacancy.type) }}</span>
+          <div class="metadata-badges">
+            <span class="badge type-badge">{{ getTypeLabel(vacancy.type) }}</span>
+            <span class="badge meta-badge" *ngIf="vacancy.region"><mat-icon>location_on</mat-icon> {{ vacancy.region }}</span>
+            <span class="badge meta-badge" *ngIf="vacancy.work_mode"><mat-icon>{{ getWorkModeIcon(vacancy.work_mode) }}</mat-icon> {{ getWorkModeLabel(vacancy.work_mode) }}</span>
+            <span class="badge meta-badge" *ngIf="vacancy.employment_type"><mat-icon>schedule</mat-icon> {{ getEmploymentTypeLabel(vacancy.employment_type) }}</span>
+            <span class="badge meta-badge deadline-badge" *ngIf="vacancy.deadline"><mat-icon>event</mat-icon> Até {{ vacancy.deadline | date:'dd/MM/yyyy' }}</span>
+          </div>
         </div>
       </div>
 

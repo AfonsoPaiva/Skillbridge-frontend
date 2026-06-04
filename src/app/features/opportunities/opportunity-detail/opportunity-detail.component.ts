@@ -91,6 +91,36 @@ export class OpportunityDetailComponent implements OnInit {
     return map[type] || type;
   }
 
+  getWorkModeLabel(mode: string | undefined): string {
+    if (!mode) return '';
+    const map: any = {
+      'hybrid': 'Híbrido',
+      'remote': 'Remoto',
+      'onsite': 'Presencial'
+    };
+    return map[mode] || mode;
+  }
+
+  getWorkModeIcon(mode: string | undefined): string {
+    if (!mode) return 'work';
+    const map: any = {
+      'hybrid': 'swap_horiz',
+      'remote': 'home_work',
+      'onsite': 'business'
+    };
+    return map[mode] || 'work';
+  }
+
+  getEmploymentTypeLabel(type: string | undefined): string {
+    if (!type) return '';
+    const map: any = {
+      'full_time': 'Full-time',
+      'part_time': 'Part-time',
+      'contract': 'Contrato'
+    };
+    return map[type] || type;
+  }
+
   async applyToVacancy(): Promise<void> {
     if (!this.vacancy) return;
     

@@ -88,14 +88,47 @@
       }
     }
 
+    .metadata-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: v.$space-2;
+      align-items: center;
+
+      @include m.sm {
+        justify-content: center;
+      }
+    }
+
     .badge {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
       font-size: 0.85rem;
       font-weight: v.$font-weight-semibold;
       padding: 4px 12px;
       border-radius: 999px;
       background: rgba(v.$color-secondary, 0.1);
       color: darken(v.$color-secondary, 10%);
+
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+      }
+
+      &.meta-badge {
+        background: v.$color-bg;
+        color: v.$color-text-soft;
+        border: 1px solid v.$color-border;
+        font-weight: v.$font-weight-medium;
+      }
+
+      &.deadline-badge {
+        background: rgba(v.$color-accent, 0.1);
+        color: darken(v.$color-accent, 10%);
+        border: none;
+      }
     }
   }
 }
