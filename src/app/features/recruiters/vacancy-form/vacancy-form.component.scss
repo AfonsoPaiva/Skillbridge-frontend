@@ -24,7 +24,7 @@
 .vacancy-form {
   display: flex;
   flex-direction: column;
-  gap: v.$space-4;
+  gap: v.$space-6;
 }
 
 .form-row {
@@ -34,7 +34,7 @@
 .split {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: v.$space-4;
+  gap: v.$space-6;
 }
 
 .full-width {

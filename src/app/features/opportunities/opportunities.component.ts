@@ -44,6 +44,9 @@ export class OpportunitiesComponent implements OnInit {
   loading = true;
   search = '';
   typeFilter = 'all';
+  regionFilter = '';
+  workModeFilter = 'all';
+  employmentTypeFilter = 'all';
 
   readonly typeOptions = [
     { value: 'all', label: 'Todas as Vagas' },
@@ -91,6 +94,19 @@ export class OpportunitiesComponent implements OnInit {
 
     if (this.typeFilter !== 'all') {
       result = result.filter(v => v.type === this.typeFilter);
+    }
+    
+    if (this.regionFilter) {
+      const lowerRegion = this.regionFilter.toLowerCase();
+      result = result.filter(v => v.region && v.region.toLowerCase().includes(lowerRegion));
+    }
+    
+    if (this.workModeFilter !== 'all') {
+      result = result.filter(v => v.work_mode === this.workModeFilter);
+    }
+    
+    if (this.employmentTypeFilter !== 'all') {
+      result = result.filter(v => v.employment_type === this.employmentTypeFilter);
     }
 
     this.filtered = result;

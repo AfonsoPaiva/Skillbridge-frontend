@@ -10,11 +10,36 @@
 
     <!-- Filters -->
     <div class="filters" @fadeUp>
-      <mat-form-field appearance="outline" class="search-field">
+      <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
         <mat-label>Pesquisar vagas</mat-label>
         <input matInput [(ngModel)]="search" (ngModelChange)="applyFilters()" placeholder="Título, descrição ou tags..."
           autocomplete="off" maxlength="100">
         <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+        <mat-label>Localidade</mat-label>
+        <input matInput [(ngModel)]="regionFilter" (ngModelChange)="applyFilters()" placeholder="Ex: Porto, Lisboa">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+        <mat-label>Modalidade</mat-label>
+        <mat-select [(ngModel)]="workModeFilter" (ngModelChange)="applyFilters()">
+          <mat-option value="all">Todas</mat-option>
+          <mat-option value="remote">Remoto</mat-option>
+          <mat-option value="hybrid">Híbrido</mat-option>
+          <mat-option value="onsite">Presencial</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+        <mat-label>Tipo de Contrato</mat-label>
+        <mat-select [(ngModel)]="employmentTypeFilter" (ngModelChange)="applyFilters()">
+          <mat-option value="all">Todos</mat-option>
+          <mat-option value="full_time">Full-time</mat-option>
+          <mat-option value="part_time">Part-time</mat-option>
+          <mat-option value="contract">Contrato</mat-option>
+        </mat-select>
       </mat-form-field>
 
       <div class="status-btns">

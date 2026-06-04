@@ -58,7 +58,7 @@ export class VacancyFormComponent implements OnInit {
     this.form = this.fb.group({
       title: ['', [Validators.required, Validators.maxLength(100)]],
       type: ['', Validators.required],
-      description: ['', [Validators.required, Validators.maxLength(500)]],
+      description: ['', [Validators.required]],
       application_url: ['', [Validators.required, Validators.pattern(/^https?:\/\/.+/)]],
       region: [''],
       work_mode: [''],

@@ -149,12 +149,20 @@
   
   mat-card-header {
     margin-bottom: v.$space-4;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: v.$space-3;
+  }
+
+  mat-card-title {
+    word-break: break-word;
+    white-space: normal;
+    line-height: 1.4;
   }
   
   .status-badge {
-    position: absolute;
-    top: v.$space-4;
-    right: v.$space-4;
+    flex-shrink: 0;
     font-size: 12px;
     font-weight: v.$font-weight-semibold;
     padding: 4px 8px;

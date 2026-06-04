@@ -33,9 +33,11 @@
   margin-bottom: v.$space-8;
 
   .search-field {
-    flex: 1;
-    min-width: 200px;
-    max-width: 360px;
+    flex: 1 1 300px;
+  }
+
+  .filter-field {
+    flex: 1 1 150px;
   }
 }
 
@@ -43,6 +45,7 @@
   display: flex;
   gap: v.$space-2;
   flex-wrap: wrap;
+  width: 100%;
 
   button.active {
     background: lighten(v.$color-primary, 40%);
