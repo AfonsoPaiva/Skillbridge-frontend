@@ -22,6 +22,7 @@ const DIALOG_CONFIG = {
 })
 export class NavbarComponent implements OnInit, OnDestroy {
   isLoggedIn = false;
+  isRegularUser = false;
   menuOpen = false;
   scrolled = false;
   isLandingPage = false;
@@ -56,7 +57,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
     this.auth.currentUser$.subscribe(u => {
       this.isLoggedIn = !!u;
-      if (this.isLoggedIn && !u?.recruiterId) {
+      this.isRegularUser = !!u && !u.recruiterId;
+      if (this.isRegularUser) {
         this.startUnreadPolling();
       } else {
         this.stopUnreadPolling();
@@ -71,7 +73,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
       this.isLandingPage = currentUrl.includes('/landing') || currentUrl === '/';
       if (!this.isLandingPage) this.heroScrolled = false;
 
-      if (this.isLoggedIn) {
+      if (this.isRegularUser) {
         if (url.includes('/messages')) {
           // User entered the messages page — clear badge immediately
           // (the conversation component calls markRead when messages load)

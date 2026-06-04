@@ -20,7 +20,7 @@
     <nav class="navbar__links">
       <a routerLink="/projects" routerLinkActive="active" mat-button>Projetos</a>
       <a routerLink="/oportunidades" routerLinkActive="active" mat-button>Oportunidades</a>
-      <ng-container *ngIf="isLoggedIn">
+      <ng-container *ngIf="isRegularUser">
         <a routerLink="/dashboard" routerLinkActive="active" mat-button>Dashboard</a>
         <a routerLink="/messages" mat-icon-button matTooltip="Mensagens" class="messages-btn">
           <span class="messages-icon-badge" [matBadge]="unreadCount > 0 ? unreadCount : null" [matBadgeHidden]="unreadCount <= 0" matBadgeColor="warn" matBadgeSize="small">
@@ -40,7 +40,7 @@
           </button>
         </mat-menu>
       </ng-container>
-      <ng-container *ngIf="!isLoggedIn">
+      <ng-container *ngIf="!isRegularUser">
         <button mat-stroked-button color="primary" (click)="openLogin()">Entrar</button>
         <button mat-raised-button color="primary" (click)="openOnboarding()">Registar</button>
       </ng-container>
@@ -56,7 +56,7 @@
   <div class="navbar__mobile" [class.open]="menuOpen" (click)="menuOpen=false">
     <a routerLink="/projects" mat-button>Projetos</a>
     <a routerLink="/oportunidades" mat-button>Oportunidades</a>
-    <ng-container *ngIf="isLoggedIn">
+    <ng-container *ngIf="isRegularUser">
       <a routerLink="/dashboard" mat-button>Dashboard</a>
       <a routerLink="/messages" mat-button>
         Mensagens
@@ -65,7 +65,7 @@
       <a routerLink="/perfil/eu" mat-button>O meu perfil</a>
       <button mat-button color="warn" (click)="logout()">Sair</button>
     </ng-container>
-    <ng-container *ngIf="!isLoggedIn">
+    <ng-container *ngIf="!isRegularUser">
       <button mat-stroked-button color="primary" (click)="openLogin()">Entrar</button>
       <button mat-raised-button color="primary" (click)="openOnboarding()">Registar</button>
     </ng-container>
