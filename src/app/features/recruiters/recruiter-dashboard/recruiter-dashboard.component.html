@@ -7,7 +7,10 @@
 
   <ng-container *ngIf="!loading && recruiter">
     <!-- Header -->
-    <div class="dashboard-header">
+    <div class="dashboard-header" style="position: relative;">
+      <button mat-icon-button color="warn" (click)="logout()" style="position: absolute; top: 16px; right: 16px;" title="Sair">
+        <mat-icon>logout</mat-icon>
+      </button>
       <div class="dashboard-header__content">
         
         <div class="dashboard-header__company-info" style="display: flex; align-items: center; gap: 20px;">
@@ -27,9 +30,6 @@
         <div class="dashboard-header__actions">
           <button mat-stroked-button (click)="editCompany()" *ngIf="!showCompanyForm && !showForm && !showAutoImport">
             <mat-icon>edit</mat-icon> Editar Empresa
-          </button>
-          <button mat-stroked-button (click)="logout()">
-            <mat-icon>logout</mat-icon> Sair
           </button>
           <button mat-stroked-button color="accent" (click)="openAutoImport()" *ngIf="!showForm && !showCompanyForm && !showAutoImport">
             <mat-icon>auto_awesome</mat-icon> Importar Vagas
@@ -98,16 +98,22 @@
               localizadas em <strong>Portugal</strong> e importá-las automaticamente.
             </p>
 
+            <div style="margin-bottom: 16px; padding: 12px; background: rgba(0,0,0,0.02); border-radius: 8px;">
+              <mat-checkbox [(ngModel)]="termsAccepted" color="primary">
+                Confirmo que li os <a href="https://skillbridge.pt/politicas-e-privacidade" target="_blank" style="text-decoration: underline; font-weight: 500;">termos e serviços</a> e concordo com as condições legais de extração automatizada (scraping).
+              </mat-checkbox>
+            </div>
+
             <div class="import-url-row">
               <mat-form-field appearance="outline" style="flex: 1;">
                 <mat-label>URL da Página de Carreiras</mat-label>
                 <input matInput [(ngModel)]="scrapeUrl"
-                       placeholder="Ex: https://careers.criticalmanufacturing.com/#jobs"
+                       placeholder="Ex: https://website-exemplo.com/careers"
                        [disabled]="scraping">
                 <mat-icon matPrefix>link</mat-icon>
               </mat-form-field>
               <button mat-raised-button color="primary" (click)="scrapeVacancies()"
-                      [disabled]="!scrapeUrl || scraping"
+                      [disabled]="!scrapeUrl || scraping || !termsAccepted"
                       class="scrape-btn">
                 <mat-spinner diameter="18" *ngIf="scraping"></mat-spinner>
                 <mat-icon *ngIf="!scraping">search</mat-icon>

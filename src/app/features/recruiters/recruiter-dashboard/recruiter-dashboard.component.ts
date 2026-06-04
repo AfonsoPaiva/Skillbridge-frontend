@@ -28,6 +28,7 @@ export class RecruiterDashboardComponent implements OnInit {
   scrapeUrl: string = '';
   scraping = false;
   importing = false;
+  termsAccepted = false;
   scrapedJobs: ScrapedJob[] = [];
   scrapeMessage: string = '';
 

@@ -147,6 +147,10 @@
   flex-direction: column;
   position: relative;
   
+  mat-card-actions {
+    margin-top: auto;
+  }
+  
   mat-card-header {
     margin-bottom: v.$space-4;
     display: flex;
@@ -326,6 +330,10 @@
   mat-checkbox {
     margin-top: 2px;
     flex-shrink: 0;
+
+    ::ng-deep .mdc-checkbox__checkmark-path {
+      stroke: white !important;
+    }
   }
 }
 
