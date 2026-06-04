@@ -406,7 +406,7 @@
     background-color: rgba(v.$color-primary, 0.08);
     color: darken(v.$color-primary, 10%);
     padding: 4px 10px;
-    border-radius: v.$radius-full;
+    border-radius: 9999px;
     font-size: 13px;
     font-weight: v.$font-weight-medium;
     border: 1px solid rgba(v.$color-primary, 0.2);
