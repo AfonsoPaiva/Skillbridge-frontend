@@ -240,5 +240,7 @@ export interface ScrapedJob {
   work_mode: string;
   employment_type: string;
   selected?: boolean; // frontend-only: whether the user selected this job for import
+  tags?: string[]; // frontend-only: tags to add to the vacancy
+  tempTag?: string; // frontend-only: temporary tag input value
 }
 

@@ -322,6 +322,20 @@ export class RecruiterDashboardComponent implements OnInit {
     this.scrapedJobs.forEach(j => j.selected = selected);
   }
 
+  addTagToScrapedJob(job: ScrapedJob): void {
+    if (!job.tags) job.tags = [];
+    const newTag = (job.tempTag || '').trim();
+    if (newTag && !job.tags.includes(newTag)) {
+      job.tags.push(newTag);
+    }
+    job.tempTag = '';
+  }
+
+  removeTagFromScrapedJob(job: ScrapedJob, tag: string): void {
+    if (!job.tags) return;
+    job.tags = job.tags.filter(t => t !== tag);
+  }
+
   getSelectedScrapedCount(): number {
     return this.scrapedJobs.filter(j => j.selected).length;
   }
@@ -335,7 +349,7 @@ export class RecruiterDashboardComponent implements OnInit {
       this.recruiterService.createVacancy({
         title: job.title,
         type: job.type,
-        tags: [],
+        tags: job.tags || [],
         description: job.description || 'Importado automaticamente.',
         application_url: job.application_url,
         region: job.region,

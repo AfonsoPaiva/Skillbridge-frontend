@@ -148,6 +148,24 @@
                       </span>
                     </div>
                     <p class="scraped-job__desc" *ngIf="job.description">{{ job.description | slice:0:150 }}{{ job.description.length > 150 ? '...' : '' }}</p>
+                    
+                    <!-- Inline Tag Input -->
+                    <div class="scraped-job__tags-section" *ngIf="job.selected" (click)="$event.stopPropagation()">
+                      <div class="tags-list">
+                        <span class="skill-chip" *ngFor="let tag of job.tags || []">
+                          {{ tag }}
+                          <mat-icon (click)="removeTagFromScrapedJob(job, tag)">close</mat-icon>
+                        </span>
+                      </div>
+                      <div class="tag-input-row">
+                        <input type="text" placeholder="Adicionar competência (ex: Angular)..." 
+                               [(ngModel)]="job.tempTag" 
+                               (keyup.enter)="addTagToScrapedJob(job)">
+                        <button mat-icon-button color="primary" (click)="addTagToScrapedJob(job)" [disabled]="!job.tempTag">
+                          <mat-icon>add</mat-icon>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
