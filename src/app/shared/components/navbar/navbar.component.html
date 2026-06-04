@@ -41,7 +41,7 @@
         </mat-menu>
       </ng-container>
       <ng-container *ngIf="isLoggedIn && !isRegularUser">
-        <a routerLink="/recruiter-dashboard" routerLinkActive="active" mat-button>Dashboard</a>
+        <a routerLink="/recrutadores/dashboard" routerLinkActive="active" mat-button>Dashboard</a>
         <button mat-icon-button [matMenuTriggerFor]="recruiterMenu" class="avatar-btn">
           <mat-icon>business</mat-icon>
         </button>
@@ -77,7 +77,7 @@
       <button mat-button color="warn" (click)="logout()">Sair</button>
     </ng-container>
     <ng-container *ngIf="isLoggedIn && !isRegularUser">
-      <a routerLink="/recruiter-dashboard" mat-button>Dashboard</a>
+      <a routerLink="/recrutadores/dashboard" mat-button>Dashboard</a>
       <button mat-button color="warn" (click)="logout()">Sair</button>
     </ng-container>
     <ng-container *ngIf="!isLoggedIn">

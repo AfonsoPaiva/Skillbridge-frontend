@@ -226,7 +226,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
   async openOnboarding(): Promise<void> {
     if (this.auth.isLoggedIn) {
       if (this.auth.isRecruiter) {
-        this.router.navigate(['/recruiter-dashboard']);
+        this.router.navigate(['/recrutadores/dashboard']);
       } else {
         this.router.navigate(['/dashboard']);
       }
