@@ -86,6 +86,7 @@ export class OpportunityDetailComponent implements OnInit {
     const map: any = {
       'summer_internship': 'Estágio de Verão',
       'curricular_internship': 'Estágio Curricular',
+      'extracurricular_internship': 'Estágio Extracurricular',
       'junior_position': 'Posição Junior'
     };
     return map[type] || type;

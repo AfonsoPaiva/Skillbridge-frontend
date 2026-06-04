@@ -34,6 +34,7 @@ export class RecruiterDashboardComponent implements OnInit {
   readonly vacancyTypeLabels: Record<string, string> = {
     'summer_internship': 'Estágio de Verão',
     'curricular_internship': 'Estágio Curricular',
+    'extracurricular_internship': 'Estágio Extracurricular',
     'junior_position': 'Posição Junior'
   };
 

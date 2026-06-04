@@ -177,6 +177,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const map: Record<string, string> = {
       summer_internship: 'Estágio de Verão',
       curricular_internship: 'Estágio Curricular',
+      extracurricular_internship: 'Estágio Extracurricular',
       junior_position: 'Posição Junior'
     };
     return map[type] || type;

@@ -52,6 +52,7 @@ export class OpportunitiesComponent implements OnInit {
     { value: 'all', label: 'Todas as Vagas' },
     { value: 'summer_internship', label: 'Estágio de Verão' },
     { value: 'curricular_internship', label: 'Estágio Curricular' },
+    { value: 'extracurricular_internship', label: 'Estágio Extracurricular' },
     { value: 'junior_position', label: 'Posição Junior' }
   ];
 
