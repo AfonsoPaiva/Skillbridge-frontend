@@ -28,6 +28,7 @@ export class RecruiterDashboardComponent implements OnInit {
   scrapeUrl: string = '';
   scraping = false;
   importing = false;
+  activeTabIndex = 0;
   termsAccepted = false;
   scrapedJobs: ScrapedJob[] = [];
   scrapeMessage: string = '';
@@ -289,6 +290,7 @@ export class RecruiterDashboardComponent implements OnInit {
     this.scrapedJobs = [];
     this.scrapeMessage = '';
     this.scrapeUrl = '';
+    this.activeTabIndex = 0;
   }
 
   scrapeVacancies(): void {
@@ -302,7 +304,8 @@ export class RecruiterDashboardComponent implements OnInit {
       next: (res) => {
         this.scraping = false;
         if (res.jobs && res.jobs.length > 0) {
-          this.scrapedJobs = res.jobs.map(j => ({ ...j, selected: true }));
+          this.scrapedJobs = res.jobs;
+          this.activeTabIndex = 0;
           this.scrapeMessage = '';
         } else {
           this.scrapedJobs = [];
@@ -316,12 +319,51 @@ export class RecruiterDashboardComponent implements OnInit {
     });
   }
 
-  toggleJobSelection(index: number): void {
-    this.scrapedJobs[index].selected = !this.scrapedJobs[index].selected;
+  confirmScrapedJob(index: number): void {
+    const job = this.scrapedJobs[index];
+    this.importing = true;
+    this.recruiterService.createVacancy({
+      title: job.title,
+      type: job.type,
+      tags: job.tags || [],
+      description: job.description || 'Importado automaticamente.',
+      application_url: job.application_url,
+      region: job.region,
+      work_mode: job.work_mode,
+      employment_type: job.employment_type
+    }).subscribe({
+      next: () => {
+        this.importing = false;
+        this.snackBar.open(`Vaga "${job.title}" importada com sucesso!`, 'OK', { duration: 3000 });
+        this.scrapedJobs.splice(index, 1);
+        
+        // Adjust tab index if needed
+        if (this.activeTabIndex >= this.scrapedJobs.length) {
+          this.activeTabIndex = Math.max(0, this.scrapedJobs.length - 1);
+        }
+
+        if (this.scrapedJobs.length === 0) {
+          this.showAutoImport = false;
+        }
+        this.loadData();
+      },
+      error: (err) => {
+        this.importing = false;
+        this.snackBar.open(err.error?.error || 'Erro ao importar vaga. Tenta novamente.', 'OK');
+      }
+    });
   }
 
-  selectAllScraped(selected: boolean): void {
-    this.scrapedJobs.forEach(j => j.selected = selected);
+  rejectScrapedJob(index: number): void {
+    this.scrapedJobs.splice(index, 1);
+    // Adjust tab index if needed
+    if (this.activeTabIndex >= this.scrapedJobs.length) {
+      this.activeTabIndex = Math.max(0, this.scrapedJobs.length - 1);
+    }
+    
+    if (this.scrapedJobs.length === 0) {
+      this.showAutoImport = false;
+    }
   }
 
   addTagToScrapedJob(job: ScrapedJob): void {
@@ -336,43 +378,6 @@ export class RecruiterDashboardComponent implements OnInit {
   removeTagFromScrapedJob(job: ScrapedJob, tag: string): void {
     if (!job.tags) return;
     job.tags = job.tags.filter(t => t !== tag);
-  }
-
-  getSelectedScrapedCount(): number {
-    return this.scrapedJobs.filter(j => j.selected).length;
-  }
-
-  importSelectedVacancies(): void {
-    const selected = this.scrapedJobs.filter(j => j.selected);
-    if (selected.length === 0) return;
-
-    this.importing = true;
-    const requests = selected.map(job =>
-      this.recruiterService.createVacancy({
-        title: job.title,
-        type: job.type,
-        tags: job.tags || [],
-        description: job.description || 'Importado automaticamente.',
-        application_url: job.application_url,
-        region: job.region,
-        work_mode: job.work_mode,
-        employment_type: job.employment_type
-      })
-    );
-
-    forkJoin(requests).subscribe({
-      next: () => {
-        this.importing = false;
-        this.snackBar.open(`${selected.length} vaga(s) importada(s) com sucesso!`, 'OK');
-        this.showAutoImport = false;
-        this.scrapedJobs = [];
-        this.loadData();
-      },
-      error: () => {
-        this.importing = false;
-        this.snackBar.open('Erro ao importar algumas vagas. Tenta novamente.', 'OK');
-      }
-    });
   }
 
   // --- Label helpers ---
