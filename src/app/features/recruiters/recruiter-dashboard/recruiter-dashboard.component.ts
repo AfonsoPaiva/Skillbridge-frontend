@@ -6,6 +6,11 @@ import { AuthService } from '../../../core/services/auth.service';
 import { Recruiter, Vacancy, ScrapedJob } from '../../../core/models/models';
 import { environment } from '../../../../environments/environment';
 import { forkJoin } from 'rxjs';
+import { FormControl } from '@angular/forms';
+import { ApiService } from '../../../core/services/api.service';
+import { SkillSection, SkillsListResponse } from '../../../core/models/models';
+import { sanitizeInput } from '../../../core/utils/search.utils';
+import { startWith, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-recruiter-dashboard',
@@ -33,6 +38,13 @@ export class RecruiterDashboardComponent implements OnInit {
   scrapedJobs: ScrapedJob[] = [];
   scrapeMessage: string = '';
 
+  // Skills
+  availableSkills: string[] = [];
+  availableSkillSections: SkillSection[] = [];
+  filteredSkillSections: SkillSection[] = [];
+  skillSearchControl = new FormControl('');
+  removingSkill = '';
+
   readonly vacancyTypeLabels: Record<string, string> = {
     'summer_internship': 'Estágio de Verão',
     'curricular_internship': 'Estágio Curricular',
@@ -44,12 +56,30 @@ export class RecruiterDashboardComponent implements OnInit {
     private recruiterService: RecruiterService,
     private auth: AuthService,
     private route: ActivatedRoute,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private api: ApiService
   ) {}
 
   ngOnInit(): void {
     this.renewVacancyId = this.route.snapshot.queryParamMap.get('renew');
     this.loadData();
+
+    // Load skills
+    this.api.listSkills().subscribe({ 
+      next: (res: SkillsListResponse) => {
+        this.availableSkills = res.skills || [];
+        this.availableSkillSections = res.sections || [];
+        this.updateFilteredSkillSections();
+      }
+    });
+
+    this.skillSearchControl.valueChanges.pipe(
+      startWith(''),
+      debounceTime(150),
+      distinctUntilChanged()
+    ).subscribe(() => {
+      this.updateFilteredSkillSections();
+    });
   }
 
   private loadData(): void {
@@ -366,18 +396,63 @@ export class RecruiterDashboardComponent implements OnInit {
     }
   }
 
-  addTagToScrapedJob(job: ScrapedJob): void {
+  addTagToScrapedJob(job: ScrapedJob, skillName?: string): void {
+    const rawSkill = (skillName ?? this.skillSearchControl.value ?? '').toString().trim();
+    const skill = this.resolveSkill(rawSkill);
+    if (!skill || (job.tags && job.tags.includes(skill))) return;
+
     if (!job.tags) job.tags = [];
-    const newTag = (job.tempTag || '').trim();
-    if (newTag && !job.tags.includes(newTag)) {
-      job.tags.push(newTag);
-    }
-    job.tempTag = '';
+    job.tags.push(skill);
+    this.skillSearchControl.setValue('', { emitEvent: false });
+    this.updateFilteredSkillSections();
   }
 
   removeTagFromScrapedJob(job: ScrapedJob, tag: string): void {
     if (!job.tags) return;
     job.tags = job.tags.filter(t => t !== tag);
+    this.updateFilteredSkillSections();
+  }
+
+  updateFilteredSkillSections(): void {
+    const query = sanitizeInput((this.skillSearchControl.value || '').toString()).toLowerCase();
+    const activeJob = this.scrapedJobs[this.activeTabIndex];
+    const currentTags = activeJob?.tags || [];
+
+    this.filteredSkillSections = this.availableSkillSections
+      .map(section => ({
+        ...section,
+        skills: section.skills.filter(skill => {
+          if (currentTags.includes(skill)) return false;
+          if (!query) return true;
+          return skill.toLowerCase().includes(query);
+        })
+      }))
+      .filter(section => section.skills.length > 0);
+  }
+
+  onTabChange(): void {
+    this.updateFilteredSkillSections();
+  }
+
+  trackBySectionLabel(_: number, section: SkillSection): string {
+    return section.label;
+  }
+
+  trackBySkill(_: number, skill: string): string {
+    return skill;
+  }
+
+  private resolveSkill(rawSkill: string): string {
+    if (!rawSkill) return '';
+    const exact = this.availableSkills.find(s => s === rawSkill);
+    if (exact) return exact;
+
+    const normalized = rawSkill.toLowerCase();
+    const caseInsensitive = this.availableSkills.find(s => s.toLowerCase() === normalized);
+    if (caseInsensitive) return caseInsensitive;
+
+    this.snackBar.open('Seleciona uma competência válida da lista.', 'Fechar', { duration: 3000 });
+    return '';
   }
 
   // --- Label helpers ---

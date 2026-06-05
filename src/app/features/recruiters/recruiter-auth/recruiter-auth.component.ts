@@ -103,7 +103,9 @@ export class RecruiterAuthComponent implements OnInit {
     } catch (err: any) {
       console.error('Recruiter auth error:', err);
 
-      if (err?.error?.expired) {
+      if (err?.code === 'auth/quota-exceeded' || err?.message?.includes('quota-exceeded')) {
+        this.error = 'O limite de tentativas de acesso foi excedido por segurança. Por favor, aguarde alguns minutos antes de tentar novamente.';
+      } else if (err?.error?.expired) {
         this.expired = true;
         this.error = 'Este link expirou. Solicite um novo link de acesso.';
       } else if (err?.status === 401) {
