@@ -123,6 +123,24 @@ export class OpportunitiesComponent implements OnInit {
     return opt ? opt.label : type;
   }
 
+  getWorkModeLabel(mode: string): string {
+    const labels: Record<string, string> = {
+      hybrid: 'Híbrido',
+      remote: 'Remoto',
+      onsite: 'Presencial'
+    };
+    return labels[mode] || mode;
+  }
+
+  getEmploymentTypeLabel(type: string): string {
+    const labels: Record<string, string> = {
+      full_time: 'Full-time',
+      part_time: 'Part-time',
+      contract: 'Contrato'
+    };
+    return labels[type] || type;
+  }
+
   async viewDetails(vacancyId: string): Promise<void> {
     if (!this.auth.isLoggedIn) {
       const { OnboardingComponent } = await import('../../features/onboarding/onboarding.component');

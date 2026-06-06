@@ -27,7 +27,7 @@
   gap: v.$space-6;
   padding: v.$space-8;
 
-  @include m.sm {
+  @media (max-width: v.$bp-sm) {
     flex-direction: column;
     align-items: flex-start;
     text-align: left;
@@ -45,7 +45,7 @@
     justify-content: center;
     box-shadow: v.$shadow-sm;
 
-    @include m.sm {
+    @media (max-width: v.$bp-sm) {
       width: 80px;
       height: 80px;
     }
@@ -63,7 +63,7 @@
       color: white;
       letter-spacing: 1px;
 
-      @include m.sm {
+      @media (max-width: v.$bp-sm) {
         font-size: 2rem;
       }
     }
@@ -83,7 +83,7 @@
       word-break: break-word;
       hyphens: auto;
 
-      @include m.sm {
+      @media (max-width: v.$bp-sm) {
         font-size: 1.5rem;
       }
     }
@@ -97,7 +97,7 @@
       align-items: center;
       gap: 6px;
 
-      @include m.sm {
+      @media (max-width: v.$bp-sm) {
         justify-content: flex-start;
       }
 
@@ -115,7 +115,7 @@
       margin-top: v.$space-2;
       align-items: center;
 
-      @include m.sm {
+      @media (max-width: v.$bp-sm) {
         justify-content: flex-start;
       }
     }
@@ -159,7 +159,7 @@
   flex-direction: column;
   gap: v.$space-8;
 
-  @include m.sm {
+  @media (max-width: v.$bp-sm) {
     padding: v.$space-4;
     gap: v.$space-6;
   }
@@ -202,7 +202,7 @@
   display: flex;
   justify-content: flex-end;
 
-  @include m.sm {
+  @media (max-width: v.$bp-sm) {
     justify-content: center;
     padding: v.$space-4;
   }
@@ -218,7 +218,7 @@
       margin-right: 8px;
     }
 
-    @include m.sm {
+    @media (max-width: v.$bp-sm) {
       width: 100%;
     }
   }

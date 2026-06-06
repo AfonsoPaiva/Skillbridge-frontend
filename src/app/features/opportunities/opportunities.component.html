@@ -90,12 +90,20 @@
               </span>
             </div>
             <div class="vcard__actions-right">
-              <span class="vcard__region" *ngIf="v.region" title="Região">
+              <span class="vcard__meta-chip" *ngIf="v.region" title="Região">
                 <mat-icon>location_on</mat-icon>
                 {{ v.region }}
               </span>
+              <span class="vcard__meta-chip" *ngIf="v.work_mode" title="Modalidade">
+                <mat-icon>apartment</mat-icon>
+                {{ getWorkModeLabel(v.work_mode) }}
+              </span>
+              <span class="vcard__meta-chip" *ngIf="v.employment_type" title="Tipo de Contrato">
+                <mat-icon>schedule</mat-icon>
+                {{ getEmploymentTypeLabel(v.employment_type) }}
+              </span>
               <span class="vcard__badge" data-status="open">{{ getTypeLabel(v.type) }}</span>
-              <span class="vcard__deadline" title="Data limite">
+              <span class="vcard__meta-chip" title="Data limite">
                 <mat-icon>event</mat-icon>
                 {{ (v.deadline || v.expires_at) | date:'dd/MM/yyyy' }}
               </span>
