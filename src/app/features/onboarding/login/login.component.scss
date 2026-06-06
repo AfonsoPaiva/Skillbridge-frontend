@@ -19,24 +19,19 @@
   }
 }
 
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
 mat-dialog-content {
-  max-height: calc(90dvh - 180px) !important;
+  flex: 1 1 auto;
+  max-height: none !important;
   overflow-x: hidden;
   overflow-y: auto !important;
-}
-
-@media (max-width: 768px) {
-  mat-dialog-content {
-    max-height: calc(100dvh - 200px) !important;
-    overflow-y: auto !important;
-  }
-}
-
-@media (max-height: 700px) {
-  mat-dialog-content {
-    max-height: calc(90dvh - 140px) !important;
-    overflow-y: auto !important;
-  }
+  padding-bottom: 24px;
 }
 
 // ── Slide-in animation ─────────────────────────────────
@@ -84,29 +79,9 @@ mat-dialog-content {
   }
 }
 
-mat-dialog-content {
-  // Use calc so the actions bar always has room at the bottom.
-  // Subtracts: logo header (~130px) + Material dialog title padding + bottom actions.
-  max-height: calc(90vh - 180px) !important;
-  overflow-x: hidden;
-  overflow-y: auto !important;
-}
-
 @media (max-width: 768px) {
-  mat-dialog-content {
-    max-height: calc(100vh - 200px) !important;
-    overflow-y: auto !important;
-  }
-
   .social-buttons {
     flex-direction: column;
-  }
-}
-
-@media (max-height: 700px) {
-  mat-dialog-content {
-    max-height: calc(90vh - 140px) !important;
-    overflow-y: auto !important;
   }
 }
 
@@ -121,6 +96,14 @@ mat-dialog-content {
     width: 150px;
     height: auto;
     display: block;
+    transition: width 0.2s ease;
+
+    @media (max-height: 800px) {
+      width: 120px;
+    }
+    @media (max-height: 650px) {
+      width: 90px;
+    }
   }
 }
 
@@ -130,12 +113,21 @@ mat-dialog-content {
   letter-spacing: -0.01em;
   margin-bottom: v.$space-2;
   margin-top: 25px;
+
+  @media (max-height: 800px) {
+    margin-top: 12px;
+    font-size: 1.4rem;
+  }
 }
 
 .login-sub {
   color: v.$color-text-soft;
   font-size: 15px;
   margin-bottom: v.$space-6;
+
+  @media (max-height: 800px) {
+    margin-bottom: v.$space-4;
+  }
 }
 
 .login-form {
@@ -226,10 +218,12 @@ mat-dialog-content {
   display: flex;
   gap: v.$space-3;
   width: 100%;
+  flex-wrap: wrap;
 }
 
 .social-btn {
   flex: 1;
+  min-width: 120px;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;

@@ -73,26 +73,20 @@
   color: v.$color-text-soft;
 }
 
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
 // ── Scrollable content ─────────────────────────────
 mat-dialog-content {
-  // Usa dvh para ser mais preciso em mobile
-  max-height: calc(90dvh - 260px) !important;
+  flex: 1 1 auto;
+  max-height: none !important;
   overflow-y: auto !important;
   overflow-x: hidden;
-}
-
-@media (max-width: 768px) {
-  mat-dialog-content {
-    max-height: calc(100dvh - 240px) !important;
-    overflow-y: auto !important;
-  }
-}
-
-@media (max-height: 650px) {
-  mat-dialog-content {
-    max-height: calc(100dvh - 220px) !important;
-    overflow-y: auto !important;
-  }
+  padding-bottom: 24px;
 }
 // ── Actions row ───────────────────────────────────
 .ob-actions {
@@ -205,6 +199,14 @@ mat-dialog-content {
     height: auto;
     display: block;
     margin: 0 auto;
+    transition: width 0.2s ease;
+
+    @media (max-height: 800px) {
+      width: 120px;
+    }
+    @media (max-height: 650px) {
+      width: 90px;
+    }
   }
 }
 
@@ -618,10 +620,12 @@ mat-divider {
   gap: v.$space-3;
   width: 100%;
   padding: 10px;
+  flex-wrap: wrap;
 }
 
 .ob-social-btn {
   flex: 1;
+  min-width: 120px;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;

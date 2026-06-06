@@ -461,12 +461,18 @@ export class OnboardingComponent implements OnInit, OnDestroy {
   }
 
   private setupIPhoneViewportFix(): void {
-  // Aplica a todos os dispositivos móveis, não só iPhone
-  const isMobile = /Android|iPhone|iPad|iPod|webOS/i.test(navigator.userAgent);
-  
-  if (!isMobile || typeof window === 'undefined' || typeof document === 'undefined') {
-    return;
-  }
+    // Check if the device is mobile based on User-Agent and viewport width
+    const isMobileUA = /Android|iPhone|iPad|iPod|webOS/i.test(navigator.userAgent);
+    
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
+      return;
+    }
+
+    const isMobileViewport = window.innerWidth <= 768;
+    
+    if (!isMobileUA || !isMobileViewport) {
+      return;
+    }
 
   const updateViewportHeight = () => {
     const height = window.visualViewport?.height ?? window.innerHeight;

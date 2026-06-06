@@ -1216,7 +1216,8 @@ body {
 
   mat-dialog-content {
     padding: 0 !important;
-    max-height: 52vh !important;
+    flex: 1 1 auto;
+    max-height: none !important;
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
@@ -1250,13 +1251,15 @@ body {
       width: calc(100vw - 16px) !important;
       max-width: 540px !important;
       max-height: calc(var(--sb-visual-viewport-height, 100vh) - 16px) !important;
+      height: 100% !important;
       padding: calc(20px + env(safe-area-inset-top, 0px)) 18px calc(18px + env(safe-area-inset-bottom, 0px)) !important;
       overflow: hidden !important;
       touch-action: manipulation;
     }
 
     mat-dialog-content {
-      max-height: calc(var(--sb-visual-viewport-height, 100vh) - 210px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
+      max-height: none !important;
+      flex: 1 1 auto;
       padding-bottom: 24px !important;
     }
   }
@@ -1270,7 +1273,8 @@ body {
       }
 
       mat-dialog-content {
-        max-height: calc(100dvh - 210px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
+        max-height: none !important;
+        flex: 1 1 auto;
       }
     }
   }
