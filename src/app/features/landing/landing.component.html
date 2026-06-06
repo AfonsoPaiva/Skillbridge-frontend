@@ -1,32 +1,93 @@
 <!-- ===================== HERO ===================== -->
 <section class="hero">
-  <div class="container hero__content" @fadeUp>
-    <div class="hero__badge">
-      <mat-icon>bolt</mat-icon>
-      <span>Plataforma para estudantes</span>
-    </div>
-    <h1 class="hero__title">
-      Troca <span class="text-primary">competências</span>,<br>
-      constrói o teu <span class="text-secondary">futuro</span>
-    </h1>
-    <p class="hero__sub">
-      Skillbridge é uma incubadora de talentos descentralizada.<br>
-      O foco não é o lucro financeiro — é o <strong>lucro curricular</strong>.
-    </p>
-    <div class="hero__cta">
-      <div class="hero__cta-main">
-        <a (click)="openOnboarding()" mat-raised-button color="primary" class="cta-btn cta-btn--primary">
-          <mat-icon>{{ auth.isLoggedIn ? 'dashboard' : 'rocket_launch' }}</mat-icon>
-          {{ auth.isLoggedIn ? 'Aceder à sua dashboard' : 'Começar agora' }}
-        </a>
-        <a routerLink="/projects" mat-stroked-button color="primary" class="cta-btn">
-          Ver projetos
-        </a>
+  <div class="container hero__container">
+    <div class="hero__content" @fadeUp>
+      <div class="hero__badge">
+        <mat-icon>bolt</mat-icon>
+        <span>Plataforma para estudantes</span>
       </div>
-      <div class="hero__cta-secondary">
-        <a routerLink="/oportunidades" mat-stroked-button color="primary" class="cta-btn">
-          Ver vagas
-        </a>
+      <h1 class="hero__title">
+        Troca <span class="text-primary">competências</span>,<br>
+        constrói o teu <span class="text-secondary">futuro</span>
+      </h1>
+      <p class="hero__sub">
+        A Skillbridge é a tua porta de entrada para o mercado de trabalho.<br>
+        Constrói o teu portfólio através da troca de serviços e <strong>encontra facilmente o teu primeiro
+          estágio</strong>.
+      </p>
+      <div class="hero__cta">
+        <div class="hero__cta-main">
+          <a (click)="openOnboarding()" mat-raised-button color="primary" class="cta-btn cta-btn--primary">
+            <mat-icon>{{ auth.isLoggedIn ? 'dashboard' : 'rocket_launch' }}</mat-icon>
+            {{ auth.isLoggedIn ? 'Aceder à sua dashboard' : 'Começar agora' }}
+          </a>
+          <a routerLink="/projects" mat-stroked-button class="cta-btn cta-btn--secondary">
+            <mat-icon>folder_open</mat-icon>
+            Ver projetos
+          </a>
+        </div>
+        <div class="hero__cta-tertiary">
+          <a routerLink="/oportunidades" mat-button class="cta-btn cta-btn--tertiary">
+            Ver estágios <mat-icon>arrow_forward</mat-icon>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="hero__visual" @fadeUp>
+      <div class="hero-mockup">
+
+        <div class="hero-mockup__window">
+          <div class="hero-mockup__header">
+            <span class="dot dot--red"></span>
+            <span class="dot dot--yellow"></span>
+            <span class="dot dot--green"></span>
+          </div>
+          <div class="hero-mockup__content">
+            <div class="hero-mockup__profile">
+              <div class="hero-mockup__avatar"></div>
+              <div class="hero-mockup__info">
+                <div class="hero-mockup__line-short"></div>
+                <div class="hero-mockup__line-long"></div>
+              </div>
+            </div>
+
+            <div class="hero-mockup__tags">
+              <span class="hero-mockup__tag hero-mockup__tag--primary">Ofereço: Pogramação</span>
+              <span class="hero-mockup__tag hero-mockup__tag--secondary">Procuro: UI/UX</span>
+            </div>
+
+            <div class="hero-mockup__match">
+              <div class="hero-mockup__match-line"></div>
+              <div class="hero-mockup__match-icon">
+                <mat-icon>handshake</mat-icon>
+              </div>
+              <div class="hero-mockup__match-line"></div>
+            </div>
+
+            <div class="hero-mockup__profile hero-mockup__profile--right">
+              <div class="hero-mockup__info hero-mockup__info--right">
+                <div class="hero-mockup__line-short"></div>
+                <div class="hero-mockup__line-long"></div>
+              </div>
+              <div class="hero-mockup__avatar hero-mockup__avatar--2"></div>
+            </div>
+
+            <div class="hero-mockup__tags hero-mockup__tags--right">
+              <span class="hero-mockup__tag hero-mockup__tag--primary">Ofereço: UI/UX</span>
+              <span class="hero-mockup__tag hero-mockup__tag--secondary">Procuro: Programação</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-mockup__float hero-mockup__float--1">
+          <mat-icon>bolt</mat-icon>
+          <span>Skill Match</span>
+        </div>
+
+        <div class="hero-mockup__float hero-mockup__float--2">
+          <mat-icon>verified</mat-icon>
+          <span>100% Gratuito</span>
+        </div>
       </div>
     </div>
   </div>
@@ -81,8 +142,12 @@
         <mat-icon class="mission__icon">swap_horiz</mat-icon>
         <strong>Intercâmbio de Competências</strong>
         <div class="barter-container">
-          <p>Tenho <span class="chip barter-chip" [@fadeBarter]="currentBarterIndex">{{ currentBarter.mySkill }}</span> e procuro <span class="chip chip--green barter-chip" [@fadeBarter]="currentBarterIndex">{{ currentBarter.neededSkill }}</span></p>
-          <p>Tens <span class="chip chip--green barter-chip" [@fadeBarter]="currentBarterIndex">{{ currentBarter.partnerSkill }}</span> e procuras <span class="chip barter-chip" [@fadeBarter]="currentBarterIndex">{{ currentBarter.partnerNeededSkill }}</span></p>
+          <p>Tenho <span class="chip barter-chip" [@fadeBarter]="currentBarterIndex">{{ currentBarter.mySkill }}</span>
+            e procuro <span class="chip chip--green barter-chip" [@fadeBarter]="currentBarterIndex">{{
+              currentBarter.neededSkill }}</span></p>
+          <p>Tens <span class="chip chip--green barter-chip" [@fadeBarter]="currentBarterIndex">{{
+              currentBarter.partnerSkill }}</span> e procuras <span class="chip barter-chip"
+              [@fadeBarter]="currentBarterIndex">{{ currentBarter.partnerNeededSkill }}</span></p>
         </div>
         <div class="mission__match">
           <strong>Temos um Match!</strong>
