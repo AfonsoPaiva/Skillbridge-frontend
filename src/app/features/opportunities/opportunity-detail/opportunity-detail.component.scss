@@ -29,8 +29,8 @@
 
   @include m.sm {
     flex-direction: column;
-    align-items: center;
-    text-align: center;
+    align-items: flex-start;
+    text-align: left;
     padding: v.$space-4;
     gap: v.$space-4;
   }
@@ -98,7 +98,7 @@
       gap: 6px;
 
       @include m.sm {
-        justify-content: center;
+        justify-content: flex-start;
       }
 
       &::before {
@@ -116,7 +116,7 @@
       align-items: center;
 
       @include m.sm {
-        justify-content: center;
+        justify-content: flex-start;
       }
     }
 
