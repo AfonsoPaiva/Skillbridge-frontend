@@ -71,12 +71,17 @@
 
   .header-info {
     flex: 1;
+    min-width: 0;
+    width: 100%;
 
     h1 {
       font-size: 2rem;
       font-weight: v.$font-weight-bold;
       margin: 0 0 v.$space-2 0;
       color: v.$color-text;
+      word-wrap: break-word;
+      word-break: break-word;
+      hyphens: auto;
 
       @include m.sm {
         font-size: 1.5rem;
