@@ -434,6 +434,20 @@ export class RecruiterDashboardComponent implements OnInit {
     this.updateFilteredSkillSections();
   }
 
+  prevScrapedJob(): void {
+    if (this.activeTabIndex > 0) {
+      this.activeTabIndex--;
+      this.onTabChange();
+    }
+  }
+
+  nextScrapedJob(): void {
+    if (this.activeTabIndex < this.scrapedJobs.length - 1) {
+      this.activeTabIndex++;
+      this.onTabChange();
+    }
+  }
+
   trackBySectionLabel(_: number, section: SkillSection): string {
     return section.label;
   }

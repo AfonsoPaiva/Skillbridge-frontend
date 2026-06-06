@@ -73,7 +73,9 @@
             </mat-form-field>
           </mat-card-content>
           <mat-card-actions align="end" style="padding-bottom: 16px; padding-right: 16px; justify-content: space-between; display: flex;">
-            <button mat-button color="warn" (click)="deleteAccount()">Apagar Conta</button>
+            <button mat-raised-button color="warn" (click)="deleteAccount()">
+              <mat-icon>delete</mat-icon> Apagar Conta
+            </button>
             <div>
               <button mat-button (click)="cancelCompany()">Cancelar</button>
               <button mat-raised-button color="primary" (click)="saveCompany()">Guardar Alterações</button>
@@ -115,9 +117,13 @@
               <button mat-raised-button color="primary" (click)="scrapeVacancies()"
                       [disabled]="!scrapeUrl || scraping || !termsAccepted"
                       class="scrape-btn">
-                <mat-spinner diameter="18" *ngIf="scraping"></mat-spinner>
-                <mat-icon *ngIf="!scraping">search</mat-icon>
-                <span>{{ scraping ? 'A procurar...' : 'Procurar Vagas' }}</span>
+                <ng-container *ngIf="scraping">
+                  <mat-spinner diameter="24"></mat-spinner>
+                </ng-container>
+                <ng-container *ngIf="!scraping">
+                  <mat-icon>search</mat-icon>
+                  <span>Procurar Vagas</span>
+                </ng-container>
               </button>
             </div>
 
@@ -130,16 +136,31 @@
                 </h3>
               </div>
 
-              <div class="warning-alert" style="margin-bottom: 24px; padding: 12px; background: rgba(255,152,0,0.1); border-left: 4px solid #ff9800; border-radius: 4px; display: flex; align-items: center; gap: 12px;">
-                <mat-icon color="accent">warning</mat-icon>
-                <p style="margin: 0; font-size: 0.9em; line-height: 1.4; color: #e65100;">
+              <div class="warning-alert" style="margin-bottom: 24px; padding: 12px; background: rgba(104,0,122,0.05); border-left: 4px solid #68007a; border-radius: 8px; display: flex; align-items: center; gap: 12px;">
+                <mat-icon style="color: #68007a; flex-shrink: 0;">info</mat-icon>
+                <p style="margin: 0; font-size: 0.9em; line-height: 1.4; color: #68007a;">
                   <strong>Atenção:</strong> Esta ferramenta utiliza inteligência artificial que pode cometer erros e não ser 100% precisa. Por favor, reveja e edite as informações de cada vaga antes de confirmar a importação.
                 </p>
               </div>
 
-              <mat-tab-group class="scraped-tabs" dynamicHeight [(selectedIndex)]="activeTabIndex" (selectedTabChange)="onTabChange()">
-                <mat-tab *ngFor="let job of scrapedJobs; let i = index" [label]="job.title">
-                  <div class="scraped-job-edit-form" style="padding: 24px; border: 1px solid rgba(0,0,0,0.1); border-top: none; border-radius: 0 0 8px 8px;">
+              <div class="job-wizard" *ngIf="scrapedJobs.length > 0">
+                <div class="wizard-header" style="display: flex; align-items: center; justify-content: space-between; background: rgba(104, 0, 122, 0.05); padding: 12px 16px; border: 1px solid rgba(104, 0, 122, 0.1); border-bottom: none; border-radius: 8px 8px 0 0;">
+                  <h4 style="margin: 0; font-size: 16px; font-weight: 600; color: #68007a; display: flex; align-items: center;">
+                    {{ scrapedJobs[activeTabIndex].title }} 
+                    <span style="opacity: 0.6; font-size: 0.85em; margin-left: 8px; font-weight: 500;">({{ activeTabIndex + 1 }} de {{ scrapedJobs.length }})</span>
+                  </h4>
+                  <div class="wizard-nav" style="display: flex; gap: 8px;">
+                    <button mat-icon-button (click)="prevScrapedJob()" [disabled]="activeTabIndex === 0" style="color: #68007a;">
+                      <mat-icon>chevron_left</mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="nextScrapedJob()" [disabled]="activeTabIndex === scrapedJobs.length - 1" style="color: #68007a;">
+                      <mat-icon>chevron_right</mat-icon>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="scraped-job-edit-form" style="padding: 24px; border: 1px solid rgba(104, 0, 122, 0.1); border-radius: 0 0 8px 8px; background: #fff;">
+                  <ng-container *ngIf="scrapedJobs[activeTabIndex] as job">
                      
                      <div class="form-row" style="display: flex; gap: 16px;">
                        <mat-form-field appearance="outline" style="flex: 2;">
@@ -248,12 +269,12 @@
                      </div>
 
                      <div class="job-actions" style="display: flex; justify-content: flex-end; gap: 16px; padding-top: 16px; border-top: 1px solid rgba(0,0,0,0.05);">
-                       <button mat-stroked-button color="warn" (click)="rejectScrapedJob(i)">Rejeitar Vaga</button>
-                       <button mat-raised-button color="primary" (click)="confirmScrapedJob(i)">Confirmar e Guardar Vaga</button>
+                       <button mat-stroked-button color="warn" (click)="rejectScrapedJob(activeTabIndex)">Rejeitar Vaga</button>
+                       <button mat-raised-button color="primary" (click)="confirmScrapedJob(activeTabIndex)">Confirmar e Guardar Vaga</button>
                      </div>
-                  </div>
-                </mat-tab>
-              </mat-tab-group>
+                  </ng-container>
+                </div>
+              </div>
             </div>
 
             <!-- No results message -->

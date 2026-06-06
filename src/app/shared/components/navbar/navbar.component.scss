@@ -161,7 +161,7 @@
     transition: max-height v.$transition-base, padding v.$transition-base;
 
     &.open {
-      max-height: 300px;
+      max-height: 500px;
       padding: v.$space-4;
       border-top: 1px solid v.$color-border;
     }

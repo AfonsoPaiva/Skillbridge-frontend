@@ -31,6 +31,8 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
+    padding: v.$space-4;
+    gap: v.$space-4;
   }
 
   .company-logo-square {
@@ -42,6 +44,11 @@
     align-items: center;
     justify-content: center;
     box-shadow: v.$shadow-sm;
+
+    @include m.sm {
+      width: 80px;
+      height: 80px;
+    }
 
     img {
       width: 100%;
@@ -55,6 +62,10 @@
       font-weight: v.$font-weight-extrabold;
       color: white;
       letter-spacing: 1px;
+
+      @include m.sm {
+        font-size: 2rem;
+      }
     }
   }
 
@@ -66,6 +77,10 @@
       font-weight: v.$font-weight-bold;
       margin: 0 0 v.$space-2 0;
       color: v.$color-text;
+
+      @include m.sm {
+        font-size: 1.5rem;
+      }
     }
 
     .company-name {
@@ -139,6 +154,11 @@
   flex-direction: column;
   gap: v.$space-8;
 
+  @include m.sm {
+    padding: v.$space-4;
+    gap: v.$space-6;
+  }
+
   h3 {
     font-size: 1.25rem;
     font-weight: v.$font-weight-semibold;
@@ -179,6 +199,7 @@
 
   @include m.sm {
     justify-content: center;
+    padding: v.$space-4;
   }
 
   .apply-btn {
@@ -190,6 +211,10 @@
 
     mat-icon {
       margin-right: 8px;
+    }
+
+    @include m.sm {
+      width: 100%;
     }
   }
 }
