@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Recruiter, RecruiterApplyInput, Vacancy, ScrapedJob } from '../models/models';
+import { Recruiter, RecruiterApplyInput, Vacancy } from '../models/models';
 import { AuthService } from './auth.service';
 import { environment } from '../../../environments/environment';
 
@@ -116,12 +116,5 @@ export class RecruiterService {
     });
   }
 
-  /** Scrape vacancies from an external careers page URL */
-  scrapeVacancies(url: string): Observable<{ jobs: ScrapedJob[]; count: number; message?: string }> {
-    return this.http.post<{ jobs: ScrapedJob[]; count: number; message?: string }>(
-      `${this.base}/recruiter/vacancies/scrape`,
-      { url },
-      { headers: this.authHeaders() }
-    );
-  }
+
 }

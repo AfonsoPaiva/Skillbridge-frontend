@@ -231,16 +231,4 @@ export interface Vacancy {
   recruiter?: Recruiter;
 }
 
-export interface ScrapedJob {
-  title: string;
-  type: string;
-  description: string;
-  application_url: string;
-  region: string;
-  work_mode: string;
-  employment_type: string;
-  selected?: boolean; // frontend-only: whether the user selected this job for import
-  tags?: string[]; // frontend-only: tags to add to the vacancy
-  tempTag?: string; // frontend-only: temporary tag input value
-}
 

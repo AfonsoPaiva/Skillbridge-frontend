@@ -28,13 +28,10 @@
         </div>
 
         <div class="dashboard-header__actions">
-          <button mat-stroked-button (click)="editCompany()" *ngIf="!showCompanyForm && !showForm && !showAutoImport">
+          <button mat-stroked-button (click)="editCompany()" *ngIf="!showCompanyForm && !showForm">
             <mat-icon>edit</mat-icon> Editar Empresa
           </button>
-          <button mat-stroked-button color="accent" (click)="openAutoImport()" *ngIf="!showForm && !showCompanyForm && !showAutoImport">
-            <mat-icon>auto_awesome</mat-icon> Importar Vagas
-          </button>
-          <button mat-raised-button color="primary" (click)="newVacancy()" *ngIf="!showForm && !showCompanyForm && !showAutoImport">
+          <button mat-raised-button color="primary" (click)="newVacancy()" *ngIf="!showForm && !showCompanyForm">
             <mat-icon>add</mat-icon> Nova Vaga
           </button>
         </div>
@@ -84,211 +81,7 @@
         </mat-card>
       </div>
 
-      <!-- Auto Import Dialog -->
-      <div *ngIf="showAutoImport" class="dashboard-form">
-        <mat-card class="auto-import-card">
-          <mat-card-header>
-            <mat-card-title>
-              <mat-icon style="margin-right: 8px; vertical-align: middle;">auto_awesome</mat-icon>
-              Importar Vagas Automaticamente
-            </mat-card-title>
-          </mat-card-header>
-          <mat-card-content style="padding-top: 20px;">
-            <p class="import-description">
-              Introduz o URL da página de carreiras da tua empresa. O sistema irá procurar posições de
-              <strong>Junior</strong>, <strong>Estágio</strong>, <strong>Internship</strong>, e <strong>Verão</strong>
-              localizadas em <strong>Portugal</strong> e importá-las automaticamente.
-            </p>
 
-            <div style="margin-bottom: 16px; padding: 12px; background: rgba(0,0,0,0.02); border-radius: 8px;">
-              <mat-checkbox [(ngModel)]="termsAccepted" color="primary">
-                Confirmo que li os <a href="https://skillbridge.pt/politicas-e-privacidade" target="_blank" style="text-decoration: underline; font-weight: 500;">termos e serviços</a> e concordo com as condições legais de extração automatizada (scraping).
-              </mat-checkbox>
-            </div>
-
-            <div class="import-url-row">
-              <mat-form-field appearance="outline" style="flex: 1;">
-                <mat-label>URL da Página de Carreiras</mat-label>
-                <input matInput [(ngModel)]="scrapeUrl"
-                       placeholder="Ex: https://website-exemplo.com/careers"
-                       [disabled]="scraping">
-                <mat-icon matPrefix>link</mat-icon>
-              </mat-form-field>
-              <button mat-raised-button color="primary" (click)="scrapeVacancies()"
-                      [disabled]="!scrapeUrl || scraping || !termsAccepted"
-                      class="scrape-btn">
-                <ng-container *ngIf="scraping">
-                  <mat-spinner diameter="24"></mat-spinner>
-                </ng-container>
-                <ng-container *ngIf="!scraping">
-                  <mat-icon>search</mat-icon>
-                  <span>Procurar Vagas</span>
-                </ng-container>
-              </button>
-            </div>
-
-            <!-- Scraped Results -->
-            <div *ngIf="scrapedJobs.length > 0" class="scraped-results">
-              <div class="scraped-header" style="margin-bottom: 16px;">
-                <h3 style="margin: 0; display: flex; align-items: center; gap: 8px;">
-                  <mat-icon>checklist</mat-icon>
-                  {{ scrapedJobs.length }} vaga(s) encontrada(s)
-                </h3>
-              </div>
-
-              <div class="warning-alert" style="margin-bottom: 24px; padding: 12px; background: rgba(104,0,122,0.05); border-left: 4px solid #68007a; border-radius: 8px; display: flex; align-items: center; gap: 12px;">
-                <mat-icon style="color: #68007a; flex-shrink: 0;">info</mat-icon>
-                <p style="margin: 0; font-size: 0.9em; line-height: 1.4; color: #68007a;">
-                  <strong>Atenção:</strong> Esta ferramenta utiliza inteligência artificial que pode cometer erros e não ser 100% precisa. Por favor, reveja e edite as informações de cada vaga antes de confirmar a importação.
-                </p>
-              </div>
-
-              <div class="job-wizard" *ngIf="scrapedJobs.length > 0">
-                <div class="wizard-header" style="display: flex; align-items: center; justify-content: space-between; background: rgba(104, 0, 122, 0.05); padding: 12px 16px; border: 1px solid rgba(104, 0, 122, 0.1); border-bottom: none; border-radius: 8px 8px 0 0;">
-                  <h4 style="margin: 0; font-size: 16px; font-weight: 600; color: #68007a; display: flex; align-items: center;">
-                    {{ scrapedJobs[activeTabIndex].title }} 
-                    <span style="opacity: 0.6; font-size: 0.85em; margin-left: 8px; font-weight: 500;">({{ activeTabIndex + 1 }} de {{ scrapedJobs.length }})</span>
-                  </h4>
-                  <div class="wizard-nav" style="display: flex; gap: 8px;">
-                    <button mat-icon-button (click)="prevScrapedJob()" [disabled]="activeTabIndex === 0" style="color: #68007a;">
-                      <mat-icon>chevron_left</mat-icon>
-                    </button>
-                    <button mat-icon-button (click)="nextScrapedJob()" [disabled]="activeTabIndex === scrapedJobs.length - 1" style="color: #68007a;">
-                      <mat-icon>chevron_right</mat-icon>
-                    </button>
-                  </div>
-                </div>
-
-                <div class="scraped-job-edit-form" style="padding: 24px; border: 1px solid rgba(104, 0, 122, 0.1); border-radius: 0 0 8px 8px; background: #fff;">
-                  <ng-container *ngIf="scrapedJobs[activeTabIndex] as job">
-                     
-                     <div class="form-row" style="display: flex; gap: 16px;">
-                       <mat-form-field appearance="outline" style="flex: 2;">
-                         <mat-label>Título</mat-label>
-                         <input matInput [(ngModel)]="job.title">
-                       </mat-form-field>
-                       <mat-form-field appearance="outline" style="flex: 1;">
-                         <mat-label>Tipo de Vaga</mat-label>
-                         <mat-select [(ngModel)]="job.type">
-                           <mat-option value="summer_internship">Estágio de Verão</mat-option>
-                           <mat-option value="curricular_internship">Estágio Curricular</mat-option>
-                           <mat-option value="extracurricular_internship">Estágio Extracurricular</mat-option>
-                           <mat-option value="junior_position">Posição Junior</mat-option>
-                         </mat-select>
-                       </mat-form-field>
-                     </div>
-
-                     <div class="form-row" style="display: flex; gap: 16px;">
-                       <mat-form-field appearance="outline" style="flex: 1;">
-                         <mat-label>Modo de Trabalho</mat-label>
-                         <mat-select [(ngModel)]="job.work_mode">
-                           <mat-option value="">Não especificado</mat-option>
-                           <mat-option value="hybrid">Híbrido</mat-option>
-                           <mat-option value="remote">Remoto</mat-option>
-                           <mat-option value="onsite">Presencial</mat-option>
-                         </mat-select>
-                       </mat-form-field>
-                       <mat-form-field appearance="outline" style="flex: 1;">
-                         <mat-label>Tipo de Emprego</mat-label>
-                         <mat-select [(ngModel)]="job.employment_type">
-                           <mat-option value="">Não especificado</mat-option>
-                           <mat-option value="full_time">Full-time</mat-option>
-                           <mat-option value="part_time">Part-time</mat-option>
-                           <mat-option value="contract">Contrato</mat-option>
-                         </mat-select>
-                       </mat-form-field>
-                       <mat-form-field appearance="outline" style="flex: 1;">
-                         <mat-label>Região</mat-label>
-                         <input matInput [(ngModel)]="job.region">
-                       </mat-form-field>
-                     </div>
-
-                     <mat-form-field appearance="outline" style="width: 100%;">
-                       <mat-label>URL de Candidatura</mat-label>
-                       <input matInput [(ngModel)]="job.application_url">
-                     </mat-form-field>
-
-                     <mat-form-field appearance="outline" style="width: 100%;">
-                       <mat-label>Descrição</mat-label>
-                       <textarea matInput rows="6" [(ngModel)]="job.description"></textarea>
-                     </mat-form-field>
-
-                     <div class="skills-section">
-                       <h2><mat-icon>build</mat-icon> Competências</h2>
-                       <p class="text-soft">As competências necessárias para esta vaga.</p>
-
-                       <mat-chip-set class="current-skills">
-                         <mat-chip *ngFor="let s of job.tags; trackBy: trackBySkill"
-                                   [highlighted]="removingSkill === s"
-                                   (removed)="removeTagFromScrapedJob(job, s)">
-                           {{ s }}
-                           <button matChipRemove [disabled]="removingSkill === s">
-                             <mat-icon>{{ removingSkill === s ? 'hourglass_empty' : 'cancel' }}</mat-icon>
-                           </button>
-                         </mat-chip>
-                       </mat-chip-set>
-
-                       <p class="text-soft empty-skills" *ngIf="!job.tags || job.tags.length === 0">
-                         <mat-icon>info</mat-icon> Ainda não adicionaste competências.
-                       </p>
-
-                       <div class="add-skill">
-                         <mat-form-field appearance="outline" style="width: 100%">
-                           <mat-label>Pesquisar competência</mat-label>
-                           <input matInput
-                                  [formControl]="skillSearchControl"
-                                  placeholder="Ex: Python, Figma…"
-                                  autocomplete="off">
-                           <button *ngIf="skillSearchControl.value" mat-icon-button matSuffix type="button" (click)="skillSearchControl.setValue('')" aria-label="Limpar pesquisa">
-                             <mat-icon>close</mat-icon>
-                           </button>
-                           <mat-icon matSuffix *ngIf="!skillSearchControl.value">search</mat-icon>
-                         </mat-form-field>
-                       </div>
-
-                       <div class="skills-catalog" *ngIf="filteredSkillSections.length > 0; else noSkillResults">
-                         <div class="skills-catalog__section" *ngFor="let section of filteredSkillSections; trackBy: trackBySectionLabel">
-                           <h4>{{ section.label }}</h4>
-                           <div class="skills-catalog__grid">
-                             <button type="button"
-                                     mat-stroked-button
-                                     class="skills-catalog__btn"
-                                     *ngFor="let skill of section.skills; trackBy: trackBySkill"
-                                     (click)="addTagToScrapedJob(job, skill)">
-                               {{ skill }}
-                             </button>
-                           </div>
-                         </div>
-                       </div>
-
-                       <ng-template #noSkillResults>
-                         <p class="text-soft empty-skills" *ngIf="availableSkills.length > 0">
-                           <mat-icon>search_off</mat-icon> Nenhuma competência disponível para esta pesquisa.
-                         </p>
-                       </ng-template>
-                     </div>
-
-                     <div class="job-actions" style="display: flex; justify-content: flex-end; gap: 16px; padding-top: 16px; border-top: 1px solid rgba(0,0,0,0.05);">
-                       <button mat-stroked-button color="warn" (click)="rejectScrapedJob(activeTabIndex)">Rejeitar Vaga</button>
-                       <button mat-raised-button color="primary" (click)="confirmScrapedJob(activeTabIndex)">Confirmar e Guardar Vaga</button>
-                     </div>
-                  </ng-container>
-                </div>
-              </div>
-            </div>
-
-            <!-- No results message -->
-            <div *ngIf="scrapeMessage" class="scrape-message">
-              <mat-icon>info</mat-icon>
-              <p>{{ scrapeMessage }}</p>
-            </div>
-          </mat-card-content>
-
-          <mat-card-actions align="end" style="padding: 16px; display: flex; justify-content: flex-end;">
-            <button mat-button (click)="cancelAutoImport()">Voltar / Cancelar</button>
-          </mat-card-actions>
-        </mat-card>
-      </div>
 
       <!-- Form View -->
       <div *ngIf="showForm" class="dashboard-form">
@@ -300,7 +93,7 @@
       </div>
 
       <!-- List View -->
-      <div *ngIf="!showForm && !showCompanyForm && !showAutoImport" class="dashboard-list">
+      <div *ngIf="!showForm && !showCompanyForm" class="dashboard-list">
         <div class="empty-state" *ngIf="vacancies.length === 0">
           <mat-icon>work_outline</mat-icon>
           <h2>Ainda não publicaste nenhuma vaga</h2>

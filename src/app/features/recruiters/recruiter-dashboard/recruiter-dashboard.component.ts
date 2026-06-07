@@ -3,14 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { RecruiterService } from '../../../core/services/recruiter.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { Recruiter, Vacancy, ScrapedJob } from '../../../core/models/models';
-import { environment } from '../../../../environments/environment';
-import { forkJoin } from 'rxjs';
-import { FormControl } from '@angular/forms';
-import { ApiService } from '../../../core/services/api.service';
-import { SkillSection, SkillsListResponse } from '../../../core/models/models';
-import { sanitizeInput } from '../../../core/utils/search.utils';
-import { startWith, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { Recruiter, Vacancy } from '../../../core/models/models';
 
 @Component({
   selector: 'app-recruiter-dashboard',
@@ -23,27 +16,10 @@ export class RecruiterDashboardComponent implements OnInit {
   loading = true;
   showForm = false;
   showCompanyForm = false;
-  showAutoImport = false;
   editingVacancy: Vacancy | null = null;
   renewVacancyId: string | null = null;
   companyUrlForm: string = '';
   logoError: boolean = false;
-
-  // Auto-import state
-  scrapeUrl: string = '';
-  scraping = false;
-  importing = false;
-  activeTabIndex = 0;
-  termsAccepted = false;
-  scrapedJobs: ScrapedJob[] = [];
-  scrapeMessage: string = '';
-
-  // Skills
-  availableSkills: string[] = [];
-  availableSkillSections: SkillSection[] = [];
-  filteredSkillSections: SkillSection[] = [];
-  skillSearchControl = new FormControl('');
-  removingSkill = '';
 
   readonly vacancyTypeLabels: Record<string, string> = {
     'summer_internship': 'Estágio de Verão',
@@ -56,30 +32,12 @@ export class RecruiterDashboardComponent implements OnInit {
     private recruiterService: RecruiterService,
     private auth: AuthService,
     private route: ActivatedRoute,
-    private snackBar: MatSnackBar,
-    private api: ApiService
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
     this.renewVacancyId = this.route.snapshot.queryParamMap.get('renew');
     this.loadData();
-
-    // Load skills
-    this.api.listSkills().subscribe({ 
-      next: (res: SkillsListResponse) => {
-        this.availableSkills = res.skills || [];
-        this.availableSkillSections = res.sections || [];
-        this.updateFilteredSkillSections();
-      }
-    });
-
-    this.skillSearchControl.valueChanges.pipe(
-      startWith(''),
-      debounceTime(150),
-      distinctUntilChanged()
-    ).subscribe(() => {
-      this.updateFilteredSkillSections();
-    });
   }
 
   private loadData(): void {
@@ -120,14 +78,12 @@ export class RecruiterDashboardComponent implements OnInit {
     this.editingVacancy = null;
     this.showForm = true;
     this.showCompanyForm = false;
-    this.showAutoImport = false;
   }
 
   editVacancy(vacancy: Vacancy): void {
     this.editingVacancy = vacancy;
     this.showForm = true;
     this.showCompanyForm = false;
-    this.showAutoImport = false;
   }
 
   onVacancySaved(): void {
@@ -205,7 +161,6 @@ export class RecruiterDashboardComponent implements OnInit {
     this.logoError = false;
     this.showCompanyForm = true;
     this.showForm = false;
-    this.showAutoImport = false;
   }
 
   onLogoError(): void {
@@ -301,173 +256,7 @@ export class RecruiterDashboardComponent implements OnInit {
     });
   }
 
-  // --- Auto Import ---
 
-  openAutoImport(): void {
-    this.showAutoImport = true;
-    this.showForm = false;
-    this.showCompanyForm = false;
-    this.scrapedJobs = [];
-    this.scrapeMessage = '';
-    // Pre-fill with company URL if available
-    if (this.recruiter?.company_url) {
-      this.scrapeUrl = this.recruiter.company_url;
-    }
-  }
-
-  cancelAutoImport(): void {
-    this.showAutoImport = false;
-    this.scrapedJobs = [];
-    this.scrapeMessage = '';
-    this.scrapeUrl = '';
-    this.activeTabIndex = 0;
-  }
-
-  scrapeVacancies(): void {
-    if (!this.scrapeUrl) return;
-
-    this.scraping = true;
-    this.scrapedJobs = [];
-    this.scrapeMessage = '';
-
-    this.recruiterService.scrapeVacancies(this.scrapeUrl).subscribe({
-      next: (res) => {
-        this.scraping = false;
-        if (res.jobs && res.jobs.length > 0) {
-          this.scrapedJobs = res.jobs;
-          this.activeTabIndex = 0;
-          this.scrapeMessage = '';
-        } else {
-          this.scrapedJobs = [];
-          this.scrapeMessage = res.message || 'Não foram encontradas vagas de entrada/estágio nesta página.';
-        }
-      },
-      error: (err) => {
-        this.scraping = false;
-        this.scrapeMessage = err.error?.error || 'Erro ao procurar vagas. Verifique o URL e tente novamente.';
-      }
-    });
-  }
-
-  confirmScrapedJob(index: number): void {
-    const job = this.scrapedJobs[index];
-    this.importing = true;
-    this.recruiterService.createVacancy({
-      title: job.title,
-      type: job.type,
-      tags: job.tags || [],
-      description: job.description || 'Importado automaticamente.',
-      application_url: job.application_url,
-      region: job.region,
-      work_mode: job.work_mode,
-      employment_type: job.employment_type
-    }).subscribe({
-      next: () => {
-        this.importing = false;
-        this.snackBar.open(`Vaga "${job.title}" importada com sucesso!`, 'OK', { duration: 3000 });
-        this.scrapedJobs.splice(index, 1);
-        
-        // Adjust tab index if needed
-        if (this.activeTabIndex >= this.scrapedJobs.length) {
-          this.activeTabIndex = Math.max(0, this.scrapedJobs.length - 1);
-        }
-
-        if (this.scrapedJobs.length === 0) {
-          this.showAutoImport = false;
-        }
-        this.loadData();
-      },
-      error: (err) => {
-        this.importing = false;
-        this.snackBar.open(err.error?.error || 'Erro ao importar vaga. Tenta novamente.', 'OK');
-      }
-    });
-  }
-
-  rejectScrapedJob(index: number): void {
-    this.scrapedJobs.splice(index, 1);
-    // Adjust tab index if needed
-    if (this.activeTabIndex >= this.scrapedJobs.length) {
-      this.activeTabIndex = Math.max(0, this.scrapedJobs.length - 1);
-    }
-    
-    if (this.scrapedJobs.length === 0) {
-      this.showAutoImport = false;
-    }
-  }
-
-  addTagToScrapedJob(job: ScrapedJob, skillName?: string): void {
-    const rawSkill = (skillName ?? this.skillSearchControl.value ?? '').toString().trim();
-    const skill = this.resolveSkill(rawSkill);
-    if (!skill || (job.tags && job.tags.includes(skill))) return;
-
-    if (!job.tags) job.tags = [];
-    job.tags.push(skill);
-    this.skillSearchControl.setValue('', { emitEvent: false });
-    this.updateFilteredSkillSections();
-  }
-
-  removeTagFromScrapedJob(job: ScrapedJob, tag: string): void {
-    if (!job.tags) return;
-    job.tags = job.tags.filter(t => t !== tag);
-    this.updateFilteredSkillSections();
-  }
-
-  updateFilteredSkillSections(): void {
-    const query = sanitizeInput((this.skillSearchControl.value || '').toString()).toLowerCase();
-    const activeJob = this.scrapedJobs[this.activeTabIndex];
-    const currentTags = activeJob?.tags || [];
-
-    this.filteredSkillSections = this.availableSkillSections
-      .map(section => ({
-        ...section,
-        skills: section.skills.filter(skill => {
-          if (currentTags.includes(skill)) return false;
-          if (!query) return true;
-          return skill.toLowerCase().includes(query);
-        })
-      }))
-      .filter(section => section.skills.length > 0);
-  }
-
-  onTabChange(): void {
-    this.updateFilteredSkillSections();
-  }
-
-  prevScrapedJob(): void {
-    if (this.activeTabIndex > 0) {
-      this.activeTabIndex--;
-      this.onTabChange();
-    }
-  }
-
-  nextScrapedJob(): void {
-    if (this.activeTabIndex < this.scrapedJobs.length - 1) {
-      this.activeTabIndex++;
-      this.onTabChange();
-    }
-  }
-
-  trackBySectionLabel(_: number, section: SkillSection): string {
-    return section.label;
-  }
-
-  trackBySkill(_: number, skill: string): string {
-    return skill;
-  }
-
-  private resolveSkill(rawSkill: string): string {
-    if (!rawSkill) return '';
-    const exact = this.availableSkills.find(s => s === rawSkill);
-    if (exact) return exact;
-
-    const normalized = rawSkill.toLowerCase();
-    const caseInsensitive = this.availableSkills.find(s => s.toLowerCase() === normalized);
-    if (caseInsensitive) return caseInsensitive;
-
-    this.snackBar.open('Seleciona uma competência válida da lista.', 'Fechar', { duration: 3000 });
-    return '';
-  }
 
   // --- Label helpers ---
 
