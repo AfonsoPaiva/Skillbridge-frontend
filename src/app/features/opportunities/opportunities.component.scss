@@ -300,3 +300,10 @@
     background-position: -200% 0;
   }
 }
+
+.chip--matched {
+  background: rgba(v.$color-secondary, 0.15) !important;
+  color: darken(v.$color-secondary, 30%) !important;
+  border: 1px solid rgba(v.$color-secondary, 0.3) !important;
+  font-weight: v.$font-weight-medium;
+}

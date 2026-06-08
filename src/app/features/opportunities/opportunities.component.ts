@@ -41,6 +41,9 @@ const DIALOG_CONFIG = {
 export class OpportunitiesComponent implements OnInit {
   vacancies: Vacancy[] = [];
   filtered: Vacancy[] = [];
+  displayed: Vacancy[] = [];
+  page = 1;
+  pageSize = 30;
   loading = true;
   search = '';
   typeFilter = 'all';
@@ -111,6 +114,20 @@ export class OpportunitiesComponent implements OnInit {
     }
 
     this.filtered = result;
+    this.page = 1;
+    this.displayed = this.filtered.slice(0, this.pageSize);
+  }
+
+  loadMore(): void {
+    const next = this.filtered.slice(this.page * this.pageSize, (this.page + 1) * this.pageSize);
+    this.displayed = [...this.displayed, ...next];
+    this.page++;
+  }
+
+  isMatchedSkill(skill: string): boolean {
+    if (!this.auth.currentUserSkills) return false;
+    const lowerSkill = skill.toLowerCase();
+    return this.auth.currentUserSkills.some(s => s.toLowerCase() === lowerSkill);
   }
 
   onTypeChange(type: string): void {

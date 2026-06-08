@@ -64,8 +64,8 @@
     </ng-container>
 
     <!-- List -->
-    <div class="grid" *ngIf="!loading && filtered.length > 0" [@list]="filtered.length">
-      <mat-card class="vcard" *ngFor="let v of filtered" (click)="viewDetails(v.id)" style="cursor: pointer;">
+    <div class="grid" *ngIf="!loading && displayed.length > 0" [@list]="displayed.length">
+      <mat-card class="vcard" *ngFor="let v of displayed" (click)="viewDetails(v.id)" style="cursor: pointer;">
         <mat-card-content class="vcard__body">
           <div class="vcard__header">
             <div class="company-logo-square">
@@ -82,7 +82,7 @@
 
           <div class="vcard__footer">
             <div class="vcard__skills">
-              <span class="chip chip--card-skill" *ngFor="let tag of v.tags.slice(0, 3)">
+              <span class="chip chip--card-skill" [class.chip--matched]="isMatchedSkill(tag)" *ngFor="let tag of v.tags.slice(0, 3)">
                 {{ tag }}
               </span>
               <span class="chip chip--card-skill" *ngIf="v.tags.length > 3">
@@ -111,6 +111,11 @@
           </div>
         </mat-card-content>
       </mat-card>
+    </div>
+
+    <!-- Load More -->
+    <div class="load-more-container" *ngIf="!loading && displayed.length < filtered.length" style="text-align: center; margin-top: 2rem;">
+      <button mat-stroked-button (click)="loadMore()">Mostrar mais</button>
     </div>
 
     <!-- Empty -->

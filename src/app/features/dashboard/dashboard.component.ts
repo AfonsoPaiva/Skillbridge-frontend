@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { RecruiterService } from '../../core/services/recruiter.service';
@@ -55,7 +56,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   constructor(
     public auth: AuthService, 
     private api: ApiService,
-    private recruiterService: RecruiterService
+    private recruiterService: RecruiterService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -192,7 +194,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return companyName.substring(0, 2).toUpperCase();
   }
 
-  applyToVacancy(v: Vacancy): void {
-    window.open(v.application_url, '_blank');
+  viewVacancyDetails(vacancyId: string): void {
+    this.router.navigate(['/oportunidades', vacancyId]);
   }
 }

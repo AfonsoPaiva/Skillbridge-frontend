@@ -108,25 +108,33 @@
           <div *ngIf="!loadingVacancies && recommendedVacancies.length > 0">
             <h2 class="section-title">Oportunidades para ti</h2>
             <div class="projects-grid" [@list]="recommendedVacancies.length">
-              <mat-card class="proj-card" *ngFor="let v of recommendedVacancies" matRipple (click)="applyToVacancy(v)">
-                <div class="proj-card__img company-logo-block">
-                  <div class="initials">{{ getInitials(v.recruiter?.company_name) }}</div>
-                  <span class="proj-card__status" data-status="open">{{ getTypeLabel(v.type) }}</span>
-                </div>
-                <mat-card-content class="proj-card__body">
-                  <h3 [attr.title]="v.title">{{ v.title }}</h3>
-                  <p class="company-name" style="font-size: 13px; color: var(--color-primary); font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 4px;">
-                    <mat-icon style="font-size: 16px; width: 16px; height: 16px;">business</mat-icon> 
-                    {{ v.recruiter?.company_name }}
-                  </p>
-                  <p [attr.title]="v.description">{{ v.description }}</p>
-                  <div class="proj-card__skills">
-                    <span class="chip chip--card-skill" [class.chip--matched]="isMatchedSkill(tag)" *ngFor="let tag of v.tags.slice(0, 3)">
-                      {{ tag }}
-                    </span>
-                    <span class="chip chip--card-skill" *ngIf="v.tags.length > 3">
-                      +{{ v.tags.length - 3 }}
-                    </span>
+              <mat-card class="vcard" *ngFor="let v of recommendedVacancies" matRipple (click)="viewVacancyDetails(v.id)">
+                <mat-card-content class="vcard__body">
+                  <div class="vcard__header">
+                    <div class="company-logo-square">
+                      <img *ngIf="v.recruiter?.logo_url" [src]="v.recruiter?.logo_url" alt="{{ v.recruiter?.company_name }} logo">
+                      <div *ngIf="!v.recruiter?.logo_url" class="initials">{{ getInitials(v.recruiter?.company_name) }}</div>
+                    </div>
+                    <div class="header-info">
+                      <h3 [attr.title]="v.title">{{ v.title }}</h3>
+                      <p class="company-name">{{ v.recruiter?.company_name }}</p>
+                    </div>
+                  </div>
+                  
+                  <p class="description" [attr.title]="v.description">{{ v.description }}</p>
+
+                  <div class="vcard__footer">
+                    <div class="vcard__skills">
+                      <span class="chip chip--card-skill" [class.chip--matched]="isMatchedSkill(tag)" *ngFor="let tag of v.tags.slice(0, 3)">
+                        {{ tag }}
+                      </span>
+                      <span class="chip chip--card-skill" *ngIf="v.tags.length > 3">
+                        +{{ v.tags.length - 3 }}
+                      </span>
+                    </div>
+                    <div class="vcard__actions-right">
+                      <span class="vcard__badge" data-status="open">{{ getTypeLabel(v.type) }}</span>
+                    </div>
                   </div>
                 </mat-card-content>
               </mat-card>
