@@ -70,7 +70,7 @@
           <div class="vcard__header">
             <div class="company-logo-square">
               <img *ngIf="v.recruiter?.logo_url" [src]="v.recruiter?.logo_url" alt="{{ v.recruiter?.company_name }} logo">
-              <img *ngIf="!v.recruiter?.logo_url && v.recruiter?.company_name" [src]="'https://icon.horse/icon/' + v.recruiter?.company_name.toLowerCase().split(' ').join('') + '.com'" alt="{{ v.recruiter?.company_name }} logo">
+              <img *ngIf="!v.recruiter?.logo_url && v.recruiter?.company_name" [src]="'https://icons.duckduckgo.com/ip3/' + v.recruiter?.company_name.toLowerCase().split(' ').join('') + '.com.ico'" alt="{{ v.recruiter?.company_name }} logo">
               <div *ngIf="!v.recruiter?.logo_url && !v.recruiter?.company_name" class="initials">{{ getInitials(v.recruiter?.company_name) }}</div>
             </div>
             <div class="header-info">
