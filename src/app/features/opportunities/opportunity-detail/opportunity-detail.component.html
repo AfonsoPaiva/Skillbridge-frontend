@@ -21,7 +21,8 @@
       <div class="detail-header">
         <div class="company-logo-square">
           <img *ngIf="vacancy.recruiter?.logo_url" [src]="vacancy.recruiter?.logo_url" alt="{{ vacancy.recruiter?.company_name }} logo">
-          <div *ngIf="!vacancy.recruiter?.logo_url" class="initials">{{ getInitials(vacancy.recruiter?.company_name) }}</div>
+          <img *ngIf="!vacancy.recruiter?.logo_url && vacancy.recruiter?.company_name" [src]="'https://icon.horse/icon/' + vacancy.recruiter?.company_name.toLowerCase().split(' ').join('') + '.com'" alt="{{ vacancy.recruiter?.company_name }} logo">
+          <div *ngIf="!vacancy.recruiter?.logo_url && !vacancy.recruiter?.company_name" class="initials">{{ getInitials(vacancy.recruiter?.company_name) }}</div>
         </div>
         <div class="header-info">
           <h1>{{ vacancy.title }}</h1>
