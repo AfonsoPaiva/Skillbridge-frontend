@@ -44,6 +44,7 @@
     align-items: center;
     justify-content: center;
     box-shadow: v.$shadow-sm;
+    background: v.$color-primary;
 
     @media (max-width: v.$bp-sm) {
       width: 80px;
