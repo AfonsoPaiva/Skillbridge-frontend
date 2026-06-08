@@ -112,7 +112,7 @@
                 <mat-card-content class="vcard__body">
                   <div class="vcard__header">
                     <div class="company-logo-square" [class.bg-purple]="isWhiteTransparentLogo(v.recruiter?.logo_url)">
-                      <img *ngIf="v.recruiter?.logo_url" [src]="v.recruiter?.logo_url" alt="{{ v.recruiter?.company_name }} logo">
+                      <img *ngIf="v.recruiter?.logo_url" [src]="v.recruiter?.logo_url | imageProxy" alt="{{ v.recruiter?.company_name }} logo">
                       <div *ngIf="!v.recruiter?.logo_url" class="initials" [class.bg-purple]="true">{{ getInitials(v.recruiter?.company_name) }}</div>
                     </div>
                     <div class="header-info">

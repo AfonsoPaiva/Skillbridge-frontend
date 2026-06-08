@@ -15,7 +15,7 @@
         
         <div class="dashboard-header__company-info" style="display: flex; align-items: center; gap: 20px;">
           <div class="logo-preview" [class.bg-purple]="isWhiteTransparentLogo(recruiter.logo_url)">
-            <img *ngIf="recruiter.logo_url && !logoError" [src]="recruiter.logo_url" alt="Logo da Empresa" (error)="onLogoError()">
+            <img *ngIf="recruiter.logo_url && !logoError" [src]="recruiter.logo_url | imageProxy" alt="Logo da Empresa" (error)="onLogoError()">
             <div *ngIf="!recruiter.logo_url || logoError" class="initials" [class.bg-purple]="true">{{ getInitials(recruiter.company_name) }}</div>
           </div>
           <div class="dashboard-header__info">
@@ -48,7 +48,7 @@
           <mat-card-content style="padding-top: 20px;">
             <div class="company-logo-section" style="margin-bottom: 30px;">
               <div class="logo-preview" [class.bg-purple]="isWhiteTransparentLogo(recruiter.logo_url)">
-                <img *ngIf="recruiter.logo_url && !logoError" [src]="recruiter.logo_url" alt="Logo da Empresa" (error)="onLogoError()">
+                <img *ngIf="recruiter.logo_url && !logoError" [src]="recruiter.logo_url | imageProxy" alt="Logo da Empresa" (error)="onLogoError()">
                 <div *ngIf="!recruiter.logo_url || logoError" class="initials" [class.bg-purple]="true">{{ getInitials(recruiter.company_name) }}</div>
               </div>
               <div class="logo-actions">

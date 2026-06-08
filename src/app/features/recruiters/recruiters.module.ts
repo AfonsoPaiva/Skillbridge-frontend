@@ -22,6 +22,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { ImageProxyPipe } from '../../shared/pipes/image-proxy.pipe';
 
 const routes: Routes = [
   { path: '', component: RecruiterLandingComponent },
@@ -55,7 +56,8 @@ const routes: Routes = [
     MatCardModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    ImageProxyPipe
   ]
 })
 export class RecruitersModule {}

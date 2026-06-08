@@ -19,11 +19,11 @@
 
     <div *ngIf="!loading && !error && vacancy" class="detail-card" @fadeUp>
       <div class="detail-header">
-      <div class="company-logo-square" [class.bg-purple]="isWhiteTransparentLogo(vacancy.recruiter?.logo_url)">
-        <ng-container *ngIf="vacancy.recruiter">
-          <img *ngIf="vacancy.recruiter?.logo_url" [src]="vacancy.recruiter?.logo_url" alt="{{ vacancy.recruiter?.company_name }} logo">
-          <div *ngIf="!vacancy.recruiter?.logo_url" class="initials" [class.bg-purple]="true">{{ getInitials(vacancy.recruiter?.company_name) }}</div>
-        </ng-container>
+        <div class="company-logo-square" [class.bg-purple]="isWhiteTransparentLogo(vacancy.recruiter?.logo_url)">
+          <ng-container *ngIf="vacancy.recruiter">
+            <img *ngIf="vacancy.recruiter.logo_url" [src]="vacancy.recruiter.logo_url | imageProxy" alt="{{ vacancy.recruiter.company_name }} logo">
+            <div *ngIf="!vacancy.recruiter.logo_url" class="initials" [class.bg-purple]="true">{{ getInitials(vacancy.recruiter.company_name) }}</div>
+          </ng-container>
         </div>
         <div class="header-info">
           <h1>{{ vacancy.title }}</h1>
