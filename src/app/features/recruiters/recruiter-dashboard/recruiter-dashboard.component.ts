@@ -290,4 +290,9 @@ export class RecruiterDashboardComponent implements OnInit {
       default: return type;
     }
   }
+
+  isWhiteTransparentLogo(url?: string): boolean {
+    if (!url) return false;
+    return url.includes('women_secret_logo');
+  }
 }

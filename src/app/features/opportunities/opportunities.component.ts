@@ -177,4 +177,9 @@ export class OpportunitiesComponent implements OnInit {
     }
     return companyName.substring(0, 2).toUpperCase();
   }
+
+  isWhiteTransparentLogo(url?: string): boolean {
+    if (!url) return false;
+    return url.includes('women_secret_logo');
+  }
 }

@@ -19,14 +19,18 @@
 
     <div *ngIf="!loading && !error && vacancy" class="detail-card" @fadeUp>
       <div class="detail-header">
-        <div class="company-logo-square">
+      <div class="company-logo-square" [class.bg-purple]="isWhiteTransparentLogo(vacancy.recruiter?.logo_url)">
+        <ng-container *ngIf="vacancy.recruiter">
           <img *ngIf="vacancy.recruiter?.logo_url" [src]="vacancy.recruiter?.logo_url" alt="{{ vacancy.recruiter?.company_name }} logo">
-          <img *ngIf="!vacancy.recruiter?.logo_url && vacancy.recruiter?.company_name" [src]="'https://icons.duckduckgo.com/ip3/' + vacancy.recruiter?.company_name.toLowerCase().split(' ').join('') + '.com.ico'" alt="{{ vacancy.recruiter?.company_name }} logo">
-          <div *ngIf="!vacancy.recruiter?.logo_url && !vacancy.recruiter?.company_name" class="initials">{{ getInitials(vacancy.recruiter?.company_name) }}</div>
+          <div *ngIf="!vacancy.recruiter?.logo_url" class="initials" [class.bg-purple]="true">{{ getInitials(vacancy.recruiter?.company_name) }}</div>
+        </ng-container>
         </div>
         <div class="header-info">
           <h1>{{ vacancy.title }}</h1>
-          <p class="company-name">{{ vacancy.recruiter?.company_name }}</p>
+          <p class="company-name">
+            <a *ngIf="vacancy.recruiter?.company_profile_url" [href]="vacancy.recruiter?.company_profile_url" target="_blank" rel="noopener">{{ vacancy.recruiter?.company_name }}</a>
+            <span *ngIf="!vacancy.recruiter?.company_profile_url">{{ vacancy.recruiter?.company_name }}</span>
+          </p>
           <div class="metadata-badges">
             <span class="badge type-badge">{{ getTypeLabel(vacancy.type) }}</span>
             <span class="badge meta-badge" *ngIf="vacancy.region"><mat-icon>location_on</mat-icon> {{ vacancy.region }}</span>

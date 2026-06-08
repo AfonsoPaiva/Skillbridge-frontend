@@ -134,5 +134,10 @@ export class OpportunityDetailComponent implements OnInit {
     // Is logged in, proceed to application URL in new tab
     window.open(this.vacancy.application_url, '_blank');
   }
+
+  isWhiteTransparentLogo(url?: string): boolean {
+    if (!url) return false;
+    return url.includes('women_secret_logo');
+  }
 }
 

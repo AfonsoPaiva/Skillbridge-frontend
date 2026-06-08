@@ -197,4 +197,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   viewVacancyDetails(vacancyId: string): void {
     this.router.navigate(['/oportunidades', vacancyId]);
   }
+
+  isWhiteTransparentLogo(url?: string): boolean {
+    if (!url) return false;
+    return url.includes('women_secret_logo');
+  }
 }

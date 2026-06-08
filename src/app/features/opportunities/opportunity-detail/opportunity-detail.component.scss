@@ -44,7 +44,11 @@
     align-items: center;
     justify-content: center;
     box-shadow: v.$shadow-sm;
-    background: v.$color-primary;
+    background: white;
+
+    &.bg-purple {
+      background: v.$color-primary;
+    }
 
     @media (max-width: v.$bp-sm) {
       width: 80px;
@@ -55,7 +59,7 @@
       width: 100%;
       height: 100%;
       object-fit: contain;
-      background: white;
+      background: transparent;
       border-radius: v.$radius-md;
     }
 
@@ -64,6 +68,13 @@
       font-weight: v.$font-weight-extrabold;
       color: white;
       letter-spacing: 1px;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: v.$color-primary;
+      border-radius: v.$radius-md;
 
       @media (max-width: v.$bp-sm) {
         font-size: 2rem;
@@ -284,3 +295,11 @@
     background-position: -200% 0;
   }
 }
+    .company-name a {
+      color: inherit;
+      text-decoration: none;
+      
+      &:hover {
+        text-decoration: underline;
+      }
+    }
