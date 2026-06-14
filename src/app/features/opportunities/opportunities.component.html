@@ -53,13 +53,7 @@
     <!-- Skeleton -->
     <ng-container *ngIf="loading">
       <div class="grid">
-        <mat-card class="pcard skeleton-card" *ngFor="let _ of [1,2,3,4]">
-          <div class="pcard__img skeleton-box"></div>
-          <mat-card-content class="pcard__body">
-            <div class="skeleton-box skeleton-title"></div>
-            <div class="skeleton-box skeleton-text"></div>
-          </mat-card-content>
-        </mat-card>
+        <app-vcard-skeleton *ngFor="let _ of [1,2,3,4,5,6]"></app-vcard-skeleton>
       </div>
     </ng-container>
 

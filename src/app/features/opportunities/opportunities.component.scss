@@ -290,34 +290,7 @@
   }
 }
 
-.skeleton-box {
-  background: linear-gradient(90deg, rgba(v.$color-primary, 0.03) 25%, rgba(v.$color-primary, 0.08) 50%, rgba(v.$color-primary, 0.03) 75%);
-  background-size: 200% 100%;
-  animation: loading 1.5s infinite;
-}
 
-.skeleton-title {
-  height: 20px;
-  width: 70%;
-  margin-bottom: 8px;
-  border-radius: 4px;
-}
-
-.skeleton-text {
-  height: 40px;
-  width: 100%;
-  border-radius: 4px;
-}
-
-@keyframes loading {
-  0% {
-    background-position: 200% 0;
-  }
-
-  100% {
-    background-position: -200% 0;
-  }
-}
 
 .chip--matched {
   background: rgba(v.$color-secondary, 0.15) !important;

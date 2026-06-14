@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MaterialModule } from './material.module';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { SkeletonComponent, CardSkeletonComponent } from './components/skeleton/skeleton.component';
+import { SkeletonComponent, CardSkeletonComponent, VcardSkeletonComponent } from './components/skeleton/skeleton.component';
 import { UniversityCarouselComponent } from './components/university-carousel/university-carousel.component';
 import { DeleteAccountDialogComponent } from './components/delete-account-dialog/delete-account-dialog.component';
 import { LazyImgDirective } from './directives/lazy-img.directive';
@@ -14,6 +14,7 @@ import { ImageProxyPipe } from './pipes/image-proxy.pipe';
   declarations: [
     SkeletonComponent,
     CardSkeletonComponent,
+    VcardSkeletonComponent,
     UniversityCarouselComponent,
     DeleteAccountDialogComponent
   ],
@@ -36,6 +37,7 @@ import { ImageProxyPipe } from './pipes/image-proxy.pipe';
     FormsModule,
     SkeletonComponent,
     CardSkeletonComponent,
+    VcardSkeletonComponent,
     UniversityCarouselComponent,
     LazyImgDirective,
     SmartFitImgDirective,
