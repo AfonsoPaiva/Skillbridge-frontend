@@ -108,7 +108,7 @@
           <div *ngIf="!loadingVacancies && recommendedVacancies.length > 0">
             <h2 class="section-title">Oportunidades para ti</h2>
             <div class="projects-grid" [@list]="recommendedVacancies.length">
-              <mat-card class="vcard" *ngFor="let v of recommendedVacancies" matRipple (click)="viewVacancyDetails(v.id)">
+              <mat-card class="vcard" *ngFor="let v of recommendedVacancies; trackBy: trackByVacancyId" matRipple (click)="viewVacancyDetails(v.id)">
                 <mat-card-content class="vcard__body">
                   <div class="vcard__header">
                     <div class="company-logo-square" [class.bg-purple]="isWhiteTransparentLogo(v.recruiter?.logo_url)">

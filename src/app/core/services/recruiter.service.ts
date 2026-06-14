@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, shareReplay } from 'rxjs/operators';
 import { Recruiter, RecruiterApplyInput, Vacancy } from '../models/models';
 import { AuthService } from './auth.service';
 import { environment } from '../../../environments/environment';
@@ -9,6 +9,9 @@ import { environment } from '../../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class RecruiterService {
   private base = environment.apiUrl;
+
+  /** In-memory cache: key = query string, value = shared observable */
+  private vacanciesCache = new Map<string, Observable<{ vacancies: Vacancy[]; count: number }>>();
 
   constructor(private http: HttpClient, private auth: AuthService) {}
 
@@ -43,7 +46,20 @@ export class RecruiterService {
     if (tag) params.push(`tag=${encodeURIComponent(tag)}`);
     if (type) params.push(`type=${encodeURIComponent(type)}`);
     if (params.length) url += '?' + params.join('&');
-    return this.http.get<{ vacancies: Vacancy[]; count: number }>(url);
+
+    const cacheKey = url;
+    if (!this.vacanciesCache.has(cacheKey)) {
+      const req$ = this.http.get<{ vacancies: Vacancy[]; count: number }>(url).pipe(
+        shareReplay({ bufferSize: 1, refCount: false })
+      );
+      this.vacanciesCache.set(cacheKey, req$);
+    }
+    return this.vacanciesCache.get(cacheKey)!;
+  }
+
+  /** Invalidate the vacancies cache (e.g. after a write operation) */
+  invalidateVacanciesCache(): void {
+    this.vacanciesCache.clear();
   }
 
   /** Get a single active vacancy (public) */

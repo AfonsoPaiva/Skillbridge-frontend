@@ -176,11 +176,16 @@
     font-size: 14px;
     line-height: 1.6;
     color: v.$color-text-soft;
-    @include m.truncate(3);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: calc(1.6em * 3);
     margin: 0;
-    flex: 1;
     word-break: break-word;
     overflow-wrap: anywhere;
+    flex-shrink: 0;
   }
 
   &__footer {

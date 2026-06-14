@@ -182,4 +182,8 @@ export class OpportunitiesComponent implements OnInit {
     if (!url) return false;
     return url.includes('women_secret_logo');
   }
+
+  trackByVacancyId(_index: number, v: Vacancy): string {
+    return v.id;
+  }
 }

@@ -202,4 +202,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (!url) return false;
     return url.includes('women_secret_logo');
   }
+
+  trackByVacancyId(_index: number, v: Vacancy): string {
+    return v.id;
+  }
 }
