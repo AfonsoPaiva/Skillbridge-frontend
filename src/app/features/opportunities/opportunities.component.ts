@@ -29,9 +29,9 @@ const DIALOG_CONFIG = {
     trigger('list', [
       transition('* => *', [
         query(':enter', [
-          style({ opacity: 0, transform: 'translateY(20px)' }),
-          stagger(50, [
-            animate('0.4s ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+          style({ opacity: 0, transform: 'translateY(16px)' }),
+          stagger(20, [
+            animate('0.35s ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
           ])
         ], { optional: true })
       ])

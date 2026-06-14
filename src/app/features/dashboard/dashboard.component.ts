@@ -30,7 +30,7 @@ import {
       transition('* => *', [
         query(':enter', [
           style({ opacity: 0, transform: 'translateY(12px)' }),
-          stagger(60, [animate('350ms cubic-bezier(0.22,1,0.36,1)', style({ opacity: 1, transform: 'none' }))])
+          stagger(20, [animate('300ms cubic-bezier(0.22,1,0.36,1)', style({ opacity: 1, transform: 'none' }))])
         ], { optional: true })
       ])
     ])
