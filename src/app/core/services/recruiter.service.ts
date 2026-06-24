@@ -28,8 +28,11 @@ export class RecruiterService {
   }
 
   /** Request login link for approved recruiters (public) */
-  requestLoginLink(email: string): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`${this.base}/recruiters/request-link`, { email });
+  requestLoginLink(email: string, recaptchaToken = ''): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.base}/recruiters/request-link`, {
+      email,
+      recaptcha_token: recaptchaToken
+    });
   }
 
   /** Verify a recruiter access token and get a Firebase custom token */
