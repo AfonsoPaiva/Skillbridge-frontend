@@ -36,6 +36,13 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
   readonly roleTitleMaxLength = 40;
   readonly roleDescriptionMaxLength = 1200;
 
+  // Mirror the server-side caps (project_handler.go)
+  readonly MAX_ROLES_PER_PROJECT = 10;
+  readonly MAX_LINKS_PER_PROJECT = 10;
+
+  get canAddRole(): boolean { return this.roles.length < this.MAX_ROLES_PER_PROJECT; }
+  get canAddLink(): boolean { return this.links.length < this.MAX_LINKS_PER_PROJECT; }
+
   form!: FormGroup;
   loading = false;
   submitting = false;

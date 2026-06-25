@@ -119,11 +119,16 @@
           </div>
         </div>
 
-        <!-- Links -->
         <div class="links-section">
           <div class="links-section__header">
-            <h2>Links do projeto</h2>
-            <button type="button" mat-stroked-button color="primary" (click)="addLink()">
+            <div class="section-title-group">
+              <h2>Links do projeto</h2>
+              <span class="limit-badge" [class.limit-badge--warn]="!canAddLink">
+                {{ links.length }}/{{ MAX_LINKS_PER_PROJECT }}
+              </span>
+            </div>
+            <button type="button" mat-stroked-button color="primary" (click)="addLink()" [disabled]="!canAddLink"
+                    [matTooltip]="canAddLink ? '' : 'Limite de ' + MAX_LINKS_PER_PROJECT + ' links atingido'">
               <mat-icon>add_link</mat-icon> Adicionar link
             </button>
           </div>
@@ -175,11 +180,16 @@
 
         <mat-divider></mat-divider>
 
-        <!-- Roles -->
         <div class="roles-section">
           <div class="roles-section__header">
-            <h2>Vagas (competências que procuras)</h2>
-            <button type="button" mat-stroked-button color="primary" (click)="addRole()">
+            <div class="section-title-group">
+              <h2>Vagas (competências que procuras)</h2>
+              <span class="limit-badge" [class.limit-badge--warn]="!canAddRole">
+                {{ roles.length }}/{{ MAX_ROLES_PER_PROJECT }}
+              </span>
+            </div>
+            <button type="button" mat-stroked-button color="primary" (click)="addRole()" [disabled]="!canAddRole"
+                    [matTooltip]="canAddRole ? '' : 'Limite de ' + MAX_ROLES_PER_PROJECT + ' vagas atingido'">
               <mat-icon>add</mat-icon> Adicionar vaga
             </button>
           </div>
@@ -293,14 +303,20 @@
 
         <!-- Submit -->
         <div class="form-page__submit">
-          <button type="button" mat-button (click)="router.navigate(['/projects'])">Cancelar</button>
-          <button type="submit" mat-raised-button color="primary"
-                  [disabled]="submitting || uploadingImage || showImageEditor">
-            <mat-spinner *ngIf="submitting" diameter="18"></mat-spinner>
-            <span *ngIf="!submitting">
-              {{ isEdit ? 'Guardar alterações' : 'Criar projeto' }}
-            </span>
-          </button>
+          <p class="daily-limit-hint" *ngIf="!isEdit">
+            <mat-icon>info_outline</mat-icon>
+            Podes criar no máximo 5 projetos por dia.
+          </p>
+          <div class="form-page__submit-actions">
+            <button type="button" mat-button (click)="router.navigate(['/projects'])">Cancelar</button>
+            <button type="submit" mat-raised-button color="primary"
+                    [disabled]="submitting || uploadingImage || showImageEditor">
+              <mat-spinner *ngIf="submitting" diameter="18"></mat-spinner>
+              <span *ngIf="!submitting">
+                {{ isEdit ? 'Guardar alterações' : 'Criar projeto' }}
+              </span>
+            </button>
+          </div>
         </div>
       </form>
     </ng-container>

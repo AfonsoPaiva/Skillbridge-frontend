@@ -13,9 +13,64 @@
   }
 
   &__submit {
-    display: flex; justify-content: flex-end; gap: v.$space-3;
     margin-top: v.$space-8;
-    button[mat-raised-button] { display: flex; align-items: center; gap: v.$space-1; }
+
+    &-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: v.$space-3;
+      button[mat-raised-button] { display: flex; align-items: center; gap: v.$space-1; }
+    }
+  }
+}
+
+// ── Shared: section title + limit badge ───────────
+.section-title-group {
+  display: flex;
+  align-items: center;
+  gap: v.$space-2;
+
+  h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: v.$font-weight-semibold;
+  }
+}
+
+.limit-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: v.$font-weight-semibold;
+  background: rgba(v.$color-text-soft, 0.08);
+  color: v.$color-text-soft;
+  letter-spacing: 0.03em;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+
+  &--warn {
+    background: rgba(245, 158, 11, 0.12);
+    color: #b45309;
+  }
+}
+
+// Subtle daily-limit hint above the submit row
+.daily-limit-hint {
+  display: flex;
+  align-items: center;
+  gap: v.$space-2;
+  margin: 0 0 v.$space-3;
+  font-size: 12px;
+  color: v.$color-text-soft;
+
+  mat-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+    opacity: 0.7;
+    flex-shrink: 0;
   }
 }
 
@@ -196,7 +251,6 @@
   &__header {
     @include m.flex-between;
     margin-bottom: v.$space-4;
-    h2 { font-size: 1.2rem; font-weight: v.$font-weight-semibold; }
   }
 }
 
@@ -338,7 +392,6 @@ mat-divider { margin: v.$space-4 0 !important; }
   &__header {
     @include m.flex-between;
     margin-bottom: v.$space-4;
-    h2 { font-size: 1.2rem; font-weight: v.$font-weight-semibold; }
   }
 }
 
