@@ -94,7 +94,7 @@
     border: 1px dashed v.$color-border;
     border-radius: v.$radius-md;
 
-    mat-icon {
+    > mat-icon {
       font-size: 40px;
       width: 40px;
       height: 40px;
