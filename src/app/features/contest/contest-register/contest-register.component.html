@@ -30,10 +30,11 @@
 
     <!-- Registration form -->
     <div *ngIf="step === 'form'">
+      <button mat-stroked-button (click)="goToContest()" class="contest-register__back">
+        <mat-icon>arrow_back</mat-icon> Voltar
+      </button>
+
       <div class="contest-register__header">
-        <button mat-icon-button (click)="goToContest()" aria-label="Voltar">
-          <mat-icon>arrow_back</mat-icon>
-        </button>
         <div>
           <h1>Inscrição no Build Challenge</h1>
           <p>Seleciona o teu projeto e a área. O pagamento é único por equipa (7 € por membro).</p>
@@ -84,7 +85,7 @@
             <mat-icon>folder_off</mat-icon>
             <p>Não tens projetos elegíveis (entre 2 e 5 membros) na plataforma.</p>
             <p>Cria um projeto e adiciona membros, ou pede para ser adicionado a um existente.</p>
-            <a mat-stroked-button color="primary" routerLink="/dashboard">
+            <a mat-stroked-button color="primary" routerLink="/projects/novo">
               <mat-icon>add</mat-icon>
               Criar projeto
             </a>
