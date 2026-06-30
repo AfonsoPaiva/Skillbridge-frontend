@@ -172,6 +172,7 @@ export class ContestRegisterComponent implements OnInit, AfterViewInit, OnDestro
       ).subscribe({
         next: async (response) => {
           this.step = 'checkout';
+          window.scrollTo({ top: 0, behavior: 'smooth' });
 
           // Wait for Angular to render the checkout container
           await new Promise(r => setTimeout(r, 100));

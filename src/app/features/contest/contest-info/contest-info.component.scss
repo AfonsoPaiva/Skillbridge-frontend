@@ -410,13 +410,7 @@
   @media (max-width: 768px) {
     white-space: normal;
     align-items: flex-start;
-    flex-direction: column;
-    text-align: center;
-    gap: v.$space-1;
-
-    mat-icon {
-      align-self: center;
-    }
+    text-align: left;
   }
 }
 
