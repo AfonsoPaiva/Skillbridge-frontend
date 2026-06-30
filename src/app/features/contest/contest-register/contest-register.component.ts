@@ -111,7 +111,10 @@ export class ContestRegisterComponent implements OnInit, AfterViewInit, OnDestro
       { headers: this.getAuthHeaders() }
     ).subscribe({
       next: (data) => {
-        this.projects = data.projects || [];
+        this.projects = (data.projects || []).filter(p => {
+          const count = this.getMemberCount(p);
+          return count >= 2 && count <= 5;
+        });
         this.loadingProjects = false;
       },
       error: () => {
@@ -129,6 +132,12 @@ export class ContestRegisterComponent implements OnInit, AfterViewInit, OnDestro
   getMemberCount(project: ContestProject): number {
     const accepted = (project.members || []).filter(m => m.status === 'accepted').length;
     return accepted + 1; // +1 for owner
+  }
+
+  getPaymentAmount(): number {
+    const proj = this.getSelectedProject();
+    if (!proj) return 7;
+    return this.getMemberCount(proj) * 7;
   }
 
   getTotalSpots(project: ContestProject): number {

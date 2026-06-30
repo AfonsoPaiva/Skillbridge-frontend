@@ -36,7 +36,7 @@
         </button>
         <div>
           <h1>Inscrição no Build Challenge</h1>
-          <p>Seleciona o teu projeto e a área. Cada membro paga 7 € individualmente.</p>
+          <p>Seleciona o teu projeto e a área. O pagamento é único por equipa (7 € por membro).</p>
         </div>
       </div>
 
@@ -82,8 +82,8 @@
 
           <div class="contest-register__empty" *ngIf="projects.length === 0">
             <mat-icon>folder_off</mat-icon>
-            <p>Não tens projetos na plataforma.</p>
-            <p>Cria um projeto ou pede a um membro da equipa para te adicionar.</p>
+            <p>Não tens projetos elegíveis (entre 2 e 5 membros) na plataforma.</p>
+            <p>Cria um projeto e adiciona membros, ou pede para ser adicionado a um existente.</p>
             <a mat-stroked-button color="primary" routerLink="/dashboard">
               <mat-icon>add</mat-icon>
               Criar projeto
@@ -133,7 +133,7 @@
           [disabled]="!canSubmit()"
           (click)="submitRegistration()">
           <mat-icon>lock</mat-icon>
-          Pagar inscrição — 7,00 €
+          Pagar inscrição da equipa — {{ getPaymentAmount() }},00 €
         </button>
         <p class="contest-register__secure">
           <mat-icon>shield</mat-icon>
@@ -146,8 +146,8 @@
     <div *ngIf="step === 'checkout'">
       <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
 
-      <button mat-button *ngIf="!loading" (click)="goBack()" class="contest-register__back">
-        <mat-icon>arrow_back</mat-icon> Voltar ao formulário
+      <button mat-stroked-button *ngIf="!loading" (click)="goBack()" class="contest-register__back">
+        <mat-icon>arrow_back</mat-icon> Voltar para trás
       </button>
 
       <div #checkoutContainer class="contest-register__checkout"></div>
