@@ -1,0 +1,290 @@
+<section class="contest-page">
+  <!-- Hero Section -->
+  <div class="contest-hero">
+    <div class="container contest-hero__container">
+      <div class="contest-hero__content">
+        <div class="contest-hero__badge">
+          <mat-icon>emoji_events</mat-icon>
+          <span>Competição oficial</span>
+        </div>
+        <h1>Build Challenge</h1>
+        <p class="contest-hero__lead">
+          Equipas de estudantes e recém-licenciados de diferentes áreas trabalham juntas
+          durante <strong>6 semanas</strong> para criar um projeto real, concorrem a
+          <strong>prémios em dinheiro</strong> e saem com algo concreto no portfólio.
+        </p>
+
+        <div class="contest-hero__actions">
+          <button mat-stroked-button color="primary" (click)="downloadRegulamento()">
+            <mat-icon>download</mat-icon>
+            Descarregar regulamento (PDF)
+          </button>
+        </div>
+
+        <p class="contest-hero__count" *ngIf="totalPaid > 0">
+          <mat-icon>people</mat-icon>
+          {{ totalPaid }} {{ totalPaid === 1 ? 'participante inscrito' : 'participantes inscritos' }}
+        </p>
+      </div>
+
+      <!-- Quick Stats / Highlights -->
+      <div class="contest-hero__stats">
+        <div class="contest-stat">
+          <mat-icon>calendar_month</mat-icon>
+          <div>
+            <strong>6 Semanas</strong>
+            <span>Duração</span>
+          </div>
+        </div>
+        <div class="contest-stat">
+          <mat-icon>groups</mat-icon>
+          <div>
+            <strong>2 a 5</strong>
+            <span>Pessoas/equipa</span>
+          </div>
+        </div>
+        <div class="contest-stat">
+          <mat-icon>euro</mat-icon>
+          <div>
+            <strong>7 €</strong>
+            <span>Inscrição p/ pessoa</span>
+          </div>
+        </div>
+        <div class="contest-stat">
+          <mat-icon>category</mat-icon>
+          <div>
+            <strong>12</strong>
+            <span>Áreas temáticas</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container contest-layout">
+    <!-- Main Content (Left) -->
+    <div class="contest-layout__main">
+      <!-- Como funciona -->
+      <div class="contest-section" id="como-funciona">
+        <div class="contest-section__header">
+          <span class="contest-section__tag">Visão Geral</span>
+          <h2>O que é o Build Challenge?</h2>
+        </div>
+        <div class="contest-info-grid">
+          <div class="contest-info-card">
+            <h3>Forma uma equipa</h3>
+            <p>2 a 5 pessoas de pelo menos 2 áreas diferentes. Um membro cria o projeto na plataforma.</p>
+          </div>
+          <div class="contest-info-card">
+            <h3>Inscreve-te</h3>
+            <p>Taxa de 7 € por membro. O valor financia os prémios (60% da receita para os vencedores).</p>
+          </div>
+          <div class="contest-info-card">
+            <h3>Constrói</h3>
+            <p>Projeto original criado durante o concurso — desde protótipos funcionais a ideias bem desenvolvidas e
+              fundamentadas.</p>
+          </div>
+          <div class="contest-info-card">
+            <h3>Compete</h3>
+            <p>12 áreas temáticas com júri próprio. Não competes entre áreas, apenas na tua.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Áreas -->
+      <div class="contest-section" id="areas">
+        <div class="contest-section__header">
+          <span class="contest-section__tag">Categorias</span>
+          <h2>12 Áreas Temáticas</h2>
+          <p>A área define o tema do projeto — não a área de estudo dos membros da equipa.</p>
+        </div>
+        <div class="contest-tracks-grid">
+          <div class="contest-track-card" *ngFor="let t of tracks">
+            <div class="contest-track-card__icon">
+              <mat-icon>{{ t.icon }}</mat-icon>
+            </div>
+            <div class="contest-track-card__code">{{ t.code }}</div>
+            <h4>{{ t.name }}</h4>
+            <p>{{ t.desc }}</p>
+            <div class="contest-track-card__count" *ngIf="getTrackRegistrations(t.code) > 0">
+              {{ getTrackRegistrations(t.code) }} {{ getTrackRegistrations(t.code) === 1 ? 'inscrito' : 'inscritos' }}
+            </div>
+          </div>
+        </div>
+        <p class="contest-note">
+          <mat-icon>info</mat-icon>
+          <strong>Área L — Impacto Social</strong> é transversal a qualquer tipo de projeto que resolva um problema
+          real de uma comunidade.
+        </p>
+      </div>
+
+      <!-- Regras -->
+      <div class="contest-section" id="regras">
+        <div class="contest-section__header">
+          <span class="contest-section__tag">Regulamento</span>
+          <h2>Regras de participação</h2>
+        </div>
+        <div class="contest-rules">
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Elegibilidade</mat-panel-title>
+            </mat-expansion-panel-header>
+            <ul>
+              <li>Nacionalidade portuguesa ou residente legal em Portugal</li>
+              <li>Estudante universitário (qualquer ciclo) ou ter concluído o grau académico há menos de 2 anos</li>
+              <li>Idade igual ou superior a 16 anos (menores de 18 necessitam autorização do representante legal)</li>
+              <li>Inscrição válida e pagamento integral da taxa de inscrição (7 € por pessoa)</li>
+            </ul>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Composição das equipas</mat-panel-title>
+            </mat-expansion-panel-header>
+            <ul>
+              <li>Mínimo de 2 pessoas, máximo de 5 pessoas por equipa</li>
+              <li>Obrigatório ter pelo menos 2 áreas de estudo diferentes na equipa</li>
+              <li>Cada pessoa só pode estar numa equipa — duplicação de inscrições implica desqualificação imediata</li>
+              <li>A SkillBridge disponibiliza um sistema de matching para quem não tem equipa formada, sem garantia de
+                emparelhamento</li>
+            </ul>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Projetos</mat-panel-title>
+            </mat-expansion-panel-header>
+            <ul>
+              <li>O projeto deve ser original e criado durante o período de desenvolvimento (14 julho – 7 agosto)</li>
+              <li>Projetos preexistentes ou desenvolvidos fora do período oficial não são aceites</li>
+              <li>Projetos que usem IA generativa como produto final, sem desenvolvimento técnico adicional pela equipa,
+                serão desqualificados</li>
+            </ul>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Submissão final</mat-panel-title>
+            </mat-expansion-panel-header>
+            <ul>
+              <li>Qualquer elemento demonstrativo do projeto, como por exemplo um repositório público ou vídeo de
+                demonstração ou deck de apresentação</li>
+              <li>Inserir todos os links necessários nos detalhes da página do projeto na plataforma skillbridge</li>
+              <li>Envio deve ser realizado por um único elemento da equipa para o seguinte endereço de e-mail:
+                <a href="mailto:skillbridge.portfolio@gmail.com">skillbridge.portfolio&#64;gmail.com</a></li>
+              <li>Submissões fora do prazo não são aceites</li>
+            </ul>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Desqualificação</mat-panel-title>
+            </mat-expansion-panel-header>
+            <ul>
+              <li>Plágio ou utilização não autorizada de trabalho de terceiros sem devida atribuição</li>
+              <li>Submissão de projeto preexistente ou desenvolvido fora do período oficial do concurso</li>
+              <li>Incumprimento do check-in obrigatório (23 de julho)</li>
+              <li>Uso de IA generativa como produto final sem desenvolvimento técnico adicional pela equipa</li>
+              <li>Violação das condições de elegibilidade</li>
+              <li>Comportamento antidesportivo ou desrespeito para com outros participantes, júri ou organização</li>
+              <li>Tentativa de manipulação do processo de avaliação</li>
+            </ul>
+          </mat-expansion-panel>
+        </div>
+      </div>
+
+      <!-- Avaliação -->
+      <div class="contest-section" id="criterios">
+        <div class="contest-section__header">
+          <span class="contest-section__tag">Avaliação</span>
+          <h2>Critérios de avaliação</h2>
+          <p>Cada projeto é avaliado por um júri de pelo menos 3 elementos na respetiva área. As decisões são
+            soberanas e inapelável.</p>
+        </div>
+        <div class="contest-criteria">
+          <div class="contest-criterion" *ngFor="let c of criteria">
+            <div class="contest-criterion__weight">{{ c.weight }}</div>
+            <div class="contest-criterion__info">
+              <h4>{{ c.name }}</h4>
+              <p>{{ c.desc }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar (Right) -->
+    <aside class="contest-layout__sidebar">
+      <div class="sticky-sidebar">
+        <!-- Prize Box -->
+        <div class="sidebar-widget prize-widget">
+          <div class="prize-widget__header">
+            <mat-icon>emoji_events</mat-icon>
+            <h3>Prémio</h3>
+          </div>
+          <div class="prize-widget__amount">350 €</div>
+          <p>Prémio único entregue à equipa vencedora com o melhor projeto absoluto do desafio.</p>
+        </div>
+
+        <!-- Timeline -->
+        <div class="sidebar-widget timeline-widget">
+          <h3>Cronograma</h3>
+          <div class="contest-timeline">
+            <div class="contest-timeline__item" *ngFor="let t of timeline; let i = index" [ngClass]="{
+                'contest-timeline__item--active': getPhaseStatus(i) === 'active',
+                'contest-timeline__item--past': getPhaseStatus(i) === 'past',
+                'contest-timeline__item--future': getPhaseStatus(i) === 'future'
+              }">
+              <div class="contest-timeline__marker">
+                <div class="contest-timeline__dot"></div>
+                <div class="contest-timeline__line" *ngIf="i < timeline.length - 1"></div>
+              </div>
+              <div class="contest-timeline__content">
+                <span class="contest-timeline__date">{{ t.dateLabel }}</span>
+                <div class="contest-timeline__phase-row">
+                  <h4>{{ t.phase }}</h4>
+                  <span class="contest-timeline__badge" *ngIf="getPhaseStatus(i) === 'active'">Agora</span>
+                </div>
+                <p>{{ t.desc }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Registration Block / Final CTA -->
+  <div class="contest-registration-block" *ngIf="registrationOpen">
+    <div class="container">
+      <div class="registration-content">
+        <mat-icon class="registration-icon">rocket_launch</mat-icon>
+        <h2>Pronto para o desafio?</h2>
+        <p>Cria o teu projeto na plataforma, junta a tua equipa e inscreve-te. As inscrições são essenciais para
+          garantires o teu lugar na competição.</p>
+
+        <div class="registration-actions">
+          <button mat-raised-button color="primary" class="btn-register" (click)="goToRegister()">
+            <mat-icon>{{ auth.isLoggedIn ? 'app_registration' : 'login' }}</mat-icon>
+            {{ auth.isLoggedIn ? 'Inscrever-me agora' : 'Iniciar sessão para inscrever' }}
+          </button>
+        </div>
+        <p class="registration-subtext">As inscrições encerram a 14 de julho. Não percas esta oportunidade.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Registration Closed Block -->
+  <div class="contest-registration-block contest-registration-block--closed" *ngIf="!registrationOpen">
+    <div class="container">
+      <div class="registration-content">
+        <mat-icon class="registration-icon">event_busy</mat-icon>
+        <h2>Inscrições encerradas</h2>
+        <p>O período de inscrições para esta edição do Build Challenge já terminou. Obrigado a todos os participantes!
+        </p>
+        <p class="registration-subtext registration-subtext--next">Fica atento — haverá uma próxima edição em breve.
+          Segue-nos para não perderes a abertura das novas inscrições.</p>
+      </div>
+    </div>
+  </div>
+</section>

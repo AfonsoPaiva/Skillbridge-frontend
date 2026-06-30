@@ -1,0 +1,330 @@
+@use '../../../../styles/variables' as v;
+
+.contest-register {
+  padding: v.$space-6 0 v.$space-16;
+  min-height: 70vh;
+
+  &__inner {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0 v.$space-4;
+  }
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    gap: v.$space-3;
+    margin-bottom: v.$space-6;
+
+    h1 {
+      font-size: clamp(1.375rem, 3vw, 1.625rem);
+      font-weight: 700;
+      color: v.$color-text;
+      margin: 0 0 v.$space-1;
+    }
+
+    p {
+      font-size: 0.9375rem;
+      color: v.$color-text-soft;
+      margin: 0;
+    }
+  }
+
+  &__notice {
+    display: flex;
+    align-items: flex-start;
+    gap: v.$space-3;
+    padding: v.$space-4;
+    background: rgba(104, 0, 122, 0.04);
+    border: 1px solid rgba(104, 0, 122, 0.12);
+    border-radius: v.$radius-sm;
+    margin-bottom: v.$space-6;
+    font-size: 0.875rem;
+    color: v.$color-text-soft;
+    line-height: 1.55;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      color: v.$color-primary;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    strong {
+      color: v.$color-text;
+    }
+  }
+
+  &__field {
+    margin-bottom: v.$space-6;
+
+    h3 {
+      display: flex;
+      align-items: center;
+      gap: v.$space-2;
+      font-size: 1rem;
+      font-weight: 600;
+      color: v.$color-text;
+      margin: 0 0 v.$space-3;
+
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        color: v.$color-primary;
+      }
+    }
+  }
+
+  &__projects {
+    display: flex;
+    flex-direction: column;
+    gap: v.$space-2;
+  }
+
+  &__select {
+    width: 100%;
+  }
+
+  &__empty {
+    text-align: center;
+    padding: v.$space-8 v.$space-4;
+    border: 1px dashed v.$color-border;
+    border-radius: v.$radius-md;
+
+    mat-icon {
+      font-size: 40px;
+      width: 40px;
+      height: 40px;
+      color: v.$color-text-soft;
+      margin-bottom: v.$space-3;
+    }
+
+    p {
+      font-size: 0.875rem;
+      color: v.$color-text-soft;
+      margin: 0 0 v.$space-1;
+
+      &:last-of-type {
+        margin-bottom: v.$space-4;
+      }
+    }
+  }
+
+  &__download {
+    margin-bottom: v.$space-4;
+  }
+
+  &__error {
+    display: flex;
+    align-items: center;
+    gap: v.$space-2;
+    color: #b42318;
+    font-size: 0.875rem;
+    margin-bottom: v.$space-4;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  &__submit {
+    text-align: center;
+  }
+
+  &__pay-btn {
+    width: 100%;
+    height: 48px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: v.$radius-sm;
+
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+
+  &__secure {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: v.$space-3;
+    font-size: 0.8125rem;
+    color: v.$color-text-soft;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      color: #10b981;
+    }
+  }
+
+  &__back {
+    margin-bottom: v.$space-3;
+  }
+
+  &__checkout {
+    margin-top: v.$space-3;
+    width: 100%;
+  }
+
+  // ── Already registered ──────────────────────────
+  &__done {
+    text-align: center;
+    padding: v.$space-10 0;
+  }
+
+  &__done-icon {
+    font-size: 56px;
+    width: 56px;
+    height: 56px;
+    color: #10b981;
+    margin-bottom: v.$space-4;
+  }
+
+  &__done h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: v.$color-text;
+    margin: 0 0 v.$space-2;
+  }
+
+  &__done > p {
+    color: v.$color-text-soft;
+    font-size: 0.9375rem;
+    margin: 0 0 v.$space-6;
+  }
+
+  &__done-details {
+    max-width: 360px;
+    margin: 0 auto v.$space-6;
+    border: 1px solid v.$color-border;
+    border-radius: v.$radius-md;
+    overflow: hidden;
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: v.$space-3 v.$space-4;
+      border-bottom: 1px solid v.$color-border;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      span {
+        font-size: 0.875rem;
+        color: v.$color-text-soft;
+      }
+
+      strong {
+        font-size: 0.9375rem;
+        color: v.$color-text;
+      }
+
+      .status-paid {
+        color: #10b981;
+      }
+    }
+  }
+}
+
+// ── Project option card ─────────────────────────
+.project-option {
+  display: flex;
+  align-items: flex-start;
+  gap: v.$space-3;
+  padding: v.$space-3 v.$space-4;
+  border: 2px solid v.$color-border;
+  border-radius: v.$radius-sm;
+  cursor: pointer;
+  transition: border-color v.$transition-base, background v.$transition-base;
+
+  &:hover {
+    border-color: rgba(104, 0, 122, 0.3);
+  }
+
+  &--selected {
+    border-color: v.$color-primary;
+    background: rgba(104, 0, 122, 0.03);
+  }
+
+  &__radio {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid v.$color-border;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+    transition: border-color v.$transition-base;
+
+    .project-option--selected & {
+      border-color: v.$color-primary;
+    }
+  }
+
+  &__radio-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: v.$color-primary;
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+
+    strong {
+      display: block;
+      font-size: 0.9375rem;
+      color: v.$color-text;
+      margin-bottom: 2px;
+    }
+  }
+
+  &__desc {
+    display: block;
+    font-size: 0.8125rem;
+    color: v.$color-text-soft;
+    line-height: 1.4;
+    margin-bottom: v.$space-2;
+  }
+
+  &__meta {
+    display: flex;
+    gap: v.$space-3;
+  }
+
+  &__members {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: v.$color-text-soft;
+
+    mat-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+      color: v.$color-primary;
+    }
+  }
+}
+
+@media (max-width: v.$bp-sm) {
+  .contest-register {
+    &__header {
+      flex-direction: column;
+    }
+  }
+}

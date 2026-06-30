@@ -1,0 +1,157 @@
+<section class="contest-register">
+  <div class="container contest-register__inner">
+
+    <!-- Already registered -->
+    <div class="contest-register__done" *ngIf="step === 'already-registered'">
+      <mat-icon class="contest-register__done-icon">check_circle</mat-icon>
+      <h2>Já estás inscrito!</h2>
+      <p>A tua inscrição no Build Challenge está confirmada.</p>
+
+      <div class="contest-register__done-details" *ngIf="existingRegistration">
+        <div class="detail-row">
+          <span>Área</span>
+          <strong>{{ existingRegistration.track }}</strong>
+        </div>
+        <div class="detail-row">
+          <span>Projeto</span>
+          <strong>{{ existingRegistration.project?.title || '—' }}</strong>
+        </div>
+        <div class="detail-row">
+          <span>Estado</span>
+          <strong class="status-paid">Pago ✓</strong>
+        </div>
+      </div>
+
+      <button mat-stroked-button color="primary" (click)="goToContest()">
+        <mat-icon>arrow_back</mat-icon>
+        Voltar à página do concurso
+      </button>
+    </div>
+
+    <!-- Registration form -->
+    <div *ngIf="step === 'form'">
+      <div class="contest-register__header">
+        <button mat-icon-button (click)="goToContest()" aria-label="Voltar">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <div>
+          <h1>Inscrição no Build Challenge</h1>
+          <p>Seleciona o teu projeto e a área. Cada membro paga 7 € individualmente.</p>
+        </div>
+      </div>
+
+      <!-- Important notice -->
+      <div class="contest-register__notice">
+        <mat-icon>info</mat-icon>
+        <div>
+          <strong>Importante:</strong> Um dos membros da equipa deve primeiro criar o projeto na
+          plataforma e adicionar os restantes membros. Cada pessoa inscreve-se individualmente
+          selecionando o mesmo projeto.
+        </div>
+      </div>
+
+      <!-- Project selection -->
+      <div class="contest-register__field">
+        <h3>
+          <mat-icon>folder_open</mat-icon>
+          Seleciona o teu projeto
+        </h3>
+
+        <mat-progress-bar *ngIf="loadingProjects" mode="indeterminate"></mat-progress-bar>
+
+        <div class="contest-register__projects" *ngIf="!loadingProjects">
+          <div
+            class="project-option"
+            *ngFor="let p of projects"
+            [class.project-option--selected]="selectedProjectId === p.id"
+            (click)="selectedProjectId = p.id">
+            <div class="project-option__radio">
+              <div class="project-option__radio-dot" *ngIf="selectedProjectId === p.id"></div>
+            </div>
+            <div class="project-option__info">
+              <strong>{{ p.title }}</strong>
+              <span class="project-option__desc">{{ p.description | slice:0:100 }}{{ p.description && p.description.length > 100 ? '…' : '' }}</span>
+              <div class="project-option__meta">
+                <span class="project-option__members">
+                  <mat-icon>people</mat-icon>
+                  {{ getMemberCount(p) }} / {{ getTotalSpots(p) }} membros
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="contest-register__empty" *ngIf="projects.length === 0">
+            <mat-icon>folder_off</mat-icon>
+            <p>Não tens projetos na plataforma.</p>
+            <p>Cria um projeto ou pede a um membro da equipa para te adicionar.</p>
+            <a mat-stroked-button color="primary" routerLink="/dashboard">
+              <mat-icon>add</mat-icon>
+              Criar projeto
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Track selection -->
+      <div class="contest-register__field" *ngIf="projects.length > 0">
+        <h3>
+          <mat-icon>category</mat-icon>
+          Seleciona a área temática
+        </h3>
+
+        <mat-form-field appearance="outline" class="contest-register__select">
+          <mat-label>Área</mat-label>
+          <mat-select [(value)]="selectedTrack">
+            <mat-option *ngFor="let t of tracks" [value]="t.code">
+              {{ t.code }} — {{ t.name }}
+            </mat-option>
+          </mat-select>
+          <mat-hint>A área define o tema do projeto, não a área de estudo dos membros.</mat-hint>
+        </mat-form-field>
+      </div>
+
+      <!-- Download regulamento -->
+      <div class="contest-register__download" *ngIf="projects.length > 0">
+        <button mat-button color="primary" (click)="downloadRegulamento()">
+          <mat-icon>download</mat-icon>
+          Descarregar regulamento (PDF)
+        </button>
+      </div>
+
+      <!-- Error -->
+      <p class="contest-register__error" *ngIf="error">
+        <mat-icon>error</mat-icon>
+        {{ error }}
+      </p>
+
+      <!-- Submit -->
+      <div class="contest-register__submit" *ngIf="projects.length > 0">
+        <button
+          mat-raised-button
+          color="primary"
+          class="contest-register__pay-btn"
+          [disabled]="!canSubmit()"
+          (click)="submitRegistration()">
+          <mat-icon>lock</mat-icon>
+          Pagar inscrição — 7,00 €
+        </button>
+        <p class="contest-register__secure">
+          <mat-icon>shield</mat-icon>
+          Pagamento 100% seguro processado pela Stripe
+        </p>
+      </div>
+    </div>
+
+    <!-- Checkout step -->
+    <div *ngIf="step === 'checkout'">
+      <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+
+      <button mat-button *ngIf="!loading" (click)="goBack()" class="contest-register__back">
+        <mat-icon>arrow_back</mat-icon> Voltar ao formulário
+      </button>
+
+      <div #checkoutContainer class="contest-register__checkout"></div>
+    </div>
+
+  </div>
+</section>

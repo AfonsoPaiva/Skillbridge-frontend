@@ -1,0 +1,765 @@
+@use '../../../../styles/variables' as v;
+@use '../../../../styles/mixins' as m;
+
+.contest-page {
+  padding: 0;
+  background: v.$color-bg;
+}
+
+// ── Hero ────────────────────────────────────────
+.contest-hero {
+  background: v.$color-surface;
+  border-bottom: 1px solid v.$color-border;
+  padding: v.$space-20 0 v.$space-12;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: radial-gradient(circle at top right, rgba(v.$color-primary, 0.05), transparent 60%);
+    pointer-events: none;
+  }
+
+  &__container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: v.$space-10;
+    max-width: 1100px;
+    margin: 0 auto;
+
+    @include m.lg {
+      grid-template-columns: 1.2fr 1fr;
+      align-items: center;
+    }
+  }
+
+  &__content {
+    max-width: 700px;
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: rgba(v.$color-primary, 0.1);
+    color: v.$color-primary;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    margin-bottom: v.$space-4;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    color: v.$color-text;
+    margin: 0 0 v.$space-4;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+
+  &__lead {
+    font-size: clamp(1rem, 2vw, 1.15rem);
+    color: v.$color-text-soft;
+    line-height: 1.6;
+    margin: 0 0 v.$space-6;
+  }
+
+  &__actions {
+    display: flex;
+    gap: v.$space-3;
+    margin-bottom: v.$space-4;
+  }
+
+  &__count {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: v.$color-text-soft;
+    font-size: 0.875rem;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: v.$color-primary;
+    }
+  }
+
+  &__stats {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: v.$space-4;
+    background: v.$color-surface;
+    padding: v.$space-5;
+    border-radius: v.$radius-lg;
+    border: 1px solid v.$color-border;
+    box-shadow: v.$shadow-md;
+    position: relative;
+    z-index: 1;
+
+    @include m.sm {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+}
+
+.contest-stat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  mat-icon {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+    color: v.$color-primary;
+    flex-shrink: 0;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+
+    strong {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: v.$color-text;
+    }
+
+    span {
+      font-size: 0.75rem;
+      color: v.$color-text-soft;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+}
+
+// ── Layout ──────────────────────────────────────
+.contest-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: v.$space-10;
+  max-width: 1100px;
+  padding: v.$space-12 v.$space-4 v.$space-16;
+  margin: 0 auto;
+
+  @include m.lg {
+    grid-template-columns: 1fr 340px;
+    gap: v.$space-12;
+  }
+
+  &__main {
+    display: flex;
+    flex-direction: column;
+    gap: v.$space-12;
+  }
+}
+
+.sticky-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-4;
+
+  @media (min-height: 750px) {
+    position: sticky;
+    top: 100px;
+    height: calc(100vh - 140px);
+  }
+}
+
+.sidebar-widget {
+  background: v.$color-surface;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-lg;
+  padding: v.$space-5;
+  box-shadow: v.$shadow-sm;
+
+  h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin: 0 0 v.$space-3;
+  }
+}
+
+.prize-widget {
+  background: rgba(v.$color-primary, 0.05);
+  border: 1px solid rgba(v.$color-primary, 0.2);
+  text-align: center;
+  padding: v.$space-6 v.$space-5;
+  transition: transform v.$transition-base, box-shadow v.$transition-base;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: v.$shadow-md;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: v.$color-primary;
+    margin-bottom: v.$space-3;
+
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 800;
+    }
+  }
+
+  &__amount {
+    font-size: clamp(3rem, 6vw, 3.5rem);
+    font-weight: 900;
+    color: v.$color-primary;
+    line-height: 1;
+    margin-bottom: v.$space-4;
+    text-shadow: 0 2px 8px rgba(v.$color-primary, 0.15);
+  }
+
+  p {
+    font-size: 0.875rem;
+    color: v.$color-text-soft;
+    margin: 0;
+    line-height: 1.6;
+    font-weight: 500;
+  }
+}
+
+// ── Sections (Main Content) ─────────────────────
+.contest-section {
+  &__header {
+    margin-bottom: v.$space-6;
+
+    h2 {
+      font-size: clamp(1.4rem, 3vw, 1.8rem);
+      font-weight: 800;
+      color: v.$color-text;
+      margin: 0 0 v.$space-2;
+      letter-spacing: -0.02em;
+    }
+
+    p {
+      color: v.$color-text-soft;
+      font-size: 1rem;
+      margin: 0;
+      line-height: 1.5;
+    }
+  }
+
+  &__tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: v.$color-primary;
+    margin-bottom: v.$space-2;
+  }
+}
+
+// ── Grids ───────────────────────────────────────
+.contest-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: v.$space-4;
+}
+
+.contest-info-card {
+  background: v.$color-surface;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-md;
+  padding: v.$space-5;
+  transition: box-shadow v.$transition-base;
+
+  &:hover {
+    box-shadow: v.$shadow-sm;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 v.$space-2;
+  }
+
+  p {
+    font-size: 0.875rem;
+    color: v.$color-text-soft;
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+.contest-tracks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: v.$space-4;
+}
+
+.contest-track-card {
+  position: relative;
+  background: v.$color-surface;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-md;
+  padding: v.$space-4;
+  transition: border-color v.$transition-base, box-shadow v.$transition-base;
+
+  &:hover {
+    border-color: v.$color-primary;
+    box-shadow: v.$shadow-sm;
+  }
+
+  &__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(v.$color-primary, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: v.$space-3;
+
+    mat-icon {
+      font-size: 22px;
+      width: 22px;
+      height: 22px;
+      color: v.$color-primary;
+    }
+  }
+
+  &__code {
+    position: absolute;
+    top: v.$space-3;
+    right: v.$space-3;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: rgba(v.$color-primary, 0.06);
+    color: v.$color-primary;
+    font-weight: 700;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  h4 {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+
+  p {
+    font-size: 0.8125rem;
+    color: v.$color-text-soft;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  &__count {
+    margin-top: v.$space-2;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: v.$color-primary;
+  }
+}
+
+.contest-note {
+  display: flex;
+  align-items: center;
+  gap: v.$space-2;
+  margin-top: v.$space-4;
+  padding: v.$space-3 v.$space-4;
+  background: rgba(v.$color-primary, 0.04);
+  border-radius: v.$radius-sm;
+  font-size: 0.8125rem;
+  color: v.$color-text-soft;
+  line-height: 1.5;
+  white-space: nowrap;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: v.$color-primary;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 768px) {
+    white-space: normal;
+    align-items: flex-start;
+    flex-direction: column;
+    text-align: center;
+    gap: v.$space-1;
+
+    mat-icon {
+      align-self: center;
+    }
+  }
+}
+
+// ── Rules ───────────────────────────────────────
+.contest-rules {
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-2;
+
+  mat-expansion-panel {
+    box-shadow: none !important;
+    border: 1px solid v.$color-border;
+    border-radius: v.$radius-sm !important;
+
+    &::ng-deep .mat-expansion-panel-body {
+      padding: 0 v.$space-4 v.$space-4;
+    }
+  }
+
+  ul {
+    margin: 0;
+    padding-left: v.$space-5;
+
+    li {
+      font-size: 0.875rem;
+      color: v.$color-text-soft;
+      line-height: 1.6;
+      margin-bottom: v.$space-1;
+    }
+  }
+}
+
+// ── Criteria ────────────────────────────────────
+.contest-criteria {
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-3;
+}
+
+.contest-criterion {
+  display: flex;
+  align-items: center;
+  gap: v.$space-4;
+  padding: v.$space-3 v.$space-4;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-sm;
+
+  &__weight {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(v.$color-primary, 0.08);
+    color: v.$color-primary;
+    font-weight: 700;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__info {
+    flex: 1;
+
+    h4 {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      margin: 0 0 2px;
+    }
+
+    p {
+      font-size: 0.8125rem;
+      color: v.$color-text-soft;
+      margin: 0;
+      line-height: 1.4;
+    }
+  }
+}
+
+// ── Timeline ────────────────────────────────────
+.timeline-widget {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.contest-timeline {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: space-between;
+
+  &__item {
+    display: flex;
+    gap: v.$space-3;
+    padding: v.$space-2 v.$space-3;
+    border-radius: v.$radius-sm;
+    transition: background v.$transition-base, opacity v.$transition-base;
+
+    // ── Active state ──
+    &--active {
+      background: rgba(v.$color-primary, 0.06);
+      border-left: 3px solid v.$color-primary;
+      border-radius: v.$radius-sm;
+
+      .contest-timeline__dot {
+        background: v.$color-primary;
+        box-shadow: 0 0 0 4px rgba(v.$color-primary, 0.2);
+        animation: timeline-pulse 2s ease-in-out infinite;
+      }
+
+      .contest-timeline__content h4 {
+        color: v.$color-primary;
+      }
+
+      .contest-timeline__date {
+        color: v.$color-primary;
+        font-weight: 700;
+      }
+    }
+
+    // ── Past state ──
+    &--past {
+      opacity: 0.55;
+
+      .contest-timeline__dot {
+        background: #4caf50;
+      }
+
+      .contest-timeline__line {
+        background: #4caf50;
+      }
+    }
+
+    // ── Future state ──
+    &--future {
+      .contest-timeline__dot {
+        background: v.$color-border;
+      }
+    }
+  }
+
+  &__marker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    width: 16px;
+  }
+
+  &__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: v.$color-primary;
+    flex-shrink: 0;
+    margin-top: 6px;
+    transition: box-shadow 0.3s, background 0.3s;
+  }
+
+  &__line {
+    width: 2px;
+    flex: 1;
+    background: v.$color-border;
+    margin: 4px 0;
+    transition: background 0.3s;
+  }
+
+  &__content {
+    padding-bottom: 0;
+  }
+
+  &__date {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: v.$color-text-soft;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &__phase-row {
+    display: flex;
+    align-items: center;
+    gap: v.$space-2;
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: v.$color-primary;
+    color: #fff;
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    animation: badge-fade-in 0.5s ease-out;
+  }
+
+  h4 {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    margin: 2px 0 4px;
+    transition: color 0.3s;
+  }
+
+  p {
+    font-size: 0.8125rem;
+    color: v.$color-text-soft;
+    margin: 0;
+    line-height: 1.4;
+  }
+}
+
+@keyframes timeline-pulse {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(v.$color-primary, 0.2); }
+  50% { box-shadow: 0 0 0 8px rgba(v.$color-primary, 0.08); }
+}
+
+@keyframes badge-fade-in {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+// ── Registration Block (CTA) ────────────────────
+.contest-registration-block {
+  background: v.$color-surface;
+  border-top: 1px solid v.$color-border;
+  padding: v.$space-16 0;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(v.$color-primary, 0.05), transparent 70%);
+    pointer-events: none;
+  }
+
+  .registration-content {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+
+    .registration-icon {
+      font-size: 56px;
+      width: 56px;
+      height: 56px;
+      color: v.$color-primary;
+      margin-bottom: v.$space-4;
+    }
+
+    h2 {
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 800;
+      color: v.$color-text;
+      margin: 0 0 v.$space-4;
+      letter-spacing: -0.02em;
+    }
+
+    p {
+      color: v.$color-text-soft;
+      font-size: clamp(1rem, 2vw, 1.125rem);
+      line-height: 1.6;
+      margin: 0 0 v.$space-8;
+    }
+
+    .registration-actions {
+      display: flex;
+      justify-content: center;
+      margin-bottom: v.$space-4;
+
+      .btn-register {
+        padding: 0 40px;
+        height: 56px;
+        font-size: 1.125rem;
+        font-weight: 700;
+        border-radius: v.$radius-md;
+        box-shadow: 0 4px 14px rgba(v.$color-primary, 0.4);
+        transition: transform 0.2s, box-shadow 0.2s;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(v.$color-primary, 0.5);
+        }
+
+        mat-icon {
+          margin-right: 8px;
+        }
+      }
+    }
+
+    .registration-subtext {
+      font-size: 0.875rem;
+      color: v.$color-text-soft;
+      margin: 0;
+      font-weight: 500;
+
+      &--next {
+        margin-top: v.$space-2;
+        font-weight: 600;
+        color: v.$color-primary;
+      }
+    }
+  }
+
+  // ── Closed state ──
+  &--closed {
+    &::before {
+      background: radial-gradient(circle, rgba(#f59e0b, 0.05), transparent 70%);
+    }
+
+    .registration-content {
+      .registration-icon {
+        color: v.$color-text-soft;
+        opacity: 0.7;
+      }
+
+      h2 {
+        color: v.$color-text;
+      }
+
+      p {
+        margin-bottom: v.$space-4;
+      }
+    }
+  }
+}
+
+// ── Responsive tweaks ───────────────────────────
+@media (max-width: v.$bp-md) {
+  .contest-hero {
+    &__container {
+      grid-template-columns: 1fr;
+    }
+  }
+}
