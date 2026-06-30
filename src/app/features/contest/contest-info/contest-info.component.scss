@@ -199,7 +199,7 @@
   background: rgba(v.$color-primary, 0.05);
   border: 1px solid rgba(v.$color-primary, 0.2);
   text-align: center;
-  padding: v.$space-6 v.$space-5;
+  padding: v.$space-4 v.$space-4;
   transition: transform v.$transition-base, box-shadow v.$transition-base;
 
   &:hover {
@@ -231,11 +231,11 @@
   }
 
   &__amount {
-    font-size: clamp(3rem, 6vw, 3.5rem);
+    font-size: clamp(2.5rem, 5vw, 3rem);
     font-weight: 900;
     color: v.$color-primary;
     line-height: 1;
-    margin-bottom: v.$space-4;
+    margin-bottom: v.$space-2;
     text-shadow: 0 2px 8px rgba(v.$color-primary, 0.15);
   }
 
@@ -394,10 +394,11 @@
   padding: v.$space-3 v.$space-4;
   background: rgba(v.$color-primary, 0.04);
   border-radius: v.$radius-sm;
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   color: v.$color-text-soft;
-  line-height: 1.5;
-  white-space: nowrap;
+  line-height: 1.4;
+  white-space: normal;
+  letter-spacing: -0.01em;
 
   mat-icon {
     font-size: 18px;
@@ -495,7 +496,15 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  
+  /* Hide scrollbar for a clean look, but allow trackpad scroll just in case */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .contest-timeline {
@@ -506,8 +515,8 @@
 
   &__item {
     display: flex;
-    gap: v.$space-3;
-    padding: v.$space-2 v.$space-3;
+    gap: v.$space-2;
+    padding: v.$space-1 v.$space-2;
     border-radius: v.$radius-sm;
     transition: background v.$transition-base, opacity v.$transition-base;
 
