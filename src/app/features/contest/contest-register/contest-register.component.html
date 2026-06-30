@@ -30,9 +30,11 @@
 
     <!-- Registration form -->
     <div *ngIf="step === 'form'">
-      <button mat-stroked-button (click)="goToContest()" class="contest-register__back">
-        <mat-icon>arrow_back</mat-icon> Voltar
-      </button>
+      <div class="contest-register__nav">
+        <button mat-stroked-button (click)="goToContest()">
+          <mat-icon>arrow_back</mat-icon> Voltar à página do concurso
+        </button>
+      </div>
 
       <div class="contest-register__header">
         <div>
@@ -99,16 +101,26 @@
           <mat-icon>category</mat-icon>
           Seleciona a área temática
         </h3>
+        <p class="contest-register__hint">
+          <mat-icon>info</mat-icon>
+          A área define o tema do projeto, não a área de estudo dos membros.
+        </p>
 
-        <mat-form-field appearance="outline" class="contest-register__select">
-          <mat-label>Área</mat-label>
-          <mat-select [(value)]="selectedTrack">
-            <mat-option *ngFor="let t of tracks" [value]="t.code">
-              {{ t.code }} — {{ t.name }}
-            </mat-option>
-          </mat-select>
-          <mat-hint>A área define o tema do projeto, não a área de estudo dos membros.</mat-hint>
-        </mat-form-field>
+        <div class="contest-register__tracks">
+          <div
+            class="track-option"
+            *ngFor="let t of tracks"
+            [class.track-option--selected]="selectedTrack === t.code"
+            (click)="selectedTrack = t.code">
+            <div class="track-option__radio">
+              <div class="track-option__radio-dot" *ngIf="selectedTrack === t.code"></div>
+            </div>
+            <div class="track-option__info">
+              <strong>{{ t.code }}</strong>
+              <span>{{ t.name }}</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Download regulamento -->

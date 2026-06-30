@@ -10,6 +10,10 @@
     padding: 0 v.$space-4;
   }
 
+  &__nav {
+    margin-bottom: v.$space-6;
+  }
+
   &__header {
     display: flex;
     align-items: flex-start;
@@ -86,6 +90,28 @@
 
   &__select {
     width: 100%;
+  }
+
+  &__hint {
+    display: flex;
+    align-items: center;
+    gap: v.$space-2;
+    font-size: 0.8125rem;
+    color: v.$color-text-soft;
+    margin: 0 0 v.$space-4;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      color: v.$color-primary;
+    }
+  }
+
+  &__tracks {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: v.$space-2;
   }
 
   &__empty {
@@ -321,10 +347,81 @@
   }
 }
 
+// ── Track option card ───────────────────────────
+.track-option {
+  display: flex;
+  align-items: center;
+  gap: v.$space-2;
+  padding: v.$space-2 v.$space-3;
+  border: 2px solid v.$color-border;
+  border-radius: v.$radius-sm;
+  cursor: pointer;
+  transition: border-color v.$transition-base, background v.$transition-base;
+  background: v.$color-bg;
+
+  &:hover {
+    border-color: rgba(104, 0, 122, 0.3);
+  }
+
+  &--selected {
+    border-color: v.$color-primary;
+    background: rgba(104, 0, 122, 0.03);
+  }
+
+  &__radio {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid v.$color-border;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: border-color v.$transition-base;
+
+    .track-option--selected & {
+      border-color: v.$color-primary;
+    }
+  }
+
+  &__radio-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: v.$color-primary;
+  }
+
+  &__info {
+    display: flex;
+    align-items: baseline;
+    gap: v.$space-2;
+    flex: 1;
+    min-width: 0;
+
+    strong {
+      font-size: 0.9375rem;
+      color: v.$color-primary;
+      font-weight: 700;
+    }
+
+    span {
+      font-size: 0.8125rem;
+      color: v.$color-text;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
 @media (max-width: v.$bp-sm) {
   .contest-register {
     &__header {
       flex-direction: column;
+    }
+    
+    &__tracks {
+      grid-template-columns: 1fr;
     }
   }
 }
