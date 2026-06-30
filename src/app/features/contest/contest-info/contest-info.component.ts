@@ -49,35 +49,35 @@ export class ContestInfoComponent implements OnInit {
   timeline: TimelineItem[] = [
     {
       phase: 'Inscrições',
-      desc: 'Período exclusivo para formalização da inscrição e pagamento da taxa. Validação técnica das equipas.',
+      desc: 'Inscrição e pagamento da taxa. Validação técnica e confirmação final do prémio. Não são aceites inscrições após o prazo.',
       startDate: new Date(2026, 6, 1),   // 1 julho
       endDate: new Date(2026, 6, 24),    // 24 julho
       dateLabel: '1 – 24 julho'
     },
     {
       phase: 'Avaliação',
-      desc: 'Projetos são avaliados para verificar a elegibilidade. Só a partir da aprovação os grupos podem começar o desenvolvimento.',
+      desc: 'Avaliação de elegibilidade. O desenvolvimento só arranca após a aprovação do projeto.',
       startDate: new Date(2026, 6, 25),  // 25 julho
       endDate: new Date(2026, 6, 25),    // 25 julho
       dateLabel: '25 julho'
     },
     {
       phase: 'Desenvolvimento',
-      desc: 'Período de construção do projeto. Check-in obrigatório a 15 de agosto.',
+      desc: 'Construção do projeto. Check-in de progresso a 15 de agosto (obrigatório, sob pena de desqualificação).',
       startDate: new Date(2026, 6, 26),  // 26 julho
       endDate: new Date(2026, 8, 6),     // 6 setembro
       dateLabel: '26 julho – 6 setembro'
     },
     {
       phase: 'Submissão',
-      desc: 'Entrega final: repositório público, vídeo demo (máx. 3 min) ou deck de apresentação.',
+      desc: 'Entrega na plataforma (repo, vídeo ou deck). Não são aceites submissões fora do prazo.',
       startDate: new Date(2026, 8, 6),   // 6 setembro
       endDate: new Date(2026, 8, 9),     // 9 setembro
       dateLabel: '6 – 9 setembro'
     },
     {
       phase: 'Resultados',
-      desc: 'Avaliação pelo júri (máx. 3 dias). Divulgação via livestream no YouTube. Prémio em 5 dias úteis.',
+      desc: 'Avaliação do júri. Livestream no YouTube, notificação e transferência do prémio (máx. 5 dias).',
       startDate: new Date(2026, 8, 14),  // 14 setembro
       endDate: new Date(2026, 8, 14),    // 14 setembro
       dateLabel: '14 setembro'
