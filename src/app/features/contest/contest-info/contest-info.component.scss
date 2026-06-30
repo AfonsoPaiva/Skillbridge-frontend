@@ -176,10 +176,12 @@
   flex-direction: column;
   gap: v.$space-3;
 
-  @media (min-height: 750px) {
-    position: sticky;
-    top: 100px;
-    height: calc(100vh - 140px);
+  @include m.lg {
+    @media (min-height: 550px) {
+      position: sticky;
+      top: 100px;
+      max-height: calc(100vh - 140px);
+    }
   }
 }
 
