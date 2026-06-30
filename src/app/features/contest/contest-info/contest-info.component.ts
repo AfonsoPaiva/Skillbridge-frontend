@@ -51,36 +51,43 @@ export class ContestInfoComponent implements OnInit {
       phase: 'Inscrições',
       desc: 'Período exclusivo para formalização da inscrição e pagamento da taxa. Validação técnica das equipas.',
       startDate: new Date(2026, 6, 1),   // 1 julho
-      endDate: new Date(2026, 6, 14),     // 14 julho
-      dateLabel: '1 – 14 julho'
+      endDate: new Date(2026, 6, 24),    // 24 julho
+      dateLabel: '1 – 24 julho'
+    },
+    {
+      phase: 'Avaliação',
+      desc: 'Projetos são avaliados para verificar a elegibilidade. Só a partir da aprovação os grupos podem começar o desenvolvimento.',
+      startDate: new Date(2026, 6, 25),  // 25 julho
+      endDate: new Date(2026, 6, 25),    // 25 julho
+      dateLabel: '25 julho'
     },
     {
       phase: 'Desenvolvimento',
-      desc: 'Período de construção do projeto. Check-in obrigatório a 23 de julho.',
-      startDate: new Date(2026, 6, 14),   // 14 julho
-      endDate: new Date(2026, 7, 7),      // 7 agosto
-      dateLabel: '14 julho – 7 agosto'
+      desc: 'Período de construção do projeto. Check-in obrigatório a 15 de agosto.',
+      startDate: new Date(2026, 6, 26),  // 26 julho
+      endDate: new Date(2026, 8, 6),     // 6 setembro
+      dateLabel: '26 julho – 6 setembro'
     },
     {
       phase: 'Submissão',
       desc: 'Entrega final: repositório público, vídeo demo (máx. 3 min) ou deck de apresentação.',
-      startDate: new Date(2026, 7, 7),    // 7 agosto
-      endDate: new Date(2026, 7, 10),     // 10 agosto
-      dateLabel: '7 – 10 agosto'
+      startDate: new Date(2026, 8, 6),   // 6 setembro
+      endDate: new Date(2026, 8, 9),     // 9 setembro
+      dateLabel: '6 – 9 setembro'
     },
     {
       phase: 'Resultados',
       desc: 'Avaliação pelo júri (máx. 3 dias). Divulgação via livestream no YouTube. Prémio em 5 dias úteis.',
-      startDate: new Date(2026, 7, 14),   // 14 agosto
-      endDate: new Date(2026, 7, 14),     // 14 agosto (single day)
-      dateLabel: '14 agosto'
+      startDate: new Date(2026, 8, 14),  // 14 setembro
+      endDate: new Date(2026, 8, 14),    // 14 setembro
+      dateLabel: '14 setembro'
     }
   ];
 
   activePhaseIndex = -1;
   registrationOpen = true;
   private timerInterval: any;
-  private readonly registrationDeadline = new Date(2026, 6, 14, 23, 59, 59); // 14 julho 2026 fim do dia
+  private readonly registrationDeadline = new Date(2026, 6, 24, 23, 59, 59); // 24 julho 2026 fim do dia
 
   criteria = [
     { name: 'Impacto e relevância', weight: '30%', desc: 'O projeto resolve um problema real? Tem utilidade demonstrada?' },

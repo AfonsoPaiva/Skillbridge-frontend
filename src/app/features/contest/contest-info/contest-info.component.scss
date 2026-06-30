@@ -398,6 +398,8 @@
   color: v.$color-text-soft;
   line-height: 1.5;
   white-space: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 
   mat-icon {
     font-size: 18px;
@@ -408,8 +410,7 @@
   }
 
   @media (max-width: 768px) {
-    white-space: normal;
-    align-items: flex-start;
+    align-items: center;
     text-align: left;
   }
 }
