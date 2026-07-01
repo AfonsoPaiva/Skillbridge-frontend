@@ -81,7 +81,8 @@
           </div>
           <div class="contest-info-card">
             <h3>Constrói</h3>
-            <p>Projeto original criado durante o concurso — desde protótipos funcionais a ideias bem desenvolvidas e
+            <p>Projeto original criado durante o concurso pode ser desde protótipos funcionais a ideias bem
+              desenvolvidas e
               fundamentadas.</p>
           </div>
           <div class="contest-info-card">
@@ -113,7 +114,8 @@
         </div>
         <p class="contest-note">
           <mat-icon>info</mat-icon>
-          <span><strong>Área L — Impacto Social</strong> é transversal a qualquer tipo de projeto que resolva um problema real de uma comunidade.</span>
+          <span><strong>Área L — Impacto Social</strong> é transversal a qualquer tipo de projeto que resolva um
+            problema real de uma comunidade.</span>
         </p>
       </div>
 
@@ -264,8 +266,8 @@
 
         <div class="registration-actions">
           <button mat-raised-button color="primary" class="btn-register" (click)="goToRegister()">
-            <mat-icon>{{ auth.isLoggedIn ? 'app_registration' : 'login' }}</mat-icon>
-            {{ auth.isLoggedIn ? 'Inscrever-me agora' : 'Regista-te para te inscreveres' }}
+            <mat-icon>{{ isRegistered ? 'visibility' : 'login' }}</mat-icon>
+            {{ auth.isLoggedIn ? (isRegistered ? 'Ver a minha inscrição' : 'Inscrever-me agora') : 'Regista-te para te inscreveres' }}
           </button>
         </div>
         <p class="registration-subtext">As inscrições encerram a 24 de julho. Não percas esta oportunidade.</p>

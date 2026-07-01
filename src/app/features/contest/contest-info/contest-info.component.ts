@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { SharedModule } from '../../../shared/shared.module';
 import { AuthService } from '../../../core/services/auth.service';
 import { ApiService } from '../../../core/services/api.service';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../../../environments/environment';
 
@@ -109,10 +109,12 @@ export class ContestInfoComponent implements OnInit {
     this.loadStats();
     this.updateActivePhase();
     this.checkRegistrationStatus();
+    this.checkUserRegistration();
     // Re-check every hour in case the day changes while the page is open
     this.timerInterval = setInterval(() => {
       this.updateActivePhase();
       this.checkRegistrationStatus();
+      if (this.auth.isLoggedIn) this.checkUserRegistration();
     }, 3600000);
   }
 
@@ -139,6 +141,28 @@ export class ContestInfoComponent implements OnInit {
 
   checkRegistrationStatus(): void {
     this.registrationOpen = new Date() <= this.registrationDeadline;
+  }
+
+  isRegistered = false;
+  checkUserRegistration(): void {
+    if (!this.auth.isLoggedIn) {
+      this.isRegistered = false;
+      return;
+    }
+    const headers = new HttpHeaders({ Authorization: `Bearer ${this.auth.getToken()}` });
+    this.http.get<{ registration: any }>(
+      `${environment.apiUrl}/contest/registrations/me`,
+      { headers }
+    ).subscribe({
+      next: (data) => {
+        if (data.registration && data.registration.payment_status === 'paid') {
+          this.isRegistered = true;
+        }
+      },
+      error: () => {
+        this.isRegistered = false;
+      }
+    });
   }
 
   getPhaseStatus(index: number): 'past' | 'active' | 'future' {

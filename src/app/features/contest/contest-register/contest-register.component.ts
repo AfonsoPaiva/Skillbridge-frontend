@@ -23,6 +23,14 @@ interface ContestRegistration {
   project?: ContestProject;
 }
 
+interface TimelineItem {
+  phase: string;
+  desc: string;
+  startDate: Date;
+  endDate: Date;
+  dateLabel: string;
+}
+
 @Component({
   selector: 'app-contest-register',
   standalone: true,
@@ -62,6 +70,54 @@ export class ContestRegisterComponent implements OnInit, AfterViewInit, OnDestro
     { code: 'K', name: 'Arquitetura & urbanismo' },
     { code: 'L', name: 'Impacto social' }
   ];
+
+  timeline: TimelineItem[] = [
+    {
+      phase: 'Inscrições',
+      desc: 'Inscrição e pagamento da taxa. Validação técnica e confirmação final.',
+      startDate: new Date(2026, 6, 1),
+      endDate: new Date(2026, 6, 24),
+      dateLabel: '1 – 24 julho'
+    },
+    {
+      phase: 'Avaliação',
+      desc: 'Avaliação de elegibilidade. O desenvolvimento só arranca após a aprovação do projeto.',
+      startDate: new Date(2026, 6, 25),
+      endDate: new Date(2026, 6, 25),
+      dateLabel: '25 julho'
+    },
+    {
+      phase: 'Desenvolvimento',
+      desc: 'Construção do projeto. Check-in de progresso a 15 de agosto.',
+      startDate: new Date(2026, 6, 26),
+      endDate: new Date(2026, 8, 6),
+      dateLabel: '26 julho – 6 setembro'
+    },
+    {
+      phase: 'Submissão',
+      desc: 'Entrega na plataforma (repo, vídeo ou deck). Não são aceites submissões fora do prazo.',
+      startDate: new Date(2026, 8, 6),
+      endDate: new Date(2026, 8, 9),
+      dateLabel: '6 – 9 setembro'
+    },
+    {
+      phase: 'Resultados',
+      desc: 'Avaliação do júri. Livestream no YouTube, notificação e transferência do prémio.',
+      startDate: new Date(2026, 8, 14),
+      endDate: new Date(2026, 8, 14),
+      dateLabel: '14 setembro'
+    }
+  ];
+
+  getPhaseStatus(index: number): 'past' | 'active' | 'future' {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const item = this.timeline[index];
+
+    if (today > item.endDate) return 'past';
+    if (today >= item.startDate && today <= item.endDate) return 'active';
+    return 'future';
+  }
 
   constructor(
     private auth: AuthService,
@@ -213,6 +269,14 @@ export class ContestRegisterComponent implements OnInit, AfterViewInit, OnDestro
 
   goToContest(): void {
     this.router.navigate(['/contest']);
+  }
+
+  goToProject(slug?: string): void {
+    if (slug) this.router.navigate(['/projects', slug]);
+  }
+
+  editProject(slug?: string): void {
+    if (slug) this.router.navigate(['/projects', slug, 'editar']);
   }
 
   downloadRegulamento(): void {
