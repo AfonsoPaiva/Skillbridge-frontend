@@ -392,29 +392,41 @@
 .contest-note {
   display: flex;
   align-items: center;
-  gap: v.$space-2;
-  margin-top: v.$space-4;
+  gap: v.$space-3;
+  margin-top: v.$space-6;
   padding: v.$space-3 v.$space-4;
-  background: rgba(v.$color-primary, 0.04);
-  border-radius: v.$radius-sm;
-  font-size: 0.75rem;
-  color: v.$color-text-soft;
-  line-height: 1.4;
-  white-space: normal;
-  letter-spacing: -0.01em;
+  background: rgba(v.$color-primary, 0.05);
+  border-left: 3px solid v.$color-primary;
+  border-radius: 0 v.$radius-sm v.$radius-sm 0;
+  font-size: 0.8125rem;
+  color: v.$color-text;
+  line-height: 1.5;
 
   mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
     color: v.$color-primary;
     flex-shrink: 0;
   }
 
-  @media (max-width: 768px) {
-    white-space: normal;
+  span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  @media (max-width: v.$bp-md) {
     align-items: flex-start;
-    text-align: left;
+    
+    mat-icon {
+      margin-top: 2px;
+    }
+
+    span {
+      white-space: normal;
+      overflow: visible;
+    }
   }
 }
 
