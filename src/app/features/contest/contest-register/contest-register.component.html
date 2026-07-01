@@ -3,42 +3,42 @@
 
     <!-- Already registered -->
     <div class="contest-register__done" *ngIf="step === 'already-registered'">
-      <div class="contest-register__done-header" style="text-align: center; margin-bottom: 2rem;">
-        <mat-icon class="contest-register__done-icon" style="font-size: 64px; height: 64px; width: 64px; color: #4caf50; margin-bottom: 1rem;">check_circle</mat-icon>
-        <h2 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Inscrição Confirmada!</h2>
-        <p style="font-size: 1.1rem; color: #666;">A equipa do projeto <strong style="color: #333;">{{ existingRegistration?.project?.title }}</strong> encontra-se oficialmente inscrita no Build Challenge.</p>
+      <div class="contest-register__done-header">
+        <mat-icon class="contest-register__done-icon">check_circle</mat-icon>
+        <h2>Inscrição Confirmada!</h2>
+        <p>A equipa do projeto <strong>{{ existingRegistration?.project?.title }}</strong> encontra-se oficialmente inscrita no Build Challenge.</p>
       </div>
 
-      <div class="contest-register__done-content" *ngIf="existingRegistration" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start;">
+      <div class="contest-register__done-content" *ngIf="existingRegistration">
         <!-- Project Details Card -->
-        <div class="contest-project-card" style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #eee;">
-          <div class="contest-project-card__header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #eee;">
-            <h3 style="margin: 0; font-size: 1.2rem;">Detalhes do Projeto</h3>
-            <span class="status-badge paid" style="background: #e8f5e9; color: #2e7d32; padding: 4px 12px; border-radius: 20px; font-weight: 500; font-size: 0.85rem;">Pago ✓</span>
+        <div class="contest-project-card">
+          <div class="contest-project-card__header">
+            <h3>Detalhes do Projeto</h3>
+            <span class="status-badge paid">Pago ✓</span>
           </div>
           <div class="contest-project-card__body">
-            <div class="detail-group" style="margin-bottom: 1rem;">
-              <span class="label" style="display: block; font-size: 0.85rem; color: #666; margin-bottom: 4px;">Área Temática</span>
-              <span class="value" style="font-weight: 500;">Trilha {{ existingRegistration.track }}</span>
+            <div class="detail-group">
+              <span class="label">Área Temática</span>
+              <span class="value">Trilha {{ existingRegistration.track }}</span>
             </div>
-            <div class="detail-group" style="margin-bottom: 1.5rem;">
-              <span class="label" style="display: block; font-size: 0.85rem; color: #666; margin-bottom: 4px;">Descrição</span>
-              <span class="value description" style="line-height: 1.5;">{{ (existingRegistration.project?.description | slice:0:150) || 'Sem descrição.' }}{{ (existingRegistration.project?.description?.length || 0) > 150 ? '...' : '' }}</span>
+            <div class="detail-group">
+              <span class="label">Descrição</span>
+              <span class="value description">{{ (existingRegistration.project?.description | slice:0:150) || 'Sem descrição.' }}{{ (existingRegistration.project?.description?.length || 0) > 150 ? '...' : '' }}</span>
             </div>
           </div>
-          <div class="contest-project-card__actions" style="display: flex; gap: 1rem; margin-top: 1rem;">
-            <button mat-flat-button color="primary" (click)="goToProject(existingRegistration.project?.slug)" style="flex: 1;">
+          <div class="contest-project-card__actions">
+            <button mat-flat-button color="primary" (click)="goToProject(existingRegistration.project?.slug)">
               <mat-icon>visibility</mat-icon> Ver Projeto
             </button>
-            <button mat-stroked-button (click)="editProject(existingRegistration.project?.slug)" style="flex: 1;">
+            <button *ngIf="isProjectOwner" mat-stroked-button (click)="editProject(existingRegistration.project?.slug)">
               <mat-icon>edit</mat-icon> Editar
             </button>
           </div>
         </div>
 
         <!-- Timeline -->
-        <div class="contest-timeline-card" style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #eee;">
-          <h3 style="margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; padding-bottom: 1rem; border-bottom: 1px solid #eee;">Próximos Passos</h3>
+        <div class="contest-timeline-card">
+          <h3>Próximos Passos</h3>
           <div class="contest-timeline">
             <div class="contest-timeline__item" *ngFor="let t of timeline; let i = index" [ngClass]="{
                 'contest-timeline__item--active': getPhaseStatus(i) === 'active',
@@ -61,7 +61,7 @@
         </div>
       </div>
 
-      <div style="text-align: center; margin-top: 3rem;">
+      <div class="contest-register__submit">
         <button mat-stroked-button color="primary" (click)="goToContest()">
           <mat-icon>arrow_back</mat-icon>
           Voltar à página do concurso

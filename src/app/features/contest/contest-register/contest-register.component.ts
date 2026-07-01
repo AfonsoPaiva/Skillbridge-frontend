@@ -11,6 +11,7 @@ interface ContestProject {
   title: string;
   slug: string;
   description: string;
+  owner_id: number;
   members?: { id: number; user_id: number; status: string; user?: { name: string } }[];
   roles?: { id: number; title: string; spots: number; filled: number }[];
 }
@@ -124,6 +125,12 @@ export class ContestRegisterComponent implements OnInit, AfterViewInit, OnDestro
     private router: Router,
     private http: HttpClient
   ) {}
+
+  get isProjectOwner(): boolean {
+    const currentUserId = this.auth.cachedProfile?.id;
+    const projectOwnerId = this.existingRegistration?.project?.owner_id;
+    return !!currentUserId && !!projectOwnerId && currentUserId === projectOwnerId;
+  }
 
   ngOnInit(): void {
     this.checkExistingRegistration();

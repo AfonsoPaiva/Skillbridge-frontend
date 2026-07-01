@@ -1,8 +1,10 @@
 @use '../../../../styles/variables' as v;
 
 .contest-register {
-  padding: calc(64px + v.$space-6) 0 v.$space-16;
-  min-height: 70vh;
+  padding: calc(80px + v.$space-6) 0 v.$space-20;
+  min-height: 80vh;
+  background: radial-gradient(circle at top center, rgba(v.$color-primary, 0.04), transparent 70%), v.$color-bg;
+  position: relative;
 
   &__inner {
     max-width: 640px;
@@ -21,10 +23,11 @@
     margin-bottom: v.$space-6;
 
     h1 {
-      font-size: clamp(1.375rem, 3vw, 1.625rem);
-      font-weight: 700;
+      font-size: clamp(1.75rem, 4vw, 2.25rem);
+      font-weight: 800;
       color: v.$color-text;
-      margin: 0 0 v.$space-1;
+      margin: 0 0 v.$space-2;
+      letter-spacing: -0.02em;
     }
 
     p {
@@ -262,7 +265,233 @@
       }
     }
   }
+
+  &__done-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: v.$space-6;
+    align-items: start;
+    text-align: left;
+    margin-bottom: v.$space-10;
+
+    @media (min-width: v.$bp-md) {
+      grid-template-columns: 1.2fr 1fr;
+      gap: v.$space-8;
+    }
+  }
 }
+
+// ── Project Details Card ────────────────────────
+.contest-project-card {
+  background: v.$color-surface;
+  border-radius: v.$radius-lg;
+  padding: v.$space-6;
+  box-shadow: v.$shadow-sm;
+  border: 1px solid v.$color-border;
+  transition: box-shadow v.$transition-base;
+
+  &:hover {
+    box-shadow: v.$shadow-md;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: v.$space-5;
+    padding-bottom: v.$space-4;
+    border-bottom: 1px solid v.$color-border;
+
+    h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: v.$color-text;
+    }
+
+    .status-badge {
+      background: rgba(#10b981, 0.1);
+      color: #059669;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.8125rem;
+    }
+  }
+
+  &__body {
+    .detail-group {
+      margin-bottom: v.$space-4;
+
+      .label {
+        display: block;
+        font-size: 0.8125rem;
+        color: v.$color-text-soft;
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+      }
+
+      .value {
+        font-size: 0.9375rem;
+        font-weight: 500;
+        color: v.$color-text;
+
+        &.description {
+          line-height: 1.6;
+          color: v.$color-text-soft;
+        }
+      }
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: v.$space-3;
+    margin-top: v.$space-6;
+
+    button {
+      flex: 1;
+
+      mat-icon {
+        margin-right: 6px;
+      }
+    }
+  }
+}
+
+// ── Timeline Card ───────────────────────────────
+.contest-timeline-card {
+  background: v.$color-surface;
+  border-radius: v.$radius-lg;
+  padding: v.$space-6;
+  box-shadow: v.$shadow-sm;
+  border: 1px solid v.$color-border;
+  display: flex;
+  flex-direction: column;
+
+  h3 {
+    margin: 0 0 v.$space-5;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: v.$color-text;
+    padding-bottom: v.$space-4;
+    border-bottom: 1px solid v.$color-border;
+  }
+}
+
+.contest-timeline {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: space-between;
+
+  &__item {
+    display: flex;
+    gap: v.$space-3;
+    padding: 0 v.$space-2;
+    transition: background v.$transition-base, opacity v.$transition-base;
+
+    // ── Active state ──
+    &--active {
+      .contest-timeline__dot {
+        background: v.$color-primary;
+      }
+      .contest-timeline__line {
+        background: v.$color-primary;
+      }
+      .contest-timeline__content h4 {
+        color: v.$color-primary;
+      }
+      .contest-timeline__date {
+        color: v.$color-primary;
+        font-weight: 700;
+      }
+    }
+
+    // ── Past state ──
+    &--past {
+      opacity: 0.6;
+      .contest-timeline__dot {
+        background: #10b981;
+      }
+      .contest-timeline__line {
+        background: #10b981;
+      }
+    }
+
+    // ── Future state ──
+    &--future {
+      .contest-timeline__dot {
+        background: v.$color-border;
+      }
+    }
+  }
+
+  &__marker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    width: 16px;
+  }
+
+  &__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: v.$color-primary;
+    flex-shrink: 0;
+    margin-top: 6px;
+    transition: box-shadow 0.3s, background 0.3s;
+  }
+
+  &__line {
+    width: 2px;
+    flex: 1;
+    background: v.$color-border;
+    margin: 4px 0;
+    transition: background 0.3s;
+  }
+
+  &__date {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: v.$color-text-soft;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+  }
+
+  &__phase-row {
+    display: flex;
+    align-items: center;
+    gap: v.$space-1;
+    
+    h4 {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: v.$color-text;
+      margin: 0 0 2px;
+      transition: color 0.3s;
+    }
+  }
+
+  &__content {
+    flex: 1;
+    padding-bottom: v.$space-4;
+
+    p {
+      margin: 2px 0 0;
+      font-size: 0.8125rem;
+      color: v.$color-text-soft;
+      line-height: 1.4;
+    }
+  }
+}
+
 
 // ── Project option card ─────────────────────────
 .project-option {
