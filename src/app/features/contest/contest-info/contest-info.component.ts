@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { SharedModule } from '../../../shared/shared.module';
 import { AuthService } from '../../../core/services/auth.service';
 import { ApiService } from '../../../core/services/api.service';
@@ -100,7 +101,8 @@ export class ContestInfoComponent implements OnInit {
   constructor(
     public auth: AuthService,
     private router: Router,
-    private http: HttpClient
+    private http: HttpClient,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -166,11 +168,19 @@ export class ContestInfoComponent implements OnInit {
     return stat ? stat.count : 0;
   }
 
-  goToRegister(): void {
+  async goToRegister(): Promise<void> {
     if (this.auth.isLoggedIn) {
       this.router.navigate(['/contest', 'inscrever']);
     } else {
-      this.router.navigate(['/onboarding']);
+      const { OnboardingComponent } = await import('../../../features/onboarding/onboarding.component');
+      this.dialog.open(OnboardingComponent, {
+        width: '540px',
+        maxWidth: '95vw',
+        maxHeight: '90vh',
+        panelClass: ['onboarding-dialog', 'slide-in-dialog'],
+        autoFocus: false,
+        restoreFocus: false
+      });
     }
   }
 
