@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { loadStripe, StripeEmbeddedCheckout } from '@stripe/stripe-js';
 import { SharedModule } from '../../../shared/shared.module';
@@ -123,6 +123,7 @@ export class ContestRegisterComponent implements OnInit, AfterViewInit, OnDestro
   constructor(
     private auth: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
     private http: HttpClient
   ) {}
 
@@ -159,10 +160,38 @@ export class ContestRegisterComponent implements OnInit, AfterViewInit, OnDestro
         this.existingRegistration = data.registration;
         if (data.registration.payment_status === 'paid') {
           this.step = 'already-registered';
+        } else if (data.registration.payment_status === 'pending') {
+          if (this.route.snapshot.queryParamMap.get('payment') === 'complete') {
+            this.loading = true;
+            this.step = 'checkout'; // keep them out of form while polling
+            setTimeout(() => this.pollPaymentStatus(), 2000);
+          }
         }
       },
       error: () => {
         // Not registered yet — OK
+      }
+    });
+  }
+
+  pollPaymentStatus(): void {
+    this.http.get<{ registration: ContestRegistration }>(
+      `${environment.apiUrl}/contest/registrations/me`,
+      { headers: this.getAuthHeaders() }
+    ).subscribe({
+      next: (data) => {
+        if (data.registration.payment_status === 'paid') {
+          this.existingRegistration = data.registration;
+          this.step = 'already-registered';
+          this.loading = false;
+        } else {
+          // keep polling every 2 seconds until it finishes or user leaves
+          setTimeout(() => this.pollPaymentStatus(), 2000);
+        }
+      },
+      error: () => {
+        this.step = 'form';
+        this.loading = false;
       }
     });
   }
