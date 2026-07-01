@@ -518,11 +518,11 @@
 
     // ── Active state ──
     &--active {
-      background: rgba(v.$color-primary, 0.06);
-      border-left: 3px solid v.$color-primary;
-      border-radius: v.$radius-sm;
-
       .contest-timeline__dot {
+        background: v.$color-primary;
+      }
+
+      .contest-timeline__line {
         background: v.$color-primary;
       }
 
