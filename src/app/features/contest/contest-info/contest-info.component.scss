@@ -524,8 +524,6 @@
 
       .contest-timeline__dot {
         background: v.$color-primary;
-        box-shadow: 0 0 0 4px rgba(v.$color-primary, 0.2);
-        animation: timeline-pulse 2s ease-in-out infinite;
       }
 
       .contest-timeline__content h4 {
@@ -615,19 +613,7 @@
     }
   }
 
-  &__badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 2px 8px;
-    border-radius: 10px;
-    background: v.$color-primary;
-    color: #fff;
-    font-size: 0.625rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    animation: badge-fade-in 0.5s ease-out;
-  }
+
 
   h4 {
     font-size: 0.9375rem;
@@ -644,15 +630,7 @@
   }
 }
 
-@keyframes timeline-pulse {
-  0%, 100% { box-shadow: 0 0 0 4px rgba(v.$color-primary, 0.2); }
-  50% { box-shadow: 0 0 0 8px rgba(v.$color-primary, 0.08); }
-}
 
-@keyframes badge-fade-in {
-  from { opacity: 0; transform: scale(0.8); }
-  to { opacity: 1; transform: scale(1); }
-}
 
 // ── Registration Block (CTA) ────────────────────
 .contest-registration-block {
