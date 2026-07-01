@@ -170,7 +170,7 @@ export class ContestInfoComponent implements OnInit {
     if (this.auth.isLoggedIn) {
       this.router.navigate(['/contest', 'inscrever']);
     } else {
-      this.router.navigate(['/landing']);
+      this.router.navigate(['/onboarding']);
     }
   }
 
