@@ -64,24 +64,24 @@ export class ContestInfoComponent implements OnInit {
     },
     {
       phase: 'Desenvolvimento',
-      desc: 'Construção do projeto. Check-in de progresso a 15 de agosto (obrigatório, sob pena de desqualificação).',
+      desc: 'Construção do projeto. Não tem de ser um projeto completo, pode ser apenas uma ideia bem estruturada.',
       startDate: new Date(2026, 6, 26),  // 26 julho
-      endDate: new Date(2026, 8, 6),     // 6 setembro
-      dateLabel: '26 julho – 6 setembro'
+      endDate: new Date(2026, 7, 2),     // 2 agosto
+      dateLabel: '26 julho – 2 agosto'
     },
     {
       phase: 'Submissão',
       desc: 'Entrega na plataforma (repo, vídeo ou deck). Não são aceites submissões fora do prazo.',
-      startDate: new Date(2026, 8, 6),   // 6 setembro
-      endDate: new Date(2026, 8, 9),     // 9 setembro
-      dateLabel: '6 – 9 setembro'
+      startDate: new Date(2026, 7, 2),   // 2 agosto
+      endDate: new Date(2026, 7, 4),     // 4 agosto
+      dateLabel: '2 – 4 agosto'
     },
     {
       phase: 'Resultados',
       desc: 'Avaliação do júri. Livestream no YouTube, notificação e transferência do prémio (máx. 5 dias).',
-      startDate: new Date(2026, 8, 14),  // 14 setembro
-      endDate: new Date(2026, 8, 14),    // 14 setembro
-      dateLabel: '14 setembro'
+      startDate: new Date(2026, 7, 8),  // 8 agosto
+      endDate: new Date(2026, 7, 8),    // 8 agosto
+      dateLabel: '8 agosto'
     }
   ];
 
