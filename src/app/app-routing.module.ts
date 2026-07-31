@@ -120,16 +120,17 @@ const routes: Routes = [
     pathMatch: 'full'
   },
   { path: 'oportunidades', loadChildren: () => import('./features/opportunities/opportunities.module').then(m => m.OpportunitiesModule) },
-  {
-    path: 'contest',
-    data: {
-      title: 'Build Challenge — SkillBridge',
-      description: 'Participa no Build Challenge! Equipas de estudantes competem em 12 trilhas durante 6 semanas com prémios em dinheiro.',
-      robots: 'index, follow'
-    },
-    loadChildren: () =>
-      import('./features/contest/contest.routes').then(m => m.CONTEST_ROUTES)
-  },
+  // TODO: Build Challenge desativado temporariamente (ninguém se inscreveu)
+  // {
+  //   path: 'contest',
+  //   data: {
+  //     title: 'Build Challenge — SkillBridge',
+  //     description: 'Participa no Build Challenge! Equipas de estudantes competem em 12 trilhas durante 6 semanas com prémios em dinheiro.',
+  //     robots: 'index, follow'
+  //   },
+  //   loadChildren: () =>
+  //     import('./features/contest/contest.routes').then(m => m.CONTEST_ROUTES)
+  // },
   {
     path: '**',
     redirectTo: 'landing'
