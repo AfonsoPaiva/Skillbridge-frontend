@@ -183,7 +183,7 @@ export class OpportunitiesComponent implements OnInit {
   /**
    * Extracts the maximum number of years of experience mentioned in a job description.
    * Handles patterns like:
-   *   "1 ano de experiência", "2 anos", "mínimo 2 anos", "1-2 anos",
+   *   "1 ano de experiência", "2 anos", "mínimo 2 anos", "1-2 anos", "(1–2 years)",
    *   "sem experiência", "0 anos", "no experience required"
    * Returns 0 if no experience is required / not mentioned.
    */
@@ -192,45 +192,54 @@ export class OpportunitiesComponent implements OnInit {
     const d = description.toLowerCase();
 
     // Explicit "no experience" → 0 years
-    if (
-      d.includes('sem experiência') ||
-      d.includes('sem experiencia') ||
-      d.includes('não é necessária experiência') ||
-      d.includes('não requer experiência') ||
-      d.includes('no experience required') ||
-      d.includes('no prior experience')
-    ) {
-      return 0;
+    const noExpPhrases = [
+      'sem experiência', 'sem experiencia',
+      'não é necessária experiência', 'não requer experiência',
+      'no experience required', 'no prior experience', 'no experience needed',
+      '0+ years', '0 years', '0 anos', '0-0 years', '0-0 anos',
+      'entry level', 'entry-level'
+    ];
+    for (const p of noExpPhrases) {
+      if (d.includes(p)) {
+        return 0;
+      }
     }
 
-    // Match patterns like "1 ano", "2 anos", "1-2 anos", "até 3 anos", "mínimo 2 anos"
     const patterns = [
-      /(\d+)\s*[-–a]\s*(\d+)\s*anos?\s*de\s*experi/,  // "1-2 anos de experiência" → take max
-      /m[ií]nimo\s+(\d+)\s+anos?/,                      // "mínimo 2 anos"
-      /at[ée]\s+(\d+)\s+anos?/,                         // "até 2 anos"
-      /(\d+)\+\s*anos?/,                                 // "2+ anos"
-      /(\d+)\s+anos?\s*de\s*experi/,                    // "2 anos de experiência"
-      /(\d+)\s+ano\s*de\s*experi/,                      // "1 ano de experiência"
-      /(\d+)\s+years?\s*of\s*experience/,               // "2 years of experience"
+      // 1. Range of years (e.g. "1-2 years", "1–2 years", "1 to 2 years", "1 a 2 anos", "0-1 years")
+      /(\d+)\s*(?:[-–—]|to|a)\s*(\d+)\s*(?:anos?|years?|yrs?)/g,
+
+      // 2. Prefixes like "mínimo 2 anos", "min 2 years", "at least 3 years", "up to 2 years", "até 2 anos"
+      /(?:m[ií]nimo|min\.?|at least|pelo menos|at[ée]|up to|maximum|m[áa]ximo)\s*(\d+)\s*\+?\s*(?:anos?|years?|yrs?)/g,
+
+      // 3. Experience context + numbers + years (e.g. "2+ years of experience", "2 anos de experiência", "1 year of experience")
+      /(\d+)\s*\+?\s*(?:anos?|years?|yrs?)\s*(?:de\s+|of\s+)?(?:professional\s+|profissional\s+|effective\s+|efetiva\s+|efectiva\s+)?(?:experi[eê]nci|experienc)/g,
+
+      // 4. Experience word followed within ~35 chars by number + years (e.g. "experience (1–2 years)", "experience: 2 years")
+      /(?:experi[eê]nci|experienc)[^\n.]{0,35}?(\d+)\s*\+?\s*(?:anos?|years?|yrs?)/g,
+
+      // 5. Direct year requirement with plus: "2+ years", "3+ anos", "2+ yrs"
+      /(\d+)\+\s*(?:anos?|years?|yrs?)/g,
+
+      // 6. Generic "X years" / "X anos" near experience terms
+      /(\d+)\s+(?:anos?|years?|yrs?)\s*(?:de\s+|of\s+)?experi/g,
     ];
 
     let maxFound = -1;
     for (const re of patterns) {
-      const m = d.match(re);
-      if (m) {
-        // If range pattern (group 1 and 2), take the larger number
-        const a = parseInt(m[1], 10);
-        const b = m[2] ? parseInt(m[2], 10) : a;
-        maxFound = Math.max(maxFound, Math.max(a, b));
+      re.lastIndex = 0;
+      let match: RegExpExecArray | null;
+      while ((match = re.exec(d)) !== null) {
+        if (match[1]) {
+          const a = parseInt(match[1], 10);
+          const b = match[2] ? parseInt(match[2], 10) : a;
+          maxFound = Math.max(maxFound, Math.max(a, b));
+        }
       }
     }
 
-    // If experience was mentioned but we couldn't parse a number, assume it's > 3
     if (maxFound === -1) {
-      if (d.includes('experiência') || d.includes('experiencia') || d.includes('experience')) {
-        return 0; // mentions exist but no number → treat as entry-level (safe default)
-      }
-      return 0; // no mention at all → entry-level
+      return 0; // no mention → treat as entry-level
     }
 
     return maxFound;
