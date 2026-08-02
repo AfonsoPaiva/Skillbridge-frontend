@@ -451,7 +451,8 @@ body {
 // Compact Select Panel (Used in Expand Dialog)
 .compact-dialog-select-panel {
   padding: 4px 0 !important;
-  min-width: 130px !important;
+  min-width: max-content !important;
+  max-width: 280px !important;
 
   .mat-mdc-option {
     min-height: 32px !important;
@@ -462,6 +463,10 @@ body {
     .mdc-list-item__primary-text {
       font-size: 12px !important;
       font-weight: 400 !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      display: block !important;
     }
 
     .mat-pseudo-checkbox {

@@ -104,10 +104,20 @@
           min-height: 38px;
         }
 
+        .mat-mdc-select-value {
+          max-width: 100%;
+          overflow: hidden;
+        }
+
         .mat-mdc-select-value-text,
         .mat-mdc-input-element {
           font-size: 12px;
           font-weight: v.$font-weight-medium;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: block;
+          max-width: 100%;
         }
 
         .mat-mdc-select-arrow-wrapper {
@@ -455,6 +465,8 @@
 
 ::ng-deep .compact-dialog-select-panel {
   padding: 4px 0 !important;
+  min-width: max-content !important;
+  max-width: 280px !important;
 
   .mat-mdc-option {
     min-height: 32px !important;
@@ -465,6 +477,10 @@
     .mdc-list-item__primary-text {
       font-size: 12px !important;
       font-weight: 400 !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      display: block !important;
     }
 
     .mat-pseudo-checkbox {
