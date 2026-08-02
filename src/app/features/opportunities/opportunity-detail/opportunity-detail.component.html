@@ -71,11 +71,12 @@
 
         <ng-container *ngIf="vacancy.applied">
           <div class="applied-status-group">
-            <span class="applied-badge" [class.badge-accepted]="vacancy.application_status === 'accepted'" [class.badge-rejected]="vacancy.application_status === 'rejected'">
+            <span class="applied-badge" [class.badge-accepted]="vacancy.application_status === 'accepted'" [class.badge-rejected]="vacancy.application_status === 'rejected'" [class.badge-ignored]="vacancy.application_status === 'ignored'">
               <mat-icon *ngIf="vacancy.application_status === 'accepted'">check_circle</mat-icon>
               <mat-icon *ngIf="vacancy.application_status === 'rejected'">cancel</mat-icon>
+              <mat-icon *ngIf="vacancy.application_status === 'ignored'">visibility_off</mat-icon>
               <mat-icon *ngIf="!vacancy.application_status || vacancy.application_status === 'pending'">schedule</mat-icon>
-              {{ vacancy.application_status === 'accepted' ? 'Fui Aceite' : vacancy.application_status === 'rejected' ? 'Fui Rejeitado' : 'Candidatei-me a esta vaga' }}
+              {{ vacancy.application_status === 'accepted' ? 'Fui Aceite' : vacancy.application_status === 'rejected' ? 'Fui Rejeitado' : vacancy.application_status === 'ignored' ? 'Ignorado' : 'Candidatei-me a esta vaga' }}
             </span>
 
             <div class="status-buttons">
@@ -84,6 +85,12 @@
               </button>
               <button mat-stroked-button class="btn-status status-rejected" (click)="updateStatus('rejected')" [class.active]="vacancy.application_status === 'rejected'" title="Clica para marcar/desmarcar">
                 <mat-icon>cancel</mat-icon> Fui Rejeitado
+              </button>
+              <button mat-stroked-button class="btn-status status-ignored" (click)="updateStatus('ignored')" [class.active]="vacancy.application_status === 'ignored'" title="Clica para marcar/desmarcar">
+                <mat-icon>visibility_off</mat-icon> Ignorado
+              </button>
+              <button mat-stroked-button color="warn" class="btn-status status-remove" (click)="removeApplication()" title="Remover candidatura registada">
+                <mat-icon>delete_outline</mat-icon> Remover candidatura
               </button>
             </div>
           </div>

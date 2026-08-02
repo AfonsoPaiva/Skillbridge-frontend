@@ -207,6 +207,27 @@ export class OpportunityDetailComponent implements OnInit {
     });
   }
 
+  removeApplication(): void {
+    if (!this.vacancy) return;
+    if (!this.auth.isLoggedIn) {
+      this.promptLogin();
+      return;
+    }
+
+    this.recruiterService.removeApplication(this.vacancy.id).subscribe({
+      next: () => {
+        if (this.vacancy) {
+          this.vacancy.applied = false;
+          this.vacancy.application_status = undefined;
+          this.snackBar.open('Candidatura removida com sucesso.', 'OK', { duration: 3000 });
+        }
+      },
+      error: () => {
+        this.snackBar.open('Erro ao remover candidatura.', 'OK', { duration: 3000 });
+      }
+    });
+  }
+
   isWhiteTransparentLogo(url?: string): boolean {
     if (!url) return false;
     return url.includes('women_secret_logo');

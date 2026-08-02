@@ -301,12 +301,18 @@
       background: rgba(239, 68, 68, 0.12);
       color: #ef4444;
     }
+
+    &.badge-ignored {
+      background: rgba(107, 114, 128, 0.14);
+      color: #6b7280;
+    }
   }
 
   .status-buttons {
     display: flex;
     gap: 8px;
     align-items: center;
+    flex-wrap: wrap;
 
     .btn-status {
       height: 40px;
@@ -330,6 +336,21 @@
         background: #ef4444;
         color: white;
         border-color: #ef4444;
+      }
+
+      &.status-ignored.active {
+        background: #6b7280;
+        color: white;
+        border-color: #6b7280;
+      }
+
+      &.status-remove {
+        color: #ef4444;
+        border-color: rgba(239, 68, 68, 0.3);
+
+        &:hover {
+          background: rgba(239, 68, 68, 0.08);
+        }
       }
     }
   }

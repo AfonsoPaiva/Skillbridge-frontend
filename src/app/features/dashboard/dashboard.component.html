@@ -212,16 +212,23 @@
                     <span class="applied-badge" [attr.data-status]="fav.application_status || 'pending'">
                       <mat-icon *ngIf="fav.application_status === 'accepted'">check_circle</mat-icon>
                       <mat-icon *ngIf="fav.application_status === 'rejected'">cancel</mat-icon>
+                      <mat-icon *ngIf="fav.application_status === 'ignored'">visibility_off</mat-icon>
                       <mat-icon *ngIf="!fav.application_status || fav.application_status === 'pending'">schedule</mat-icon>
-                      {{ fav.application_status === 'accepted' ? 'Aceite' : fav.application_status === 'rejected' ? 'Rejeitado' : 'Candidatado (Email em 1 sem)' }}
+                      {{ fav.application_status === 'accepted' ? 'Aceite' : fav.application_status === 'rejected' ? 'Rejeitado' : fav.application_status === 'ignored' ? 'Ignorado' : 'Candidatado' }}
                     </span>
 
                     <div class="status-buttons">
-                      <button mat-stroked-button class="btn-status status-accepted" (click)="updateStatus(fav, 'accepted', $event)" [class.active]="fav.application_status === 'accepted'">
-                        Fui Aceite
+                      <button mat-stroked-button class="btn-status status-accepted" (click)="updateStatus(fav, 'accepted', $event)" [class.active]="fav.application_status === 'accepted'" title="Marcar como Aceite">
+                        Aceite
                       </button>
-                      <button mat-stroked-button class="btn-status status-rejected" (click)="updateStatus(fav, 'rejected', $event)" [class.active]="fav.application_status === 'rejected'">
+                      <button mat-stroked-button class="btn-status status-rejected" (click)="updateStatus(fav, 'rejected', $event)" [class.active]="fav.application_status === 'rejected'" title="Marcar como Rejeitado">
                         Rejeitado
+                      </button>
+                      <button mat-stroked-button class="btn-status status-ignored" (click)="updateStatus(fav, 'ignored', $event)" [class.active]="fav.application_status === 'ignored'" title="Marcar como Ignorado">
+                        Ignorado
+                      </button>
+                      <button mat-icon-button class="remove-app-btn" (click)="removeApplication(fav, $event)" title="Remover candidatura" aria-label="Remover candidatura">
+                        <mat-icon>delete_outline</mat-icon>
                       </button>
                     </div>
                   </div>
@@ -233,6 +240,84 @@
           <div class="empty-state-compact" *ngIf="!loadingFavorites && favoriteVacancies.length === 0">
             <mat-icon>star_border</mat-icon>
             <p>Ainda não adicionaste vagas aos teus favoritos. Clica na estrela em qualquer vaga para a guardar aqui.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECTION: As Minhas Candidaturas ── -->
+      <div class="grid-card grid-card--full-width">
+        <div class="card-header">
+          <div class="card-title">
+            <mat-icon color="primary">send</mat-icon>
+            <h2>As Minhas Candidaturas</h2>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="fav-vagas-list" *ngIf="loadingApplications">
+            <div class="skeleton-fav-row" *ngFor="let _ of [1,2]">
+              <div class="skeleton-fav-left">
+                <div class="skeleton-box skeleton-logo"></div>
+                <div class="skeleton-info">
+                  <div class="skeleton-box skeleton-line title"></div>
+                  <div class="skeleton-box skeleton-line sub"></div>
+                </div>
+              </div>
+              <div class="skeleton-fav-actions">
+                <div class="skeleton-box skeleton-btn"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="fav-vagas-list" *ngIf="!loadingApplications && myApplications.length > 0">
+            <div class="fav-vaga-row" *ngFor="let app of myApplications">
+              <div class="fav-vaga-left" (click)="viewVacancyDetails(app.id)">
+                <div class="company-logo-square" [class.bg-purple]="isWhiteTransparentLogo(app.recruiter?.logo_url)">
+                  <img *ngIf="app.recruiter?.logo_url" [src]="app.recruiter?.logo_url | imageProxy" alt="{{ app.recruiter?.company_name }} logo">
+                  <div *ngIf="!app.recruiter?.logo_url" class="initials" [class.bg-purple]="true">{{ getInitials(app.recruiter?.company_name) }}</div>
+                </div>
+                <div class="fav-vaga-details">
+                  <h3>{{ app.title }}</h3>
+                  <p class="company-name">{{ app.recruiter?.company_name }} · {{ getTypeLabel(app.type) }}</p>
+                </div>
+              </div>
+
+              <div class="fav-vaga-actions">
+                <button mat-icon-button class="star-fav-btn" [class.is-fav]="app.is_favorite" (click)="toggleFavorite(app, $event)" [title]="app.is_favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'">
+                  <mat-icon>{{ app.is_favorite ? 'star' : 'star_border' }}</mat-icon>
+                </button>
+
+                <div class="applied-status-group">
+                  <span class="applied-badge" [attr.data-status]="app.application_status || 'pending'">
+                    <mat-icon *ngIf="app.application_status === 'accepted'">check_circle</mat-icon>
+                    <mat-icon *ngIf="app.application_status === 'rejected'">cancel</mat-icon>
+                    <mat-icon *ngIf="app.application_status === 'ignored'">visibility_off</mat-icon>
+                    <mat-icon *ngIf="!app.application_status || app.application_status === 'pending'">schedule</mat-icon>
+                    {{ app.application_status === 'accepted' ? 'Aceite' : app.application_status === 'rejected' ? 'Rejeitado' : app.application_status === 'ignored' ? 'Ignorado' : 'Candidatado' }}
+                  </span>
+
+                  <div class="status-buttons">
+                    <button mat-stroked-button class="btn-status status-accepted" (click)="updateStatus(app, 'accepted', $event)" [class.active]="app.application_status === 'accepted'" title="Marcar como Aceite">
+                      Aceite
+                    </button>
+                    <button mat-stroked-button class="btn-status status-rejected" (click)="updateStatus(app, 'rejected', $event)" [class.active]="app.application_status === 'rejected'" title="Marcar como Rejeitado">
+                      Rejeitado
+                    </button>
+                    <button mat-stroked-button class="btn-status status-ignored" (click)="updateStatus(app, 'ignored', $event)" [class.active]="app.application_status === 'ignored'" title="Marcar como Ignorado">
+                      Ignorado
+                    </button>
+                    <button mat-icon-button class="remove-app-btn" (click)="removeApplication(app, $event)" title="Remover candidatura" aria-label="Remover candidatura">
+                      <mat-icon>delete_outline</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="empty-state-compact" *ngIf="!loadingApplications && myApplications.length === 0">
+            <mat-icon>mark_email_read</mat-icon>
+            <p>Ainda não te candidataste a nenhuma vaga. Clica em "Eu candidatei-me a esta vaga" numa oportunidade para a registar aqui.</p>
           </div>
         </div>
       </div>

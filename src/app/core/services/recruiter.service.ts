@@ -86,10 +86,25 @@ export class RecruiterService {
     );
   }
 
+  /** Get authenticated user's applied vacancies */
+  getMyApplications(): Observable<{ vacancies: Vacancy[]; count: number }> {
+    return this.http.get<{ vacancies: Vacancy[]; count: number }>(
+      `${this.base}/vacancies/applications/me`, { headers: this.authHeaders() }
+    );
+  }
+
   /** Mark a vacancy as applied by the user (schedules 1-week follow-up email) */
   applyToVacancy(vacancyId: string): Observable<{ message: string; application: any }> {
     return this.http.post<{ message: string; application: any }>(
       `${this.base}/vacancies/${vacancyId}/apply`, {}, { headers: this.authHeaders() }
+    );
+  }
+
+  /** Remove a user's application */
+  removeApplication(vacancyId: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(
+      `${this.base}/vacancies/${vacancyId}/apply`,
+      { headers: this.authHeaders() }
     );
   }
 

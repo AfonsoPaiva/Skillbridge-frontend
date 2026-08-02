@@ -503,11 +503,17 @@
       background: rgba(244, 67, 54, 0.15);
       color: #c62828;
     }
+
+    &[data-status="ignored"] {
+      background: rgba(107, 114, 128, 0.15);
+      color: #4b5563;
+    }
   }
 
   .status-buttons {
     display: flex;
     gap: 6px;
+    align-items: center;
 
     .btn-status {
       font-size: 11px;
@@ -522,6 +528,29 @@
       &.status-rejected.active {
         background: #c62828;
         color: white;
+      }
+
+      &.status-ignored.active {
+        background: #4b5563;
+        color: white;
+      }
+    }
+
+    .remove-app-btn {
+      color: v.$color-text-soft;
+      width: 32px;
+      height: 32px;
+      line-height: 32px;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+
+      &:hover {
+        color: #f44336;
+        background: rgba(244, 67, 54, 0.08);
       }
     }
   }

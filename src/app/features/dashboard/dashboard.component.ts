@@ -53,6 +53,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   vacancies: Vacancy[] = [];
   recommendedVacancies: Vacancy[] = [];
   favoriteVacancies: Vacancy[] = [];
+  myApplications: Vacancy[] = [];
   favoritesCountToday: number = 0;
   communityStats: CommunityVacancyStats | null = null;
   
@@ -60,6 +61,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   loadingProjects = true;
   loadingVacancies = true;
   loadingFavorites = true;
+  loadingApplications = true;
   loadingStats = true;
 
   private userSub?: Subscription;
@@ -94,6 +96,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.loadVacancies();
     this.loadMyFavorites();
+    this.loadMyApplications();
     this.loadCommunityStats();
   }
 
@@ -142,6 +145,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
       },
       error: () => {
         this.loadingFavorites = false;
+      }
+    });
+  }
+
+  loadMyApplications(): void {
+    if (!this.auth.isLoggedIn) {
+      this.loadingApplications = false;
+      return;
+    }
+
+    this.recruiterService.getMyApplications().subscribe({
+      next: (res) => {
+        this.myApplications = res.vacancies || [];
+        this.loadingApplications = false;
+      },
+      error: () => {
+        this.loadingApplications = false;
       }
     });
   }
@@ -279,6 +299,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         vacancy.application_status = 'pending';
         this.snackBar.open('Candidatura marcada! Enviaremos um email em 1 semana a perguntar o resultado.', 'OK', { duration: 4000 });
         this.loadMyFavorites();
+        this.loadMyApplications();
         this.loadCommunityStats();
       },
       error: () => {
@@ -302,10 +323,31 @@ export class DashboardComponent implements OnInit, OnDestroy {
           : (res.message || 'Estado da candidatura atualizado com sucesso!');
         this.snackBar.open(msg, 'OK', { duration: 3000 });
         this.loadMyFavorites();
+        this.loadMyApplications();
         this.loadCommunityStats();
       },
       error: () => {
         this.snackBar.open('Erro ao atualizar estado.', 'OK', { duration: 3000 });
+      }
+    });
+  }
+
+  removeApplication(vacancy: Vacancy, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    this.recruiterService.removeApplication(vacancy.id).subscribe({
+      next: () => {
+        vacancy.applied = false;
+        vacancy.application_status = undefined;
+        this.snackBar.open('Candidatura removida com sucesso.', 'OK', { duration: 3000 });
+        this.loadMyFavorites();
+        this.loadMyApplications();
+        this.loadCommunityStats();
+      },
+      error: () => {
+        this.snackBar.open('Erro ao remover candidatura.', 'OK', { duration: 3000 });
       }
     });
   }
