@@ -50,6 +50,15 @@ export class OpportunitiesComponent implements OnInit {
   regionFilter = '';
   workModeFilter = 'all';
   employmentTypeFilter = 'all';
+  experienceFilter = 'all';
+
+  readonly experienceOptions = [
+    { value: 'all',  label: 'Qualquer experiência' },
+    { value: '0',    label: 'Sem experiência' },
+    { value: '1',    label: 'Até 1 ano' },
+    { value: '2',    label: 'Até 2 anos' },
+    { value: '3',    label: 'Até 3 anos' },
+  ];
 
   readonly typeOptions = [
     { value: 'all', label: 'Todas as Vagas' },
@@ -114,9 +123,75 @@ export class OpportunitiesComponent implements OnInit {
       result = result.filter(v => v.employment_type === this.employmentTypeFilter);
     }
 
+    // Filter by years of experience (parsed from description)
+    if (this.experienceFilter !== 'all') {
+      const maxYears = parseInt(this.experienceFilter, 10);
+      result = result.filter(v => {
+        const years = this.extractMaxExperienceYears(v.description);
+        // If no experience mentioned, treat as 0 (entry-level)
+        return years <= maxYears;
+      });
+    }
+
     this.filtered = result;
     this.page = 1;
     this.displayed = this.filtered.slice(0, this.pageSize);
+  }
+
+  /**
+   * Extracts the maximum number of years of experience mentioned in a job description.
+   * Handles patterns like:
+   *   "1 ano de experiência", "2 anos", "mínimo 2 anos", "1-2 anos",
+   *   "sem experiência", "0 anos", "no experience required"
+   * Returns 0 if no experience is required / not mentioned.
+   */
+  extractMaxExperienceYears(description: string): number {
+    if (!description) return 0;
+    const d = description.toLowerCase();
+
+    // Explicit "no experience" → 0 years
+    if (
+      d.includes('sem experiência') ||
+      d.includes('sem experiencia') ||
+      d.includes('não é necessária experiência') ||
+      d.includes('não requer experiência') ||
+      d.includes('no experience required') ||
+      d.includes('no prior experience')
+    ) {
+      return 0;
+    }
+
+    // Match patterns like "1 ano", "2 anos", "1-2 anos", "até 3 anos", "mínimo 2 anos"
+    const patterns = [
+      /(\d+)\s*[-–a]\s*(\d+)\s*anos?\s*de\s*experi/,  // "1-2 anos de experiência" → take max
+      /m[ií]nimo\s+(\d+)\s+anos?/,                      // "mínimo 2 anos"
+      /at[ée]\s+(\d+)\s+anos?/,                         // "até 2 anos"
+      /(\d+)\+\s*anos?/,                                 // "2+ anos"
+      /(\d+)\s+anos?\s*de\s*experi/,                    // "2 anos de experiência"
+      /(\d+)\s+ano\s*de\s*experi/,                      // "1 ano de experiência"
+      /(\d+)\s+years?\s*of\s*experience/,               // "2 years of experience"
+    ];
+
+    let maxFound = -1;
+    for (const re of patterns) {
+      const m = d.match(re);
+      if (m) {
+        // If range pattern (group 1 and 2), take the larger number
+        const a = parseInt(m[1], 10);
+        const b = m[2] ? parseInt(m[2], 10) : a;
+        maxFound = Math.max(maxFound, Math.max(a, b));
+      }
+    }
+
+    // If experience was mentioned but we couldn't parse a number, assume it's > 3
+    if (maxFound === -1) {
+      if (d.includes('experiência') || d.includes('experiencia') || d.includes('experience')) {
+        return 0; // mentions exist but no number → treat as entry-level (safe default)
+      }
+      return 0; // no mention at all → entry-level
+    }
+
+    return maxFound;
   }
 
   loadMore(): void {

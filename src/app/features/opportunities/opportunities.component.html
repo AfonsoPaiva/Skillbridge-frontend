@@ -42,6 +42,15 @@
         </mat-select>
       </mat-form-field>
 
+      <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+        <mat-label>Experiência</mat-label>
+        <mat-select [(ngModel)]="experienceFilter" (ngModelChange)="applyFilters()">
+          <mat-option *ngFor="let opt of experienceOptions" [value]="opt.value">
+            {{ opt.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
       <div class="status-btns">
         <button *ngFor="let s of typeOptions" mat-stroked-button [class.active]="typeFilter === s.value"
           (click)="onTypeChange(s.value)">
