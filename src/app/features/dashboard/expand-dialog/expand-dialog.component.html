@@ -13,13 +13,67 @@
   </div>
 
   <div class="dialog-search">
-    <mat-form-field appearance="outline" class="search-field">
+    <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
       <mat-icon matPrefix>search</mat-icon>
       <input matInput [(ngModel)]="searchTerm" (ngModelChange)="filterItems()" placeholder="Pesquisar por título, empresa ou competências...">
       <button mat-icon-button matSuffix *ngIf="searchTerm" (click)="searchTerm=''; filterItems()">
         <mat-icon>clear</mat-icon>
       </button>
     </mat-form-field>
+
+    <!-- Compact Filters Row for Vacancies -->
+    <div class="compact-filters-row" *ngIf="data.type === 'vacancies'">
+      <mat-form-field appearance="outline" class="mini-field" subscriptSizing="dynamic">
+        <mat-label>Localidade</mat-label>
+        <input matInput [(ngModel)]="regionFilter" (ngModelChange)="filterItems()" placeholder="Ex: Porto">
+        <button mat-icon-button matSuffix *ngIf="regionFilter" (click)="regionFilter=''; filterItems()">
+          <mat-icon>clear</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="mini-field" subscriptSizing="dynamic">
+        <mat-label>Modalidade</mat-label>
+        <mat-select [(ngModel)]="workModeFilter" (ngModelChange)="filterItems()">
+          <mat-option value="all">Todas</mat-option>
+          <mat-option value="remote">Remoto</mat-option>
+          <mat-option value="hybrid">Híbrido</mat-option>
+          <mat-option value="onsite">Presencial</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="mini-field" subscriptSizing="dynamic">
+        <mat-label>Contrato</mat-label>
+        <mat-select [(ngModel)]="employmentTypeFilter" (ngModelChange)="filterItems()">
+          <mat-option value="all">Todos</mat-option>
+          <mat-option value="full_time">Full-time</mat-option>
+          <mat-option value="part_time">Part-time</mat-option>
+          <mat-option value="contract">Contrato</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="mini-field" subscriptSizing="dynamic">
+        <mat-label>Experiência</mat-label>
+        <mat-select [(ngModel)]="experienceFilter" (ngModelChange)="filterItems()">
+          <mat-option *ngFor="let opt of experienceOptions" [value]="opt.value">
+            {{ opt.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="mini-field" subscriptSizing="dynamic">
+        <mat-label>Tipo Vaga</mat-label>
+        <mat-select [(ngModel)]="typeFilter" (ngModelChange)="filterItems()">
+          <mat-option *ngFor="let s of typeOptions" [value]="s.value">
+            {{ s.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-button class="clear-filters-btn" *ngIf="hasActiveFilters()" (click)="resetFilters()" title="Limpar todos os filtros">
+        <mat-icon>filter_alt_off</mat-icon>
+        <span>Limpar</span>
+      </button>
+    </div>
   </div>
 
   <div class="dialog-body">

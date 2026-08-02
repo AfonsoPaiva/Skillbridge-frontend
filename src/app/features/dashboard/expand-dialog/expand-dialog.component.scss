@@ -61,6 +61,9 @@
 }
 
 .dialog-search {
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-2;
   margin-bottom: v.$space-4;
   width: 100%;
   box-sizing: border-box;
@@ -70,6 +73,76 @@
 
     ::ng-deep .mat-mdc-form-field-subscript-wrapper {
       display: none;
+    }
+  }
+
+  .compact-filters-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+
+    .mini-field {
+      flex: 1 1 125px;
+      min-width: 110px;
+
+      ::ng-deep {
+        .mat-mdc-form-field-subscript-wrapper {
+          display: none;
+        }
+
+        .mat-mdc-text-field-wrapper {
+          padding-left: 10px;
+          padding-right: 8px;
+          background: rgba(v.$color-primary, 0.02);
+        }
+
+        .mat-mdc-form-field-infix {
+          padding-top: 6px;
+          padding-bottom: 6px;
+          min-height: 38px;
+        }
+
+        .mat-mdc-select-value-text,
+        .mat-mdc-input-element {
+          font-size: 12px;
+          font-weight: v.$font-weight-medium;
+        }
+
+        .mat-mdc-select-arrow-wrapper {
+          transform: scale(0.85);
+        }
+
+        .mat-mdc-form-field-icon-suffix button {
+          width: 28px;
+          height: 28px;
+          padding: 0;
+
+          mat-icon {
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+          }
+        }
+      }
+    }
+
+    .clear-filters-btn {
+      height: 38px;
+      font-size: 12px;
+      padding: 0 10px;
+      color: #ef4444;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      border-radius: v.$radius-sm;
+
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+      }
     }
   }
 }
