@@ -1,0 +1,91 @@
+<div class="expand-dialog-container">
+  <div class="dialog-header">
+    <div class="header-title">
+      <mat-icon color="primary" *ngIf="data.type === 'vacancies'">work</mat-icon>
+      <mat-icon color="primary" *ngIf="data.type === 'projects'">folder_open</mat-icon>
+      <h2>{{ data.title }}</h2>
+      <span class="count-badge" *ngIf="data.type === 'vacancies'">{{ filteredVacancies.length }} vagas</span>
+      <span class="count-badge" *ngIf="data.type === 'projects'">{{ filteredProjects.length }} projetos</span>
+    </div>
+    <button mat-icon-button (click)="close()" class="close-btn" aria-label="Fechar">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="dialog-search">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput [(ngModel)]="searchTerm" (ngModelChange)="filterItems()" placeholder="Pesquisar por título, empresa ou competências...">
+      <button mat-icon-button matSuffix *ngIf="searchTerm" (click)="searchTerm=''; filterItems()">
+        <mat-icon>clear</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+
+  <div class="dialog-body">
+
+    <!-- Vacancies Expand List -->
+    <ng-container *ngIf="data.type === 'vacancies'">
+      <div class="vacancies-grid" *ngIf="filteredVacancies.length > 0">
+        <div class="vcard-expanded" *ngFor="let v of filteredVacancies" (click)="viewVacancy(v.id)">
+          <div class="vcard-top">
+            <div class="company-logo-square" [class.bg-purple]="isWhiteTransparentLogo(v.recruiter?.logo_url)">
+              <img *ngIf="v.recruiter?.logo_url" [src]="v.recruiter?.logo_url | imageProxy" alt="{{ v.recruiter?.company_name }} logo">
+              <div *ngIf="!v.recruiter?.logo_url" class="initials" [class.bg-purple]="true">{{ getInitials(v.recruiter?.company_name) }}</div>
+            </div>
+            <div class="vcard-info">
+              <h3>{{ v.title }}</h3>
+              <p class="company-name">{{ v.recruiter?.company_name }}</p>
+            </div>
+            <button mat-icon-button class="star-fav-btn" [class.is-fav]="v.is_favorite" (click)="toggleFavorite(v, $event)" title="Favoritar vaga">
+              <mat-icon>{{ v.is_favorite ? 'star' : 'star_border' }}</mat-icon>
+            </button>
+          </div>
+
+          <p class="vcard-desc">{{ v.description }}</p>
+
+          <div class="vcard-bottom">
+            <div class="chips-row">
+              <span class="chip chip--skill" [class.chip--matched]="isMatchedSkill(tag)" *ngFor="let tag of v.tags">
+                {{ tag }}
+              </span>
+            </div>
+            <span class="type-badge">{{ getTypeLabel(v.type) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="empty-dialog-state" *ngIf="filteredVacancies.length === 0">
+        <mat-icon>work_off</mat-icon>
+        <p>Nenhuma vaga encontrada para o termo pesquisado.</p>
+      </div>
+    </ng-container>
+
+    <!-- Projects Expand List -->
+    <ng-container *ngIf="data.type === 'projects'">
+      <div class="projects-grid" *ngIf="filteredProjects.length > 0">
+        <div class="pcard-expanded" *ngFor="let p of filteredProjects" (click)="viewProject(p.slug)">
+          <div class="pcard-img">
+            <img [src]="p.image_url || 'assets/project-placeholder.svg'" [alt]="p.title">
+            <span class="open-badge">Aberto</span>
+          </div>
+          <div class="pcard-body">
+            <h3>{{ getProjectCardTitle(p.title) }}</h3>
+            <p class="description">{{ getProjectCardDescription(p.description) }}</p>
+            <div class="chips-row">
+              <span class="chip chip--skill" [class.chip--matched]="isMatchedSkill(skill)" *ngFor="let skill of getProjectCardSkillLabels(p.roles, 4, {fallbackToTitle: true}, auth.currentUserSkills)">
+                {{ skill }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="empty-dialog-state" *ngIf="filteredProjects.length === 0">
+        <mat-icon>folder_off</mat-icon>
+        <p>Nenhum projeto aberto encontrado para o termo pesquisado.</p>
+      </div>
+    </ng-container>
+
+  </div>
+</div>

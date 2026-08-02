@@ -7,6 +7,8 @@ import { User, Project, Vacancy, CommunityVacancyStats } from '../../core/models
 import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
 import { Subscription } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { ExpandDialogComponent } from './expand-dialog/expand-dialog.component';
 import {
   getProjectCardDescription,
   getProjectCardSkillLabels,
@@ -67,7 +69,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private api: ApiService,
     private recruiterService: RecruiterService,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -80,7 +83,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.refreshProfile();
 
-    // List all projects and filter ONLY OPEN projects for recommended
     this.api.listProjects('all').subscribe({
       next: (p: Project[]) => { 
         this.projects = p; 
@@ -178,9 +180,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     const userSkills = new Set(this.user.skills.map(skill => skill.toLowerCase()));
 
-    // CRITICAL: Filter projects that have OPEN status AND match user's skills
     this.recommendedProjects = this.projects.filter(project => {
-      if (project.status !== 'open') return false; // ONLY OPEN PROJECTS!
+      if (project.status !== 'open') return false;
       if (!project.roles || project.roles.length === 0) return false;
       
       return project.roles.some(role =>
@@ -203,6 +204,36 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
 
     this.syncFavoriteStates();
+  }
+
+  openExpandVacanciesDialog(): void {
+    this.dialog.open(ExpandDialogComponent, {
+      width: '920px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      panelClass: ['onboarding-dialog', 'slide-in-dialog'],
+      data: {
+        type: 'vacancies',
+        title: 'Vagas Recomendadas',
+        vacancies: this.recommendedVacancies,
+        userSkills: this.user?.skills
+      }
+    });
+  }
+
+  openExpandProjectsDialog(): void {
+    this.dialog.open(ExpandDialogComponent, {
+      width: '920px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      panelClass: ['onboarding-dialog', 'slide-in-dialog'],
+      data: {
+        type: 'projects',
+        title: 'Projetos Recomendados (Apenas Abertos)',
+        projects: this.recommendedProjects,
+        userSkills: this.user?.skills
+      }
+    });
   }
 
   toggleFavorite(vacancy: Vacancy, event?: Event): void {
@@ -243,7 +274,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
 
     this.recruiterService.applyToVacancy(vacancy.id).subscribe({
-      next: (res) => {
+      next: () => {
         vacancy.applied = true;
         vacancy.application_status = 'pending';
         this.snackBar.open('Candidatura marcada! Enviaremos um email em 1 semana a perguntar o resultado.', 'OK', { duration: 4000 });

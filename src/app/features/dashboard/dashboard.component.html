@@ -9,7 +9,7 @@
           <app-skeleton width="140px" height="16px" style="margin-top:8px"></app-skeleton>
         </ng-container>
         <ng-container *ngIf="!loadingUser && user">
-          <h1>{{ getGreeting() }}, {{ user.name.split(' ')[0] }}! 👋</h1>
+          <h1>{{ getGreeting() }}, {{ user.name.split(' ')[0] }}!</h1>
           <p class="text-soft">{{ user.university }} · {{ user.course }}</p>
         </ng-container>
       </div>
@@ -48,7 +48,12 @@
             <mat-icon color="primary">work</mat-icon>
             <h2>Vagas Recomendadas</h2>
           </div>
-          <a routerLink="/oportunidades" class="see-all-link">Ver todas</a>
+          <div class="header-actions">
+            <button mat-icon-button class="expand-btn" (click)="openExpandVacanciesDialog()" title="Expandir vagas recomendadas" aria-label="Expandir vagas">
+              <mat-icon>fullscreen</mat-icon>
+            </button>
+            <a routerLink="/oportunidades" class="see-all-link">Ver todas</a>
+          </div>
         </div>
 
         <div class="card-body">
@@ -98,7 +103,12 @@
             <h2>Projetos Recomendados</h2>
             <span class="open-only-badge">Apenas Abertos</span>
           </div>
-          <a routerLink="/projects" class="see-all-link">Ver todos</a>
+          <div class="header-actions">
+            <button mat-icon-button class="expand-btn" (click)="openExpandProjectsDialog()" title="Expandir projetos recomendados" aria-label="Expandir projetos">
+              <mat-icon>fullscreen</mat-icon>
+            </button>
+            <a routerLink="/projects" class="see-all-link">Ver todos</a>
+          </div>
         </div>
 
         <div class="card-body">
@@ -173,7 +183,7 @@
                       <mat-icon *ngIf="fav.application_status === 'accepted'">check_circle</mat-icon>
                       <mat-icon *ngIf="fav.application_status === 'rejected'">cancel</mat-icon>
                       <mat-icon *ngIf="!fav.application_status || fav.application_status === 'pending'">schedule</mat-icon>
-                      {{ fav.application_status === 'accepted' ? 'Aceite ✅' : fav.application_status === 'rejected' ? 'Rejeitado ❌' : 'Candidatado (Email em 1 sem)' }}
+                      {{ fav.application_status === 'accepted' ? 'Aceite' : fav.application_status === 'rejected' ? 'Rejeitado' : 'Candidatado (Email em 1 sem)' }}
                     </span>
 
                     <div class="status-buttons">
@@ -192,7 +202,7 @@
 
           <div class="empty-state-compact" *ngIf="!loadingFavorites && favoriteVacancies.length === 0">
             <mat-icon>star_border</mat-icon>
-            <p>Ainda não adicionaste vagas aos teus favoritos. Clica na estrela ⭐ em qualquer vaga para a guardar aqui.</p>
+            <p>Ainda não adicionaste vagas aos teus favoritos. Clica na estrela em qualquer vaga para a guardar aqui.</p>
           </div>
         </div>
       </div>

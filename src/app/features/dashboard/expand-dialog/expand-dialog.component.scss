@@ -1,0 +1,294 @@
+@use '../../../../styles/variables' as v;
+@use '../../../../styles/mixins' as m;
+
+.expand-dialog-container {
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
+  padding: v.$space-2;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: v.$space-4;
+  border-bottom: 1px solid v.$color-border;
+  margin-bottom: v.$space-4;
+
+  .header-title {
+    display: flex;
+    align-items: center;
+    gap: v.$space-3;
+
+    mat-icon {
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+    }
+
+    h2 {
+      font-size: 1.35rem;
+      font-weight: v.$font-weight-bold;
+      margin: 0;
+    }
+
+    .count-badge {
+      font-size: 12px;
+      font-weight: v.$font-weight-semibold;
+      background: rgba(v.$color-primary, 0.1);
+      color: v.$color-primary;
+      padding: 3px 10px;
+      border-radius: 12px;
+    }
+  }
+}
+
+.dialog-search {
+  margin-bottom: v.$space-4;
+
+  .search-field {
+    width: 100%;
+
+    ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+      display: none;
+    }
+  }
+}
+
+.dialog-body {
+  overflow-y: auto;
+  padding-right: 4px;
+  flex: 1;
+}
+
+/* Vacancies Expand Grid */
+.vacancies-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: v.$space-4;
+
+  @include m.md {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.vcard-expanded {
+  cursor: pointer;
+  background: v.$color-bg;
+  border-radius: v.$radius-md;
+  border: 1px solid v.$color-border;
+  padding: v.$space-4;
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-3;
+  transition: transform v.$transition-fast, border-color v.$transition-fast;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: rgba(v.$color-primary, 0.4);
+  }
+
+  .vcard-top {
+    display: flex;
+    align-items: center;
+    gap: v.$space-3;
+
+    .company-logo-square {
+      width: 48px;
+      height: 48px;
+      border-radius: v.$radius-sm;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .initials {
+        font-size: 1.2rem;
+        font-weight: v.$font-weight-bold;
+        color: white;
+      }
+
+      &.bg-purple {
+        background: v.$color-primary;
+      }
+    }
+
+    .vcard-info {
+      flex: 1;
+      min-width: 0;
+
+      h3 {
+        font-size: 15px;
+        font-weight: v.$font-weight-semibold;
+        margin: 0 0 2px 0;
+        @include m.truncate(1);
+      }
+
+      .company-name {
+        font-size: 12px;
+        color: v.$color-text-soft;
+        margin: 0;
+        @include m.truncate(1);
+      }
+    }
+
+    .star-fav-btn {
+      color: v.$color-text-soft;
+
+      &.is-fav {
+        color: #ffb703;
+      }
+    }
+  }
+
+  .vcard-desc {
+    font-size: 13px;
+    line-height: 1.5;
+    color: v.$color-text-soft;
+    margin: 0;
+    @include m.truncate(2);
+  }
+
+  .vcard-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: v.$space-2;
+    margin-top: auto;
+    padding-top: v.$space-2;
+
+    .type-badge {
+      font-size: 11px;
+      font-weight: v.$font-weight-semibold;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: rgba(v.$color-primary, 0.1);
+      color: v.$color-primary;
+      white-space: nowrap;
+    }
+  }
+}
+
+/* Projects Expand Grid */
+.projects-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: v.$space-4;
+
+  @include m.md {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.pcard-expanded {
+  cursor: pointer;
+  background: v.$color-bg;
+  border-radius: v.$radius-md;
+  border: 1px solid v.$color-border;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform v.$transition-fast, border-color v.$transition-fast;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: rgba(v.$color-primary, 0.4);
+  }
+
+  .pcard-img {
+    position: relative;
+    width: 100%;
+    height: 110px;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .open-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      font-size: 10px;
+      font-weight: v.$font-weight-bold;
+      background: #4caf50;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+  }
+
+  .pcard-body {
+    padding: v.$space-4;
+    display: flex;
+    flex-direction: column;
+    gap: v.$space-2;
+
+    h3 {
+      font-size: 15px;
+      font-weight: v.$font-weight-semibold;
+      margin: 0;
+      @include m.truncate(1);
+    }
+
+    .description {
+      font-size: 13px;
+      color: v.$color-text-soft;
+      margin: 0;
+      @include m.truncate(2);
+    }
+  }
+}
+
+.chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.chip--skill {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(v.$color-primary, 0.05);
+  color: v.$color-text-soft;
+  border: 1px solid v.$color-border;
+}
+
+.chip--matched {
+  background: rgba(v.$color-secondary, 0.15) !important;
+  color: darken(v.$color-secondary, 20%) !important;
+  border-color: rgba(v.$color-secondary, 0.3) !important;
+  font-weight: v.$font-weight-medium;
+}
+
+.empty-dialog-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: v.$space-12 0;
+  color: v.$color-text-soft;
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    margin-bottom: v.$space-2;
+  }
+
+  p {
+    font-size: 14px;
+    margin: 0;
+  }
+}
