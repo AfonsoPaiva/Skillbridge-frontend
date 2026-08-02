@@ -50,7 +50,7 @@ export class OpportunityDetailComponent implements OnInit {
       if (id) {
         this.loadVacancy(id);
       } else {
-        this.router.navigate(['/opportunities']);
+        this.router.navigate(['/oportunidades']);
       }
     });
   }
@@ -84,7 +84,7 @@ export class OpportunityDetailComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/opportunities']);
+    this.router.navigate(['/oportunidades']);
   }
 
   getInitials(companyName: string | undefined): string {
