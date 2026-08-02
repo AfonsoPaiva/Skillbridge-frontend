@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
-import { Recruiter, RecruiterApplyInput, Vacancy } from '../models/models';
+import { Recruiter, RecruiterApplyInput, Vacancy, CommunityVacancyStats } from '../models/models';
 import { AuthService } from './auth.service';
 import { environment } from '../../../environments/environment';
 
@@ -70,6 +70,43 @@ export class RecruiterService {
     return this.http.get<{ vacancy: Vacancy }>(`${this.base}/vacancies/${id}`);
   }
 
+  // ── Favorites & Application Tracking ──────────────
+
+  /** Toggle favorite status of a vacancy (max 10 additions per day) */
+  toggleFavoriteVacancy(vacancyId: string): Observable<{ is_favorite: boolean; message: string; limit_reached?: boolean; favorites_count_today?: number }> {
+    return this.http.post<{ is_favorite: boolean; message: string; limit_reached?: boolean; favorites_count_today?: number }>(
+      `${this.base}/vacancies/${vacancyId}/favorite`, {}, { headers: this.authHeaders() }
+    );
+  }
+
+  /** Get authenticated user's favorited vacancies */
+  getMyFavoriteVacancies(): Observable<{ vacancies: Vacancy[]; count: number; favorites_count_today: number }> {
+    return this.http.get<{ vacancies: Vacancy[]; count: number; favorites_count_today: number }>(
+      `${this.base}/vacancies/favorites/me`, { headers: this.authHeaders() }
+    );
+  }
+
+  /** Mark a vacancy as applied by the user (schedules 1-week follow-up email) */
+  applyToVacancy(vacancyId: string): Observable<{ message: string; application: any }> {
+    return this.http.post<{ message: string; application: any }>(
+      `${this.base}/vacancies/${vacancyId}/apply`, {}, { headers: this.authHeaders() }
+    );
+  }
+
+  /** Update user application status (e.g. accepted / rejected) */
+  updateApplicationStatus(vacancyId: string, status: string, responseTimeDays?: number): Observable<{ message: string; application: any }> {
+    return this.http.post<{ message: string; application: any }>(
+      `${this.base}/vacancies/${vacancyId}/application-status`,
+      { status, response_time_days: responseTimeDays },
+      { headers: this.authHeaders() }
+    );
+  }
+
+  /** Get community vacancy analytics (rejection rates, response times, top vacancies) */
+  getCommunityVacancyStats(): Observable<CommunityVacancyStats> {
+    return this.http.get<CommunityVacancyStats>(`${this.base}/vacancies/community-stats`);
+  }
+
   // ── Authenticated recruiter endpoints ─────────────
 
   /** Get authenticated recruiter's profile */
@@ -134,6 +171,4 @@ export class RecruiterService {
       headers: this.authHeaders()
     });
   }
-
-
 }

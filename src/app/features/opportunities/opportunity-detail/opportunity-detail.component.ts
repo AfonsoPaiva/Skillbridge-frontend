@@ -4,6 +4,7 @@ import { RecruiterService } from '../../../core/services/recruiter.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Vacancy } from '../../../core/models/models';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { trigger, transition, style, animate } from '@angular/animations';
 
 const DIALOG_CONFIG = {
@@ -39,7 +40,8 @@ export class OpportunityDetailComponent implements OnInit {
     private router: Router,
     private recruiterService: RecruiterService,
     public auth: AuthService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -59,6 +61,19 @@ export class OpportunityDetailComponent implements OnInit {
     this.recruiterService.getPublicVacancy(id).subscribe({
       next: (res) => {
         this.vacancy = res.vacancy;
+        if (this.auth.isLoggedIn) {
+          this.recruiterService.getMyFavoriteVacancies().subscribe({
+            next: (favRes) => {
+              if (this.vacancy) {
+                const found = favRes.vacancies.find(v => v.id === this.vacancy?.id);
+                if (found) {
+                  this.vacancy.is_favorite = true;
+                  this.vacancy.applied = found.applied;
+                }
+              }
+            }
+          });
+        }
         this.loading = false;
       },
       error: () => {
@@ -122,16 +137,45 @@ export class OpportunityDetailComponent implements OnInit {
     return map[type] || type;
   }
 
+  toggleFavorite(): void {
+    if (!this.vacancy) return;
+
+    if (!this.auth.isLoggedIn) {
+      this.promptLogin();
+      return;
+    }
+
+    this.recruiterService.toggleFavoriteVacancy(this.vacancy.id).subscribe({
+      next: (res) => {
+        if (this.vacancy) {
+          this.vacancy.is_favorite = res.is_favorite;
+          this.snackBar.open(res.message, 'OK', { duration: 3000 });
+        }
+      },
+      error: (err) => {
+        const errorMsg = err.error?.error || 'Erro ao atualizar favoritos.';
+        this.snackBar.open(errorMsg, 'OK', { duration: 4000 });
+      }
+    });
+  }
+
+  async promptLogin(): Promise<void> {
+    const { LoginComponent } = await import('../../../features/onboarding/login/login.component');
+    this.dialog.open(LoginComponent, { ...DIALOG_CONFIG, width: '420px' });
+  }
+
   async applyToVacancy(): Promise<void> {
     if (!this.vacancy) return;
     
     if (!this.auth.isLoggedIn) {
-      const { LoginComponent } = await import('../../../features/onboarding/login/login.component');
-      this.dialog.open(LoginComponent, { ...DIALOG_CONFIG, width: '420px' });
+      this.promptLogin();
       return;
     }
 
-    // Is logged in, proceed to application URL in new tab
+    this.recruiterService.applyToVacancy(this.vacancy.id).subscribe();
+    this.vacancy.applied = true;
+    this.snackBar.open('Candidatura registada! Em 1 semana enviaremos um email de acompanhamento.', 'OK', { duration: 4000 });
+
     window.open(this.vacancy.application_url, '_blank');
   }
 

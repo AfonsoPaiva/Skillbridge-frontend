@@ -230,6 +230,30 @@ export interface Vacancy {
   published_at: string;
   expires_at: string;
   recruiter?: Recruiter;
+  is_favorite?: boolean;
+  applied?: boolean;
+  application_status?: string; // pending | accepted | rejected | no_response
+  applied_at?: string;
+  favorited_at?: string;
+}
+
+export interface CommunityVacancyStatItem extends Vacancy {
+  favorites_count: number;
+  applications_count: number;
+  rejections_count: number;
+  accepted_count: number;
+  rejection_rate: number;
+  avg_response_days: number;
+}
+
+export interface CommunityVacancyStats {
+  total_favorites: number;
+  total_applications: number;
+  total_rejections: number;
+  total_accepted: number;
+  rejection_rate_percent: number;
+  avg_response_days: number;
+  top_community_vacancies: CommunityVacancyStatItem[];
 }
 
 

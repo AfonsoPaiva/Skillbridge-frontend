@@ -14,6 +14,9 @@
         </ng-container>
       </div>
       <div class="dashboard__actions">
+        <a routerLink="/perfil/eu/editar" mat-stroked-button class="edit-profile-btn">
+          <mat-icon>edit</mat-icon> Perfil
+        </a>
         <a routerLink="/projects/novo" mat-raised-button color="primary">
           <mat-icon>add</mat-icon> Novo projeto
         </a>
@@ -29,174 +32,247 @@
     }}</span>
 
       <span class="chip" *ngIf="user.skills.length"><mat-icon>build</mat-icon> {{ user.skills.length }} competência{{ user.skills.length !== 1 ? 's' : '' }}</span>
+      
+      <span class="chip chip--fav" *ngIf="auth.isLoggedIn">
+        <mat-icon class="star-icon">star</mat-icon> {{ favoritesCountToday }}/10 favoritas hoje
+      </span>
     </div>
 
-    <!-- ── Tabs: Projetos / Descobrir ── -->
-    <mat-tab-group [(selectedIndex)]="activeTab" class="dashboard__tabs" @fadeUp>
+    <!-- ── Main Grid Layout ── -->
+    <div class="grid-layout" @fadeUp>
 
-      <!-- Tab: Descobrir projetos -->
-      <mat-tab label="Descobrir projetos">
-        <div class="tab-content">
-          <!-- loading -->
-          <div class="projects-grid" *ngIf="loadingProjects">
-            <app-card-skeleton *ngFor="let _ of [1,2,3,4,5,6]"></app-card-skeleton>
+      <!-- ── SECTION 1: Vagas Recomendadas ── -->
+      <div class="grid-card">
+        <div class="card-header">
+          <div class="card-title">
+            <mat-icon color="primary">work</mat-icon>
+            <h2>Vagas Recomendadas</h2>
+          </div>
+          <a routerLink="/oportunidades" class="see-all-link">Ver todas</a>
+        </div>
+
+        <div class="card-body">
+          <div class="cards-compact-grid" *ngIf="loadingVacancies">
+            <app-vcard-skeleton *ngFor="let _ of [1,2,3,4]"></app-vcard-skeleton>
           </div>
 
-          <!-- list: recommended projects based on skills -->
-          <div *ngIf="!loadingProjects && recommendedProjects.length > 0">
-            <h2 class="section-title">Recomendados para ti</h2>
-            <div class="projects-grid" [@list]="recommendedProjects.length">
-              <mat-card class="proj-card" *ngFor="let p of recommendedProjects" matRipple
-                        [routerLink]="['/projects', p.slug]">
-                <div class="proj-card__img">
-                  <img [src]="p.image_url || 'assets/project-placeholder.svg'" [alt]="p.title">
-                  <span class="proj-card__status" [attr.data-status]="p.status">
-                    {{ getStatusLabel(p.status) }}
+          <div class="cards-compact-grid" *ngIf="!loadingVacancies && recommendedVacancies.length > 0" [@list]="recommendedVacancies.length">
+            <div class="compact-vcard" *ngFor="let v of recommendedVacancies.slice(0, 4); trackBy: trackByVacancyId" (click)="viewVacancyDetails(v.id)">
+              <div class="vcard-top">
+                <div class="company-logo-square" [class.bg-purple]="isWhiteTransparentLogo(v.recruiter?.logo_url)">
+                  <img *ngIf="v.recruiter?.logo_url" [src]="v.recruiter?.logo_url | imageProxy" alt="{{ v.recruiter?.company_name }} logo" loading="lazy">
+                  <div *ngIf="!v.recruiter?.logo_url" class="initials" [class.bg-purple]="true">{{ getInitials(v.recruiter?.company_name) }}</div>
+                </div>
+                <div class="vcard-meta">
+                  <h3 [attr.title]="v.title">{{ v.title }}</h3>
+                  <p class="company-name">{{ v.recruiter?.company_name }}</p>
+                </div>
+                <button mat-icon-button class="star-fav-btn" [class.is-fav]="v.is_favorite" (click)="toggleFavorite(v, $event)" [title]="v.is_favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos (máx 10/dia)'">
+                  <mat-icon>{{ v.is_favorite ? 'star' : 'star_border' }}</mat-icon>
+                </button>
+              </div>
+              <div class="vcard-bottom">
+                <div class="chips-row">
+                  <span class="chip chip--card-skill" [class.chip--matched]="isMatchedSkill(tag)" *ngFor="let tag of v.tags.slice(0, 2)">
+                    {{ tag }}
                   </span>
                 </div>
-                <mat-card-content class="proj-card__body">
-                  <h3 [attr.title]="p.title">{{ getProjectCardTitle(p.title) }}</h3>
-                  <p [attr.title]="p.description">{{ getProjectCardDescription(p.description) }}</p>
-                  <div class="proj-card__skills"
-                       [attr.title]="getProjectCardSkillText(p.roles) || null">
-                    <span class="chip chip--card-skill" 
-                          [class.chip--matched]="isMatchedSkill(skill)"
-                          *ngFor="let skill of getProjectCardSkillLabels(p.roles, 3, {fallbackToTitle: true}, auth.currentUserSkills)">
-                      {{ skill }}
-                    </span>
-                  </div>
-                </mat-card-content>
-              </mat-card>
-            </div>
-          </div>
-
-          <!-- no matching projects based on skills -->
-          <div class="empty-state" *ngIf="!loadingProjects && recommendedProjects.length === 0 && user && user.skills && user.skills.length > 0">
-            <mat-icon>search_off</mat-icon>
-            <h3>Não existem projetos com as tuas competências</h3>
-            <p>Ainda não há projetos que correspondam às tuas competências. Explora todos os projetos!</p>
-            <a routerLink="/projects" mat-raised-button color="primary">Ver todos os projetos</a>
-          </div>
-
-          <!-- no skills added yet -->
-          <div class="empty-state" *ngIf="!loadingProjects && projects.length > 0 && user && (!user.skills || user.skills.length === 0)">
-            <mat-icon>info</mat-icon>
-            <h3>Adiciona competências ao teu perfil</h3>
-            <p>Para receber recomendações personalizadas, adiciona as tuas competências no perfil.</p>
-            <a routerLink="/perfil/eu/editar" mat-raised-button color="primary">Adicionar competências</a>
-          </div>
-
-          <!-- completely empty -->
-          <div class="empty-state" *ngIf="!loadingProjects && projects.length === 0">
-            <mat-icon>search_off</mat-icon>
-            <h3>Nenhum projeto disponível</h3>
-            <p>Sê o primeiro a criar um projeto na comunidade!</p>
-            <a routerLink="/projects/novo" mat-raised-button color="primary">Criar projeto</a>
-          </div>
-        </div>
-      </mat-tab>
-
-      <!-- Tab: Oportunidades recomendadas -->
-      <mat-tab label="Oportunidades">
-        <div class="tab-content">
-          <!-- loading -->
-          <div class="projects-grid" *ngIf="loadingVacancies">
-            <app-vcard-skeleton *ngFor="let _ of [1,2,3,4,5,6]"></app-vcard-skeleton>
-          </div>
-
-          <!-- list: recommended vacancies based on skills -->
-          <div *ngIf="!loadingVacancies && recommendedVacancies.length > 0">
-            <h2 class="section-title">Oportunidades para ti</h2>
-            <div class="projects-grid" [@list]="recommendedVacancies.length">
-              <mat-card class="vcard" *ngFor="let v of recommendedVacancies; trackBy: trackByVacancyId" matRipple (click)="viewVacancyDetails(v.id)">
-                <mat-card-content class="vcard__body">
-                  <div class="vcard__header">
-                    <div class="company-logo-square" [class.bg-purple]="isWhiteTransparentLogo(v.recruiter?.logo_url)">
-                      <img *ngIf="v.recruiter?.logo_url" [src]="v.recruiter?.logo_url | imageProxy"
-                           alt="{{ v.recruiter?.company_name }} logo"
-                           loading="lazy" decoding="async" width="56" height="56">
-                      <div *ngIf="!v.recruiter?.logo_url" class="initials" [class.bg-purple]="true">{{ getInitials(v.recruiter?.company_name) }}</div>
-                    </div>
-                    <div class="header-info">
-                      <h3 [attr.title]="v.title">{{ v.title }}</h3>
-                      <p class="company-name">{{ v.recruiter?.company_name }}</p>
-                    </div>
-                  </div>
-                  
-                  <p class="description" [attr.title]="v.description">{{ v.description }}</p>
-
-                  <div class="vcard__footer">
-                    <div class="vcard__skills">
-                      <span class="chip chip--card-skill" [class.chip--matched]="isMatchedSkill(tag)" *ngFor="let tag of v.tags.slice(0, 3)">
-                        {{ tag }}
-                      </span>
-                      <span class="chip chip--card-skill" *ngIf="v.tags.length > 3">
-                        +{{ v.tags.length - 3 }}
-                      </span>
-                    </div>
-                    <div class="vcard__actions-right">
-                      <span class="vcard__badge" data-status="open">{{ getTypeLabel(v.type) }}</span>
-                    </div>
-                  </div>
-                </mat-card-content>
-              </mat-card>
-            </div>
-          </div>
-
-          <!-- no matching vacancies based on skills -->
-          <div class="empty-state" *ngIf="!loadingVacancies && recommendedVacancies.length === 0 && user && user.skills && user.skills.length > 0">
-            <mat-icon>work_off</mat-icon>
-            <h3>Nenhuma vaga compatível</h3>
-            <p>Ainda não há ofertas que correspondam às tuas competências.</p>
-            <a routerLink="/oportunidades" mat-raised-button color="primary">Ver todas as oportunidades</a>
-          </div>
-
-          <!-- no skills added yet -->
-          <div class="empty-state" *ngIf="!loadingVacancies && vacancies.length > 0 && user && (!user.skills || user.skills.length === 0)">
-            <mat-icon>info</mat-icon>
-            <h3>Adiciona competências ao teu perfil</h3>
-            <p>Para receber recomendações de oportunidades de estágio e emprego, adiciona as tuas competências.</p>
-            <a routerLink="/perfil/eu/editar" mat-raised-button color="primary">Adicionar competências</a>
-          </div>
-
-          <!-- completely empty -->
-          <div class="empty-state" *ngIf="!loadingVacancies && vacancies.length === 0">
-            <mat-icon>work_off</mat-icon>
-            <h3>Nenhuma oportunidade disponível</h3>
-            <p>De momento não existem vagas partilhadas pelas empresas.</p>
-          </div>
-        </div>
-      </mat-tab>
-
-      <!-- Tab: O meu perfil rápido -->
-      <mat-tab label="O meu perfil">
-        <div class="tab-content profile-quick" *ngIf="!loadingUser && user" @fadeUp>
-          <div class="profile-quick__avatar">
-            <img [src]="user.avatar_url || 'assets/avatar-placeholder.svg'" [alt]="user.name">
-          </div>
-          <div class="profile-quick__info">
-            <h2>{{ user.name }}</h2>
-            <p class="text-soft">{{ user.email }}</p>
-            <p>{{ user.bio || 'Sem biografia definida.' }}</p>
-            <div class="profile-quick__skills" *ngIf="user.skills.length">
-              <strong>Competências:</strong>
-              <div class="chips-row">
-                <span class="chip chip--matched" *ngFor="let s of user.skills">{{ s }}</span>
+                <span class="vcard__badge">{{ getTypeLabel(v.type) }}</span>
               </div>
             </div>
-            <div class="profile-quick__empty" *ngIf="!user.skills.length">
-              <mat-icon>info</mat-icon>
-              <span>Ainda não adicionaste competências ao teu perfil.</span>
-              <a routerLink="/perfil/eu" mat-stroked-button color="primary" style="margin-left:8px">
-                Editar perfil
-              </a>
+          </div>
+
+          <!-- Empty state -->
+          <div class="empty-state-compact" *ngIf="!loadingVacancies && recommendedVacancies.length === 0">
+            <mat-icon>work_outline</mat-icon>
+            <p>Adiciona competências ao teu perfil para veres vagas recomendadas.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECTION 2: Projetos Recomendados (Apenas Abertos) ── -->
+      <div class="grid-card">
+        <div class="card-header">
+          <div class="card-title">
+            <mat-icon color="primary">folder_open</mat-icon>
+            <h2>Projetos Recomendados</h2>
+            <span class="open-only-badge">Apenas Abertos</span>
+          </div>
+          <a routerLink="/projects" class="see-all-link">Ver todos</a>
+        </div>
+
+        <div class="card-body">
+          <div class="cards-compact-grid" *ngIf="loadingProjects">
+            <app-card-skeleton *ngFor="let _ of [1,2,3,4]"></app-card-skeleton>
+          </div>
+
+          <div class="cards-compact-grid" *ngIf="!loadingProjects && recommendedProjects.length > 0" [@list]="recommendedProjects.length">
+            <div class="compact-pcard" *ngFor="let p of recommendedProjects.slice(0, 4)" [routerLink]="['/projects', p.slug]">
+              <div class="pcard-img">
+                <img [src]="p.image_url || 'assets/project-placeholder.svg'" [alt]="p.title">
+                <span class="open-tag">Aberto</span>
+              </div>
+              <div class="pcard-info">
+                <h3 [attr.title]="p.title">{{ getProjectCardTitle(p.title) }}</h3>
+                <p class="description">{{ getProjectCardDescription(p.description) }}</p>
+                <div class="chips-row">
+                  <span class="chip chip--card-skill" [class.chip--matched]="isMatchedSkill(skill)" *ngFor="let skill of getProjectCardSkillLabels(p.roles, 2, {fallbackToTitle: true}, auth.currentUserSkills)">
+                    {{ skill }}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
-          <a routerLink="/perfil/eu" mat-raised-button color="primary" class="profile-quick__edit">
-            <mat-icon>edit</mat-icon> Editar perfil
-          </a>
+
+          <!-- Empty state -->
+          <div class="empty-state-compact" *ngIf="!loadingProjects && recommendedProjects.length === 0">
+            <mat-icon>folder_off</mat-icon>
+            <p>Não há projetos abertos compatíveis com as tuas competências neste momento.</p>
+          </div>
         </div>
-      </mat-tab>
-    </mat-tab-group>
+      </div>
+
+      <!-- ── SECTION 3: As Minhas Vagas Favoritas & Candidaturas ── -->
+      <div class="grid-card grid-card--full-width">
+        <div class="card-header">
+          <div class="card-title">
+            <mat-icon class="star-icon">star</mat-icon>
+            <h2>As Minhas Vagas Favoritas</h2>
+            <span class="fav-limit-badge">{{ favoritesCountToday }}/10 hoje</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="fav-vagas-list" *ngIf="!loadingFavorites && favoriteVacancies.length > 0">
+            <div class="fav-vaga-row" *ngFor="let fav of favoriteVacancies">
+              <div class="fav-vaga-left" (click)="viewVacancyDetails(fav.id)">
+                <div class="company-logo-square" [class.bg-purple]="isWhiteTransparentLogo(fav.recruiter?.logo_url)">
+                  <img *ngIf="fav.recruiter?.logo_url" [src]="fav.recruiter?.logo_url | imageProxy" alt="{{ fav.recruiter?.company_name }} logo">
+                  <div *ngIf="!fav.recruiter?.logo_url" class="initials" [class.bg-purple]="true">{{ getInitials(fav.recruiter?.company_name) }}</div>
+                </div>
+                <div class="fav-vaga-details">
+                  <h3>{{ fav.title }}</h3>
+                  <p class="company-name">{{ fav.recruiter?.company_name }} · {{ getTypeLabel(fav.type) }}</p>
+                </div>
+              </div>
+
+              <div class="fav-vaga-actions">
+                <button mat-icon-button class="star-fav-btn is-fav" (click)="toggleFavorite(fav, $event)" title="Remover dos favoritos">
+                  <mat-icon>star</mat-icon>
+                </button>
+
+                <ng-container *ngIf="!fav.applied">
+                  <button mat-raised-button color="primary" class="apply-btn" (click)="markAsApplied(fav, $event)">
+                    <mat-icon>check_circle</mat-icon> Eu candidatei-me a esta vaga
+                  </button>
+                </ng-container>
+
+                <ng-container *ngIf="fav.applied">
+                  <div class="applied-status-group">
+                    <span class="applied-badge" [attr.data-status]="fav.application_status || 'pending'">
+                      <mat-icon *ngIf="fav.application_status === 'accepted'">check_circle</mat-icon>
+                      <mat-icon *ngIf="fav.application_status === 'rejected'">cancel</mat-icon>
+                      <mat-icon *ngIf="!fav.application_status || fav.application_status === 'pending'">schedule</mat-icon>
+                      {{ fav.application_status === 'accepted' ? 'Aceite ✅' : fav.application_status === 'rejected' ? 'Rejeitado ❌' : 'Candidatado (Email em 1 sem)' }}
+                    </span>
+
+                    <div class="status-buttons">
+                      <button mat-stroked-button class="btn-status status-accepted" (click)="updateStatus(fav, 'accepted', $event)" [class.active]="fav.application_status === 'accepted'">
+                        Fui Aceite
+                      </button>
+                      <button mat-stroked-button class="btn-status status-rejected" (click)="updateStatus(fav, 'rejected', $event)" [class.active]="fav.application_status === 'rejected'">
+                        Rejeitado
+                      </button>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+
+          <div class="empty-state-compact" *ngIf="!loadingFavorites && favoriteVacancies.length === 0">
+            <mat-icon>star_border</mat-icon>
+            <p>Ainda não adicionaste vagas aos teus favoritos. Clica na estrela ⭐ em qualquer vaga para a guardar aqui.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECTION 4: Vagas Favoritas da Comunidade & Métricas ── -->
+      <div class="grid-card grid-card--full-width">
+        <div class="card-header">
+          <div class="card-title">
+            <mat-icon color="accent">insights</mat-icon>
+            <h2>Vagas Favoritas da Comunidade & Métricas</h2>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <!-- Metrics Overview Stats Bar -->
+          <div class="metrics-summary-grid" *ngIf="communityStats">
+            <div class="metric-box">
+              <div class="metric-icon purple"><mat-icon>star</mat-icon></div>
+              <div class="metric-data">
+                <span class="metric-value">{{ communityStats.total_favorites }}</span>
+                <span class="metric-label">Total Favoritos</span>
+              </div>
+            </div>
+
+            <div class="metric-box">
+              <div class="metric-icon blue"><mat-icon>send</mat-icon></div>
+              <div class="metric-data">
+                <span class="metric-value">{{ communityStats.total_applications }}</span>
+                <span class="metric-label">Candidaturas</span>
+              </div>
+            </div>
+
+            <div class="metric-box">
+              <div class="metric-icon red"><mat-icon>block</mat-icon></div>
+              <div class="metric-data">
+                <span class="metric-value">{{ communityStats.total_rejections }}</span>
+                <span class="metric-label">Rejeições Registadas</span>
+              </div>
+            </div>
+
+            <div class="metric-box">
+              <div class="metric-icon green"><mat-icon>timer</mat-icon></div>
+              <div class="metric-data">
+                <span class="metric-value">{{ communityStats.avg_response_days | number:'1.0-1' }} dias</span>
+                <span class="metric-label">Tempo Médio Resposta</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Top Community Vacancies Table / List -->
+          <div class="community-vacancies-list" *ngIf="communityStats && communityStats.top_community_vacancies?.length">
+            <h3>Vagas Mais Favoritadas na Comunidade</h3>
+            <div class="community-vac-row" *ngFor="let cv of communityStats.top_community_vacancies" (click)="viewVacancyDetails(cv.id)">
+              <div class="cv-info">
+                <div class="company-logo-square" [class.bg-purple]="isWhiteTransparentLogo(cv.recruiter?.logo_url)">
+                  <img *ngIf="cv.recruiter?.logo_url" [src]="cv.recruiter?.logo_url | imageProxy" alt="{{ cv.recruiter?.company_name }} logo">
+                  <div *ngIf="!cv.recruiter?.logo_url" class="initials" [class.bg-purple]="true">{{ getInitials(cv.recruiter?.company_name) }}</div>
+                </div>
+                <div>
+                  <h4>{{ cv.title }}</h4>
+                  <p class="company-name">{{ cv.recruiter?.company_name }}</p>
+                </div>
+              </div>
+
+              <div class="cv-metrics">
+                <span class="metric-chip fav-chip">
+                  <mat-icon>star</mat-icon> {{ cv.favorites_count }} favoritos
+                </span>
+                <span class="metric-chip time-chip">
+                  <mat-icon>schedule</mat-icon> ~{{ cv.avg_response_days | number:'1.0-0' }}d resposta
+                </span>
+                <span class="metric-chip rej-chip">
+                  <mat-icon>trending_down</mat-icon> {{ cv.rejection_rate | number:'1.0-0' }}% rejeição
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>

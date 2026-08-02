@@ -3,9 +3,10 @@ import { Router } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { RecruiterService } from '../../core/services/recruiter.service';
-import { User, Project, Vacancy } from '../../core/models/models';
+import { User, Project, Vacancy, CommunityVacancyStats } from '../../core/models/models';
 import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
 import { Subscription } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   getProjectCardDescription,
   getProjectCardSkillLabels,
@@ -19,6 +20,7 @@ import {
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
+  standalone: false,
   animations: [
     trigger('fadeUp', [
       transition(':enter', [
@@ -42,26 +44,33 @@ export class DashboardComponent implements OnInit, OnDestroy {
   readonly getProjectCardSkillText = getProjectCardSkillText;
   readonly getProjectCardTitle = getProjectCardTitle;
   readonly getProjectSkillLabels = getProjectSkillLabels;
+  
   user: User | null = null;
   projects: Project[] = [];
   recommendedProjects: Project[] = [];
   vacancies: Vacancy[] = [];
   recommendedVacancies: Vacancy[] = [];
+  favoriteVacancies: Vacancy[] = [];
+  favoritesCountToday: number = 0;
+  communityStats: CommunityVacancyStats | null = null;
+  
   loadingUser = true;
   loadingProjects = true;
   loadingVacancies = true;
-  activeTab = 0;
+  loadingFavorites = true;
+  loadingStats = true;
+
   private userSub?: Subscription;
 
   constructor(
     public auth: AuthService, 
     private api: ApiService,
     private recruiterService: RecruiterService,
-    private router: Router
+    private router: Router,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
-    // Use cached user profile for instant header load
     this.userSub = this.auth.user$.subscribe(u => {
       this.user = u;
       this.loadingUser = false;
@@ -69,12 +78,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.filterRecommendedVacancies();
     });
 
-    // Always revalidate profile from API so role/skills changes reflect immediately
-    // when returning to dashboard after editing profile.
     this.refreshProfile();
 
-    // request all statuses so that items don't vanish when the status
-    // is changed on the backend (the API defaults to `status=open`).
+    // List all projects and filter ONLY OPEN projects for recommended
     this.api.listProjects('all').subscribe({
       next: (p: Project[]) => { 
         this.projects = p; 
@@ -84,14 +90,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       error: () => { this.loadingProjects = false; }
     });
 
-    this.recruiterService.listPublicVacancies().subscribe({
-      next: (res) => {
-        this.vacancies = res.vacancies || [];
-        this.loadingVacancies = false;
-        this.filterRecommendedVacancies();
-      },
-      error: () => { this.loadingVacancies = false; }
-    });
+    this.loadVacancies();
+    this.loadMyFavorites();
+    this.loadCommunityStats();
   }
 
   private refreshProfile(): void {
@@ -113,6 +114,58 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
+  loadVacancies(): void {
+    this.recruiterService.listPublicVacancies().subscribe({
+      next: (res) => {
+        this.vacancies = res.vacancies || [];
+        this.loadingVacancies = false;
+        this.filterRecommendedVacancies();
+      },
+      error: () => { this.loadingVacancies = false; }
+    });
+  }
+
+  loadMyFavorites(): void {
+    if (!this.auth.isLoggedIn) {
+      this.loadingFavorites = false;
+      return;
+    }
+
+    this.recruiterService.getMyFavoriteVacancies().subscribe({
+      next: (res) => {
+        this.favoriteVacancies = res.vacancies || [];
+        this.favoritesCountToday = res.favorites_count_today || 0;
+        this.loadingFavorites = false;
+        this.syncFavoriteStates();
+      },
+      error: () => {
+        this.loadingFavorites = false;
+      }
+    });
+  }
+
+  loadCommunityStats(): void {
+    this.recruiterService.getCommunityVacancyStats().subscribe({
+      next: (stats) => {
+        this.communityStats = stats;
+        this.loadingStats = false;
+      },
+      error: () => {
+        this.loadingStats = false;
+      }
+    });
+  }
+
+  syncFavoriteStates(): void {
+    const favSet = new Set(this.favoriteVacancies.map(f => f.id));
+    this.vacancies.forEach(v => {
+      v.is_favorite = favSet.has(v.id);
+    });
+    this.recommendedVacancies.forEach(v => {
+      v.is_favorite = favSet.has(v.id);
+    });
+  }
+
   ngOnDestroy(): void {
     this.userSub?.unsubscribe();
   }
@@ -125,8 +178,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     const userSkills = new Set(this.user.skills.map(skill => skill.toLowerCase()));
 
-    // Filter projects that have roles matching at least one of the user's skills
+    // CRITICAL: Filter projects that have OPEN status AND match user's skills
     this.recommendedProjects = this.projects.filter(project => {
+      if (project.status !== 'open') return false; // ONLY OPEN PROJECTS!
       if (!project.roles || project.roles.length === 0) return false;
       
       return project.roles.some(role =>
@@ -143,12 +197,80 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     const userSkills = new Set(this.user.skills.map(skill => skill.toLowerCase()));
 
-    // If the user meant "as mesmas skills das ofertas de estagios",
-    // maybe they meant ONLY internship offers that match the user's skills?
-    // Let's filter all vacancies that match the user's skills.
     this.recommendedVacancies = this.vacancies.filter(v => {
       if (!v.tags || v.tags.length === 0) return false;
       return v.tags.some(tag => userSkills.has(tag.toLowerCase()));
+    });
+
+    this.syncFavoriteStates();
+  }
+
+  toggleFavorite(vacancy: Vacancy, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    if (!this.auth.isLoggedIn) {
+      this.snackBar.open('Inicia sessão para guardar vagas nos favoritos.', 'OK', { duration: 3000 });
+      return;
+    }
+
+    this.recruiterService.toggleFavoriteVacancy(vacancy.id).subscribe({
+      next: (res) => {
+        vacancy.is_favorite = res.is_favorite;
+        if (res.favorites_count_today !== undefined) {
+          this.favoritesCountToday = res.favorites_count_today;
+        }
+        this.snackBar.open(res.message, 'OK', { duration: 3000 });
+        this.loadMyFavorites();
+        this.loadCommunityStats();
+      },
+      error: (err) => {
+        const errorMsg = err.error?.error || 'Erro ao atualizar favoritos.';
+        this.snackBar.open(errorMsg, 'OK', { duration: 4000 });
+      }
+    });
+  }
+
+  markAsApplied(vacancy: Vacancy, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    if (!this.auth.isLoggedIn) {
+      this.snackBar.open('Inicia sessão para registar candidaturas.', 'OK', { duration: 3000 });
+      return;
+    }
+
+    this.recruiterService.applyToVacancy(vacancy.id).subscribe({
+      next: (res) => {
+        vacancy.applied = true;
+        vacancy.application_status = 'pending';
+        this.snackBar.open('Candidatura marcada! Enviaremos um email em 1 semana a perguntar o resultado.', 'OK', { duration: 4000 });
+        this.loadMyFavorites();
+        this.loadCommunityStats();
+      },
+      error: () => {
+        this.snackBar.open('Erro ao guardar candidatura.', 'OK', { duration: 3000 });
+      }
+    });
+  }
+
+  updateStatus(vacancy: Vacancy, status: string, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    this.recruiterService.updateApplicationStatus(vacancy.id, status).subscribe({
+      next: (res) => {
+        vacancy.application_status = status;
+        this.snackBar.open(res.message || 'Estado da candidatura atualizado com sucesso!', 'OK', { duration: 3000 });
+        this.loadMyFavorites();
+        this.loadCommunityStats();
+      },
+      error: () => {
+        this.snackBar.open('Erro ao atualizar estado.', 'OK', { duration: 3000 });
+      }
     });
   }
 
