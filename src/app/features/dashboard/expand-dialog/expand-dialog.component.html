@@ -33,7 +33,7 @@
 
       <mat-form-field appearance="outline" class="mini-field" subscriptSizing="dynamic">
         <mat-label>Modalidade</mat-label>
-        <mat-select [(ngModel)]="workModeFilter" (ngModelChange)="filterItems()">
+        <mat-select [(ngModel)]="workModeFilter" (ngModelChange)="filterItems()" panelClass="compact-dialog-select-panel">
           <mat-option value="all">Todas</mat-option>
           <mat-option value="remote">Remoto</mat-option>
           <mat-option value="hybrid">Híbrido</mat-option>
@@ -43,7 +43,7 @@
 
       <mat-form-field appearance="outline" class="mini-field" subscriptSizing="dynamic">
         <mat-label>Contrato</mat-label>
-        <mat-select [(ngModel)]="employmentTypeFilter" (ngModelChange)="filterItems()">
+        <mat-select [(ngModel)]="employmentTypeFilter" (ngModelChange)="filterItems()" panelClass="compact-dialog-select-panel">
           <mat-option value="all">Todos</mat-option>
           <mat-option value="full_time">Full-time</mat-option>
           <mat-option value="part_time">Part-time</mat-option>
@@ -53,7 +53,7 @@
 
       <mat-form-field appearance="outline" class="mini-field" subscriptSizing="dynamic">
         <mat-label>Experiência</mat-label>
-        <mat-select [(ngModel)]="experienceFilter" (ngModelChange)="filterItems()">
+        <mat-select [(ngModel)]="experienceFilter" (ngModelChange)="filterItems()" panelClass="compact-dialog-select-panel">
           <mat-option *ngFor="let opt of experienceOptions" [value]="opt.value">
             {{ opt.label }}
           </mat-option>
@@ -62,7 +62,7 @@
 
       <mat-form-field appearance="outline" class="mini-field" subscriptSizing="dynamic">
         <mat-label>Tipo Vaga</mat-label>
-        <mat-select [(ngModel)]="typeFilter" (ngModelChange)="filterItems()">
+        <mat-select [(ngModel)]="typeFilter" (ngModelChange)="filterItems()" panelClass="compact-dialog-select-panel">
           <mat-option *ngFor="let s of typeOptions" [value]="s.value">
             {{ s.label }}
           </mat-option>

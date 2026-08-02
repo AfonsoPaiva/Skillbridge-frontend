@@ -448,6 +448,28 @@ body {
   }
 }
 
+// Compact Select Panel (Used in Expand Dialog)
+.compact-dialog-select-panel {
+  padding: 4px 0 !important;
+  min-width: 130px !important;
+
+  .mat-mdc-option {
+    min-height: 32px !important;
+    height: 32px !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+
+    .mdc-list-item__primary-text {
+      font-size: 12px !important;
+      font-weight: 400 !important;
+    }
+
+    .mat-pseudo-checkbox {
+      transform: scale(0.75) !important;
+    }
+  }
+}
+
 // ── Autocomplete ──────────────────────────────────────────
 .mat-mdc-autocomplete-panel {
   background: v.$color-surface !important;
