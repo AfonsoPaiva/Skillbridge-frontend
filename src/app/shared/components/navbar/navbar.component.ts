@@ -1,8 +1,8 @@
 import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { filter } from 'rxjs/operators';
-import { interval, Subscription } from 'rxjs';
+import { filter, takeUntil } from 'rxjs/operators';
+import { interval, Subscription, Subject } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { ApiService } from '../../../core/services/api.service';
 
@@ -29,6 +29,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   heroScrolled = false;
   unreadCount = 0;
   private unreadSubscription?: Subscription;
+  private destroy$ = new Subject<void>();
 
   constructor(
     public auth: AuthService,
@@ -54,7 +55,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.isLandingPage = this.router.url.includes('/landing') || this.router.url === '/';
     this.onScroll(); // initial scroll check
 
-    this.auth.currentUser$.subscribe(u => {
+    this.auth.currentUser$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(u => {
       this.isLoggedIn = !!u;
       this.isRegularUser = !!u && !u.recruiterId;
       // Always stop first to avoid leaking multiple intervals if currentUser$ emits several times
@@ -67,7 +70,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
     });
 
     this.router.events.pipe(
-      filter((e): e is NavigationEnd => e instanceof NavigationEnd)
+      filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+      takeUntil(this.destroy$)
     ).subscribe(e => {
       const currentUrl = e.urlAfterRedirects;
       this.isLandingPage = currentUrl.includes('/landing') || currentUrl === '/';
@@ -88,12 +92,17 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.stopUnreadPolling();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private startUnreadPolling(): void {
+    this.stopUnreadPolling();
     this.loadUnreadCount();
-    // Poll every 60 seconds (reduced from 30s — adequate for a badge counter)
-    this.unreadSubscription = interval(60000).subscribe(() => {
+    // Poll every 120 seconds (2 minutes — sufficient for badge indicator and reduces server load)
+    this.unreadSubscription = interval(120000).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
       this.loadUnreadCount();
     });
   }
@@ -101,6 +110,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   private stopUnreadPolling(): void {
     if (this.unreadSubscription) {
       this.unreadSubscription.unsubscribe();
+      this.unreadSubscription = undefined;
     }
   }
 
