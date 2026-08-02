@@ -646,10 +646,22 @@
       }
     }
   }
+}
 
-  .metrics-summary-grid {
-    display: flex;
-    flex-direction: column;
+/* ── Section 4: Metrics & Community Stats ────── */
+.metrics-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: v.$space-4;
+  margin-bottom: v.$space-6;
+
+  @include m.md {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  @media (max-width: 640px) {
+    display: flex !important;
+    flex-direction: column !important;
     gap: v.$space-2;
     margin-bottom: v.$space-5;
 
@@ -695,55 +707,6 @@
         }
       }
     }
-  }
-
-  .community-vac-row {
-    flex-direction: column;
-    align-items: stretch;
-    gap: v.$space-3;
-    padding: v.$space-3 v.$space-4;
-
-    .cv-info {
-      width: 100%;
-
-      h4 {
-        font-size: 14px;
-        font-weight: v.$font-weight-semibold;
-      }
-    }
-
-    .cv-metrics {
-      width: 100%;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-
-      .metric-chip {
-        flex: 1 1 auto;
-        min-width: fit-content;
-        justify-content: center;
-        padding: 4px 10px;
-        font-size: 11px;
-
-        mat-icon {
-          font-size: 14px;
-          width: 14px;
-          height: 14px;
-        }
-      }
-    }
-  }
-}
-
-/* ── Section 4: Metrics & Community Stats ────── */
-.metrics-summary-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: v.$space-4;
-  margin-bottom: v.$space-6;
-
-  @include m.md {
-    grid-template-columns: repeat(4, 1fr);
   }
 
   .metric-box {
@@ -842,6 +805,43 @@
 
   &:hover {
     border-color: rgba(v.$color-primary, 0.3);
+  }
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: v.$space-3;
+    padding: v.$space-3 v.$space-4;
+
+    .cv-info {
+      width: 100%;
+
+      h4 {
+        font-size: 14px;
+        font-weight: v.$font-weight-semibold;
+      }
+    }
+
+    .cv-metrics {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+
+      .metric-chip {
+        flex: 1 1 auto;
+        min-width: fit-content;
+        justify-content: center;
+        padding: 4px 10px;
+        font-size: 11px;
+
+        mat-icon {
+          font-size: 14px;
+          width: 14px;
+          height: 14px;
+        }
+      }
+    }
   }
 
   .cv-info {
