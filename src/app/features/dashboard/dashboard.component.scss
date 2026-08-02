@@ -518,6 +518,7 @@
     display: flex;
     gap: 6px;
     align-items: center;
+    flex-wrap: wrap;
 
     .btn-status {
       font-size: 11px;
@@ -548,6 +549,7 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
 
       mat-icon {
         font-size: 20px;
@@ -562,6 +564,35 @@
       &:hover {
         color: #ef4444;
         background: rgba(239, 68, 68, 0.1);
+      }
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .fav-vaga-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: v.$space-3;
+
+    .fav-vaga-left {
+      min-width: 100%;
+      width: 100%;
+    }
+
+    .fav-vaga-actions {
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .applied-status-group {
+      width: 100%;
+
+      .status-buttons {
+        width: 100%;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 6px;
       }
     }
   }

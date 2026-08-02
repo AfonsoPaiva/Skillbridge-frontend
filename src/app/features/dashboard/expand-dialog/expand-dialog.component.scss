@@ -15,6 +15,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: v.$space-2;
   padding-bottom: v.$space-4;
   border-bottom: 1px solid v.$color-border;
   margin-bottom: v.$space-4;
@@ -24,18 +25,23 @@
   .header-title {
     display: flex;
     align-items: center;
-    gap: v.$space-3;
+    gap: v.$space-2;
+    flex-wrap: wrap;
+    flex: 1;
+    min-width: 0;
 
     mat-icon {
       font-size: 24px;
       width: 24px;
       height: 24px;
+      flex-shrink: 0;
     }
 
     h2 {
       font-size: 1.35rem;
       font-weight: v.$font-weight-bold;
       margin: 0;
+      word-break: break-word;
     }
 
     .count-badge {
@@ -45,7 +51,12 @@
       color: v.$color-primary;
       padding: 3px 10px;
       border-radius: 12px;
+      white-space: nowrap;
     }
+  }
+
+  .close-btn {
+    flex-shrink: 0;
   }
 }
 
@@ -101,7 +112,7 @@
 
   .vcard-top {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: v.$space-3;
     width: 100%;
     box-sizing: border-box;
@@ -141,8 +152,10 @@
       h3 {
         font-size: 15px;
         font-weight: v.$font-weight-semibold;
+        line-height: 1.3;
         margin: 0 0 2px 0;
-        @include m.truncate(1);
+        word-break: break-word;
+        @include m.truncate(2);
       }
 
       .company-name {
@@ -155,6 +168,7 @@
 
     .star-fav-btn {
       color: v.$color-text-soft;
+      flex-shrink: 0;
 
       &:hover,
       &.is-fav {
@@ -188,6 +202,11 @@
     width: 100%;
     box-sizing: border-box;
 
+    .chips-row {
+      flex: 1;
+      min-width: 0;
+    }
+
     .type-badge {
       font-size: 11px;
       font-weight: v.$font-weight-semibold;
@@ -196,6 +215,46 @@
       background: rgba(v.$color-primary, 0.1);
       color: v.$color-primary;
       white-space: nowrap;
+      flex-shrink: 0;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .expand-dialog-container {
+    padding: 0;
+    max-height: 90vh;
+  }
+
+  .dialog-header {
+    .header-title {
+      h2 {
+        font-size: 1.1rem;
+      }
+
+      .count-badge {
+        font-size: 11px;
+        padding: 2px 8px;
+      }
+    }
+  }
+
+  .vcard-expanded {
+    padding: v.$space-3;
+
+    .vcard-desc {
+      font-size: 12px;
+      @include m.truncate(2);
+    }
+  }
+
+  .vcard-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+
+    .type-badge {
+      align-self: flex-start;
     }
   }
 }
