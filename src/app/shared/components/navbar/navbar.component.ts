@@ -51,17 +51,17 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // Initialize state based on current URL
-    const url = this.router.url;
-    this.isLandingPage = url.includes('/landing') || url === '/';
+    this.isLandingPage = this.router.url.includes('/landing') || this.router.url === '/';
     this.onScroll(); // initial scroll check
 
     this.auth.currentUser$.subscribe(u => {
       this.isLoggedIn = !!u;
       this.isRegularUser = !!u && !u.recruiterId;
+      // Always stop first to avoid leaking multiple intervals if currentUser$ emits several times
+      this.stopUnreadPolling();
       if (this.isRegularUser) {
         this.startUnreadPolling();
       } else {
-        this.stopUnreadPolling();
         this.unreadCount = 0;
       }
     });
@@ -74,7 +74,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
       if (!this.isLandingPage) this.heroScrolled = false;
 
       if (this.isRegularUser) {
-        if (url.includes('/messages')) {
+        if (currentUrl.includes('/messages')) {
           // User entered the messages page — clear badge immediately
           // (the conversation component calls markRead when messages load)
           this.unreadCount = 0;
@@ -92,8 +92,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   private startUnreadPolling(): void {
     this.loadUnreadCount();
-    // Poll every 30 seconds
-    this.unreadSubscription = interval(30000).subscribe(() => {
+    // Poll every 60 seconds (reduced from 30s — adequate for a badge counter)
+    this.unreadSubscription = interval(60000).subscribe(() => {
       this.loadUnreadCount();
     });
   }
