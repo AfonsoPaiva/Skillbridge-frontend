@@ -58,7 +58,7 @@
       </div>
 
       <div class="detail-actions">
-        <button mat-icon-button class="fav-star-btn" (click)="toggleFavorite()" [class.is-fav]="vacancy.is_favorite" [attr.aria-label]="vacancy.is_favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'" [title]="vacancy.is_favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos (máx. 10/dia)'">
+        <button mat-icon-button class="fav-star-btn" (click)="toggleFavorite()" [class.is-fav]="vacancy.is_favorite" [attr.aria-label]="vacancy.is_favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'" [title]="vacancy.is_favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'">
           <mat-icon>{{ vacancy.is_favorite ? 'star' : 'star_border' }}</mat-icon>
         </button>
         <button mat-raised-button color="primary" class="apply-btn" (click)="applyToVacancy()">

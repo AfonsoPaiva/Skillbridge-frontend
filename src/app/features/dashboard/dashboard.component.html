@@ -32,10 +32,6 @@
     }}</span>
 
       <span class="chip" *ngIf="user.skills.length"><mat-icon>build</mat-icon> {{ user.skills.length }} competência{{ user.skills.length !== 1 ? 's' : '' }}</span>
-      
-      <span class="chip chip--fav" *ngIf="auth.isLoggedIn">
-        <mat-icon class="star-icon">star</mat-icon> {{ favoritesCountToday }}/10 favoritas hoje
-      </span>
     </div>
 
     <!-- ── Main Grid Layout ── -->
@@ -99,7 +95,6 @@
           <div class="card-title">
             <mat-icon color="primary">folder_open</mat-icon>
             <h2>Projetos Recomendados</h2>
-            <span class="open-only-badge">Apenas Abertos</span>
           </div>
           <div class="header-actions">
             <button mat-icon-button class="expand-btn" (click)="openExpandProjectsDialog()" title="Expandir projetos recomendados" aria-label="Expandir projetos">
@@ -145,7 +140,6 @@
           <div class="card-title">
             <mat-icon class="star-icon">star</mat-icon>
             <h2>As Minhas Vagas Favoritas</h2>
-            <span class="fav-limit-badge">{{ favoritesCountToday }}/10 hoje</span>
           </div>
         </div>
 
