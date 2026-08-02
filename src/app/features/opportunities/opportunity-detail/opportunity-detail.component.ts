@@ -64,7 +64,7 @@ export class OpportunityDetailComponent implements OnInit {
         if (this.auth.isLoggedIn) {
           this.recruiterService.getMyFavoriteVacancies().subscribe({
             next: (favRes) => {
-              if (this.vacancy) {
+              if (this.vacancy && favRes?.vacancies) {
                 const found = favRes.vacancies.find(v => v.id === this.vacancy?.id);
                 if (found) {
                   this.vacancy.is_favorite = true;
