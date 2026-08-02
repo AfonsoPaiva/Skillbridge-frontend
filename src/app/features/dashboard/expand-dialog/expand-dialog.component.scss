@@ -5,6 +5,9 @@
   display: flex;
   flex-direction: column;
   max-height: 85vh;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
   padding: v.$space-2;
 }
 
@@ -15,6 +18,8 @@
   padding-bottom: v.$space-4;
   border-bottom: 1px solid v.$color-border;
   margin-bottom: v.$space-4;
+  width: 100%;
+  box-sizing: border-box;
 
   .header-title {
     display: flex;
@@ -46,6 +51,8 @@
 
 .dialog-search {
   margin-bottom: v.$space-4;
+  width: 100%;
+  box-sizing: border-box;
 
   .search-field {
     width: 100%;
@@ -58,19 +65,20 @@
 
 .dialog-body {
   overflow-y: auto;
-  padding-right: 4px;
+  overflow-x: hidden;
+  padding: 4px;
+  width: 100%;
+  box-sizing: border-box;
   flex: 1;
 }
 
-/* Vacancies Expand Grid */
-.vacancies-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: v.$space-4;
-
-  @include m.md {
-    grid-template-columns: repeat(2, 1fr);
-  }
+/* Vacancies Vertical List (NO GRID, NO HORIZONTAL SCROLL) */
+.vacancies-vertical-list {
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-3;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .vcard-expanded {
@@ -82,10 +90,12 @@
   display: flex;
   flex-direction: column;
   gap: v.$space-3;
-  transition: transform v.$transition-fast, border-color v.$transition-fast;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  transition: border-color v.$transition-fast;
 
   &:hover {
-    transform: translateY(-2px);
     border-color: rgba(v.$color-primary, 0.4);
   }
 
@@ -93,10 +103,12 @@
     display: flex;
     align-items: center;
     gap: v.$space-3;
+    width: 100%;
+    box-sizing: border-box;
 
     .company-logo-square {
-      width: 48px;
-      height: 48px;
+      width: 44px;
+      height: 44px;
       border-radius: v.$radius-sm;
       overflow: hidden;
       flex-shrink: 0;
@@ -112,7 +124,7 @@
       }
 
       .initials {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         font-weight: v.$font-weight-bold;
         color: white;
       }
@@ -155,7 +167,9 @@
     line-height: 1.5;
     color: v.$color-text-soft;
     margin: 0;
-    @include m.truncate(2);
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    @include m.truncate(3);
   }
 
   .vcard-bottom {
@@ -163,8 +177,11 @@
     align-items: center;
     justify-content: space-between;
     gap: v.$space-2;
+    flex-wrap: wrap;
     margin-top: auto;
     padding-top: v.$space-2;
+    width: 100%;
+    box-sizing: border-box;
 
     .type-badge {
       font-size: 11px;
@@ -183,6 +200,8 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: v.$space-4;
+  width: 100%;
+  box-sizing: border-box;
 
   @include m.md {
     grid-template-columns: repeat(2, 1fr);
@@ -197,17 +216,18 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: transform v.$transition-fast, border-color v.$transition-fast;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color v.$transition-fast;
 
   &:hover {
-    transform: translateY(-2px);
     border-color: rgba(v.$color-primary, 0.4);
   }
 
   .pcard-img {
     position: relative;
     width: 100%;
-    height: 110px;
+    height: 120px;
 
     img {
       width: 100%;
@@ -254,6 +274,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
+  max-width: 100%;
 }
 
 .chip--skill {
@@ -263,6 +284,8 @@
   background: rgba(v.$color-primary, 0.05);
   color: v.$color-text-soft;
   border: 1px solid v.$color-border;
+  max-width: 100%;
+  word-break: break-word;
 }
 
 .chip--matched {

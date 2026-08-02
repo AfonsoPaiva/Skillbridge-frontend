@@ -24,9 +24,9 @@
 
   <div class="dialog-body">
 
-    <!-- Vacancies Expand List -->
+    <!-- Vacancies Expand LIST (1 Column Vertical List, NO Horizontal Scroll) -->
     <ng-container *ngIf="data.type === 'vacancies'">
-      <div class="vacancies-grid" *ngIf="filteredVacancies.length > 0">
+      <div class="vacancies-vertical-list" *ngIf="filteredVacancies.length > 0">
         <div class="vcard-expanded" *ngFor="let v of filteredVacancies" (click)="viewVacancy(v.id)">
           <div class="vcard-top">
             <div class="company-logo-square" [class.bg-purple]="isWhiteTransparentLogo(v.recruiter?.logo_url)">
@@ -61,7 +61,7 @@
       </div>
     </ng-container>
 
-    <!-- Projects Expand List -->
+    <!-- Projects Expand Grid -->
     <ng-container *ngIf="data.type === 'projects'">
       <div class="projects-grid" *ngIf="filteredProjects.length > 0">
         <div class="pcard-expanded" *ngFor="let p of filteredProjects" (click)="viewProject(p.slug)">

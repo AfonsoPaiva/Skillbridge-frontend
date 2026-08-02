@@ -41,7 +41,7 @@
     <!-- ── Main Grid Layout ── -->
     <div class="grid-layout" @fadeUp>
 
-      <!-- ── SECTION 1: Vagas Recomendadas ── -->
+      <!-- ── SECTION 1: Vagas Recomendadas (LISTA) ── -->
       <div class="grid-card">
         <div class="card-header">
           <div class="card-title">
@@ -52,37 +52,35 @@
             <button mat-icon-button class="expand-btn" (click)="openExpandVacanciesDialog()" title="Expandir vagas recomendadas" aria-label="Expandir vagas">
               <mat-icon>fullscreen</mat-icon>
             </button>
-            <a routerLink="/oportunidades" class="see-all-link">Ver todas</a>
           </div>
         </div>
 
         <div class="card-body">
-          <div class="cards-compact-grid" *ngIf="loadingVacancies">
+          <div class="cards-vertical-list" *ngIf="loadingVacancies">
             <app-vcard-skeleton *ngFor="let _ of [1,2,3,4]"></app-vcard-skeleton>
           </div>
 
-          <div class="cards-compact-grid" *ngIf="!loadingVacancies && recommendedVacancies.length > 0" [@list]="recommendedVacancies.length">
-            <div class="compact-vcard" *ngFor="let v of recommendedVacancies.slice(0, 4); trackBy: trackByVacancyId" (click)="viewVacancyDetails(v.id)">
-              <div class="vcard-top">
+          <div class="cards-vertical-list" *ngIf="!loadingVacancies && recommendedVacancies.length > 0" [@list]="recommendedVacancies.length">
+            <div class="compact-vcard-row" *ngFor="let v of recommendedVacancies.slice(0, 4); trackBy: trackByVacancyId" (click)="viewVacancyDetails(v.id)">
+              <div class="vcard-row-left">
                 <div class="company-logo-square" [class.bg-purple]="isWhiteTransparentLogo(v.recruiter?.logo_url)">
                   <img *ngIf="v.recruiter?.logo_url" [src]="v.recruiter?.logo_url | imageProxy" alt="{{ v.recruiter?.company_name }} logo" loading="lazy">
                   <div *ngIf="!v.recruiter?.logo_url" class="initials" [class.bg-purple]="true">{{ getInitials(v.recruiter?.company_name) }}</div>
                 </div>
-                <div class="vcard-meta">
+                <div class="vcard-row-meta">
                   <h3 [attr.title]="v.title">{{ v.title }}</h3>
-                  <p class="company-name">{{ v.recruiter?.company_name }}</p>
+                  <p class="company-name">{{ v.recruiter?.company_name }} · <span class="vcard-type-text">{{ getTypeLabel(v.type) }}</span></p>
+                  <div class="chips-row" *ngIf="v.tags?.length">
+                    <span class="chip chip--card-skill" [class.chip--matched]="isMatchedSkill(tag)" *ngFor="let tag of v.tags.slice(0, 3)">
+                      {{ tag }}
+                    </span>
+                  </div>
                 </div>
-                <button mat-icon-button class="star-fav-btn" [class.is-fav]="v.is_favorite" (click)="toggleFavorite(v, $event)" [title]="v.is_favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos (máx 10/dia)'">
+              </div>
+              <div class="vcard-row-right">
+                <button mat-icon-button class="star-fav-btn" [class.is-fav]="v.is_favorite" (click)="toggleFavorite(v, $event)" [title]="v.is_favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'">
                   <mat-icon>{{ v.is_favorite ? 'star' : 'star_border' }}</mat-icon>
                 </button>
-              </div>
-              <div class="vcard-bottom">
-                <div class="chips-row">
-                  <span class="chip chip--card-skill" [class.chip--matched]="isMatchedSkill(tag)" *ngFor="let tag of v.tags.slice(0, 2)">
-                    {{ tag }}
-                  </span>
-                </div>
-                <span class="vcard__badge">{{ getTypeLabel(v.type) }}</span>
               </div>
             </div>
           </div>
@@ -95,7 +93,7 @@
         </div>
       </div>
 
-      <!-- ── SECTION 2: Projetos Recomendados (Apenas Abertos) ── -->
+      <!-- ── SECTION 2: Projetos Recomendados (GRID - Apenas Abertos) ── -->
       <div class="grid-card">
         <div class="card-header">
           <div class="card-title">
@@ -107,7 +105,6 @@
             <button mat-icon-button class="expand-btn" (click)="openExpandProjectsDialog()" title="Expandir projetos recomendados" aria-label="Expandir projetos">
               <mat-icon>fullscreen</mat-icon>
             </button>
-            <a routerLink="/projects" class="see-all-link">Ver todos</a>
           </div>
         </div>
 

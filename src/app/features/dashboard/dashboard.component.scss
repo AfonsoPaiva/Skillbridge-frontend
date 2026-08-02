@@ -81,11 +81,10 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: border-color v.$transition-base, box-shadow v.$transition-base;
+  transition: border-color v.$transition-base;
 
   &:hover {
-    border-color: rgba(v.$color-primary, 0.2);
-    box-shadow: v.$shadow-md;
+    border-color: rgba(v.$color-primary, 0.25);
   }
 
   &--full-width {
@@ -97,7 +96,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: v.$space-5 v.$space-6;
+  padding: v.$space-4 v.$space-6;
   border-bottom: 1px solid v.$color-border;
   background: rgba(v.$color-bg, 0.5);
 
@@ -118,7 +117,7 @@
     }
 
     h2 {
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       font-weight: v.$font-weight-bold;
       margin: 0;
       color: v.$color-text;
@@ -151,58 +150,43 @@
 
     .expand-btn {
       color: v.$color-text-soft;
-      transition: color v.$transition-fast, transform v.$transition-fast;
+      transition: color v.$transition-fast;
 
       &:hover {
         color: v.$color-primary;
-        transform: scale(1.1);
       }
-    }
-  }
-
-  .see-all-link {
-    font-size: 13px;
-    font-weight: v.$font-weight-semibold;
-    color: v.$color-primary;
-    text-decoration: none;
-    transition: opacity v.$transition-fast;
-
-    &:hover {
-      opacity: 0.8;
-      text-decoration: underline;
     }
   }
 }
 
 .card-body {
-  padding: v.$space-6;
+  padding: v.$space-5 v.$space-6;
   flex: 1;
 }
 
-/* ── Compact Grid Cards ─────────────────────── */
-.cards-compact-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: v.$space-4;
-
-  @include m.md {
-    grid-template-columns: repeat(2, 1fr);
-  }
+/* ── Vacancies Vertical List (NO GRID) ─────── */
+.cards-vertical-list {
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-3;
+  width: 100%;
 }
 
-.compact-vcard {
+.compact-vcard-row {
   cursor: pointer;
   background: v.$color-bg;
   border-radius: v.$radius-md;
   border: 1px solid v.$color-border;
-  padding: v.$space-4;
+  padding: v.$space-3 v.$space-4;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
   gap: v.$space-3;
-  transition: transform v.$transition-fast, border-color v.$transition-fast;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color v.$transition-fast;
 
   &:hover {
-    transform: translateY(-2px);
     border-color: rgba(v.$color-primary, 0.4);
 
     .company-name {
@@ -210,10 +194,12 @@
     }
   }
 
-  .vcard-top {
+  .vcard-row-left {
     display: flex;
     align-items: center;
     gap: v.$space-3;
+    flex: 1;
+    min-width: 0;
 
     .company-logo-square {
       width: 44px;
@@ -243,7 +229,7 @@
       }
     }
 
-    .vcard-meta {
+    .vcard-row-meta {
       flex: 1;
       min-width: 0;
 
@@ -258,27 +244,30 @@
       .company-name {
         font-size: 12px;
         color: v.$color-text-soft;
-        margin: 0;
+        margin: 0 0 4px 0;
         @include m.truncate(1);
+
+        .vcard-type-text {
+          font-weight: v.$font-weight-semibold;
+          color: v.$color-primary;
+        }
       }
     }
   }
 
-  .vcard-bottom {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: v.$space-2;
+  .vcard-row-right {
+    flex-shrink: 0;
+  }
+}
 
-    .vcard__badge {
-      font-size: 10px;
-      font-weight: v.$font-weight-semibold;
-      padding: 3px 8px;
-      border-radius: 999px;
-      background: rgba(v.$color-primary, 0.1);
-      color: v.$color-primary;
-      white-space: nowrap;
-    }
+/* ── Projects Compact Grid ──────────────────── */
+.cards-compact-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: v.$space-4;
+
+  @include m.md {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -290,10 +279,9 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: transform v.$transition-fast, border-color v.$transition-fast;
+  transition: border-color v.$transition-fast;
 
   &:hover {
-    transform: translateY(-2px);
     border-color: rgba(v.$color-primary, 0.4);
   }
 
@@ -346,11 +334,10 @@
 
 .star-fav-btn {
   color: v.$color-text-soft;
-  transition: color v.$transition-fast, transform v.$transition-fast;
+  transition: color v.$transition-fast;
 
   &:hover {
     color: #ffb703;
-    transform: scale(1.15);
   }
 
   &.is-fav {
