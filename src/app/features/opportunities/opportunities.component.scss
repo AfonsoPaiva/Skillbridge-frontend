@@ -38,6 +38,21 @@
 
   .filter-field {
     flex: 1 1 150px;
+
+    ::ng-deep {
+      .mat-mdc-select-value {
+        max-width: 100%;
+        overflow: hidden;
+      }
+
+      .mat-mdc-select-value-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        max-width: 100%;
+      }
+    }
   }
 }
 

@@ -24,7 +24,7 @@
 
       <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
         <mat-label>Modalidade</mat-label>
-        <mat-select [(ngModel)]="workModeFilter" (ngModelChange)="applyFilters()">
+        <mat-select [(ngModel)]="workModeFilter" (ngModelChange)="applyFilters()" panelClass="compact-dialog-select-panel">
           <mat-option value="all">Todas</mat-option>
           <mat-option value="remote">Remoto</mat-option>
           <mat-option value="hybrid">Híbrido</mat-option>
@@ -34,7 +34,7 @@
 
       <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
         <mat-label>Tipo de Contrato</mat-label>
-        <mat-select [(ngModel)]="employmentTypeFilter" (ngModelChange)="applyFilters()">
+        <mat-select [(ngModel)]="employmentTypeFilter" (ngModelChange)="applyFilters()" panelClass="compact-dialog-select-panel">
           <mat-option value="all">Todos</mat-option>
           <mat-option value="full_time">Full-time</mat-option>
           <mat-option value="part_time">Part-time</mat-option>
@@ -44,7 +44,7 @@
 
       <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
         <mat-label>Experiência</mat-label>
-        <mat-select [(ngModel)]="experienceFilter" (ngModelChange)="applyFilters()">
+        <mat-select [(ngModel)]="experienceFilter" (ngModelChange)="applyFilters()" panelClass="compact-dialog-select-panel">
           <mat-option *ngFor="let opt of experienceOptions" [value]="opt.value">
             {{ opt.label }}
           </mat-option>
