@@ -117,12 +117,19 @@
     display: flex;
     align-items: center;
     gap: v.$space-3;
+    flex-wrap: wrap;
+    flex: 1;
+    min-width: 0;
 
     mat-icon {
       font-size: 22px;
       width: 22px;
       height: 22px;
       color: v.$color-primary;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
 
       &.star-icon {
         color: #ffb703;
@@ -134,6 +141,7 @@
       font-weight: v.$font-weight-bold;
       margin: 0;
       color: v.$color-text;
+      word-break: break-word;
     }
 
     .open-only-badge {
@@ -621,15 +629,19 @@
     .metric-icon {
       width: 42px;
       height: 42px;
+      min-width: 42px;
+      min-height: 42px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
 
       mat-icon {
         font-size: 20px;
         width: 20px;
         height: 20px;
+        flex-shrink: 0;
       }
 
       &.purple {
@@ -656,16 +668,22 @@
     .metric-data {
       display: flex;
       flex-direction: column;
+      min-width: 0;
+      overflow: hidden;
 
       .metric-value {
-        font-size: 1.2rem;
+        font-size: 1.15rem;
         font-weight: v.$font-weight-bold;
         color: v.$color-text;
+        line-height: 1.2;
+        word-break: break-word;
       }
 
       .metric-label {
         font-size: 11px;
         color: v.$color-text-soft;
+        line-height: 1.25;
+        word-break: break-word;
       }
     }
   }
@@ -782,23 +800,27 @@
 
 .empty-state-compact {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: v.$space-3;
-  padding: v.$space-8 v.$space-4;
+  gap: v.$space-2;
+  padding: v.$space-6 v.$space-4;
   color: v.$color-text-soft;
   text-align: center;
 
   mat-icon {
-    font-size: 24px;
-    width: 24px;
-    height: 24px;
-    color: lighten(v.$color-primary, 20%);
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    color: v.$color-primary;
+    flex-shrink: 0;
   }
 
   p {
     font-size: 13px;
     margin: 0;
+    max-width: 480px;
+    line-height: 1.4;
   }
 }
 
