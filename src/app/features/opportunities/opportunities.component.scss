@@ -285,8 +285,8 @@
     font-weight: v.$font-weight-semibold;
     padding: 4px 10px;
     border-radius: 999px;
-    background: rgba(v.$color-secondary, 0.1);
-    color: darken(v.$color-secondary, 10%);
+    background: rgba(v.$color-primary, 0.08);
+    color: v.$color-primary;
     white-space: nowrap;
   }
 }
