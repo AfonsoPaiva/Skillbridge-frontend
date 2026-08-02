@@ -113,14 +113,14 @@
     }
 
     &:hover {
-      color: #6366f1;
-      background: rgba(99, 102, 241, 0.08);
+      color: #68007A;
+      background: rgba(104, 0, 122, 0.08);
     }
 
     &.is-fav {
-      color: #6366f1;
+      color: #68007A;
       mat-icon {
-        color: #6366f1;
+        color: #68007A;
       }
     }
   }

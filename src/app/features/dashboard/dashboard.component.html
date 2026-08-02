@@ -216,21 +216,6 @@
                       <mat-icon *ngIf="!fav.application_status || fav.application_status === 'pending'">schedule</mat-icon>
                       {{ fav.application_status === 'accepted' ? 'Aceite' : fav.application_status === 'rejected' ? 'Rejeitado' : fav.application_status === 'ignored' ? 'Ignorado' : 'Candidatado' }}
                     </span>
-
-                    <div class="status-buttons">
-                      <button mat-stroked-button class="btn-status status-accepted" (click)="updateStatus(fav, 'accepted', $event)" [class.active]="fav.application_status === 'accepted'" title="Marcar como Aceite">
-                        Aceite
-                      </button>
-                      <button mat-stroked-button class="btn-status status-rejected" (click)="updateStatus(fav, 'rejected', $event)" [class.active]="fav.application_status === 'rejected'" title="Marcar como Rejeitado">
-                        Rejeitado
-                      </button>
-                      <button mat-stroked-button class="btn-status status-ignored" (click)="updateStatus(fav, 'ignored', $event)" [class.active]="fav.application_status === 'ignored'" title="Marcar como Ignorado">
-                        Ignorado
-                      </button>
-                      <button mat-icon-button class="remove-app-btn" (click)="removeApplication(fav, $event)" title="Remover candidatura" aria-label="Remover candidatura">
-                        <mat-icon>delete_outline</mat-icon>
-                      </button>
-                    </div>
                   </div>
                 </ng-container>
               </div>

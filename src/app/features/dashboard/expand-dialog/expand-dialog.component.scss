@@ -156,8 +156,13 @@
     .star-fav-btn {
       color: v.$color-text-soft;
 
+      &:hover,
       &.is-fav {
-        color: #ffb703;
+        color: #68007A;
+
+        mat-icon {
+          color: #68007A;
+        }
       }
     }
   }

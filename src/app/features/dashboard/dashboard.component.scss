@@ -350,11 +350,15 @@
   transition: color v.$transition-fast;
 
   &:hover {
-    color: #ffb703;
+    color: #68007A;
   }
 
   &.is-fav {
-    color: #ffb703;
+    color: #68007A;
+
+    mat-icon {
+      color: #68007A;
+    }
   }
 }
 
@@ -540,17 +544,24 @@
       color: v.$color-text-soft;
       width: 32px;
       height: 32px;
-      line-height: 32px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
 
       mat-icon {
-        font-size: 18px;
-        width: 18px;
-        height: 18px;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       &:hover {
-        color: #f44336;
-        background: rgba(244, 67, 54, 0.08);
+        color: #ef4444;
+        background: rgba(239, 68, 68, 0.1);
       }
     }
   }
