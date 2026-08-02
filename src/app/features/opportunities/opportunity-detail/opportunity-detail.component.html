@@ -18,6 +18,11 @@
     </div>
 
     <div *ngIf="!loading && !error && vacancy" class="detail-card" @fadeUp>
+      <!-- Top-right favorite button -->
+      <button mat-icon-button class="detail-fav-btn" [class.is-fav]="vacancy.is_favorite" (click)="toggleFavorite()" [title]="vacancy.is_favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'" [attr.aria-label]="vacancy.is_favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'">
+        <mat-icon>{{ vacancy.is_favorite ? 'star' : 'star_border' }}</mat-icon>
+      </button>
+
       <div class="detail-header">
         <div class="company-logo-square" [class.bg-purple]="isWhiteTransparentLogo(vacancy.recruiter?.logo_url)">
           <ng-container *ngIf="vacancy.recruiter">
@@ -58,12 +63,35 @@
       </div>
 
       <div class="detail-actions">
-        <button mat-icon-button class="fav-star-btn" (click)="toggleFavorite()" [class.is-fav]="vacancy.is_favorite" [attr.aria-label]="vacancy.is_favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'" [title]="vacancy.is_favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'">
-          <mat-icon>{{ vacancy.is_favorite ? 'star' : 'star_border' }}</mat-icon>
-        </button>
-        <button mat-raised-button color="primary" class="apply-btn" (click)="applyToVacancy()">
-          <mat-icon>launch</mat-icon> Candidatar-me
-        </button>
+        <ng-container *ngIf="!vacancy.applied">
+          <button mat-raised-button color="primary" class="apply-btn" (click)="applyToVacancy()">
+            <mat-icon>check_circle</mat-icon> Eu candidatei-me a isto
+          </button>
+        </ng-container>
+
+        <ng-container *ngIf="vacancy.applied">
+          <div class="applied-status-group">
+            <span class="applied-badge" [class.badge-accepted]="vacancy.application_status === 'accepted'" [class.badge-rejected]="vacancy.application_status === 'rejected'">
+              <mat-icon *ngIf="vacancy.application_status === 'accepted'">check_circle</mat-icon>
+              <mat-icon *ngIf="vacancy.application_status === 'rejected'">cancel</mat-icon>
+              <mat-icon *ngIf="!vacancy.application_status || vacancy.application_status === 'pending'">schedule</mat-icon>
+              {{ vacancy.application_status === 'accepted' ? 'Fui Aceite' : vacancy.application_status === 'rejected' ? 'Fui Rejeitado' : 'Candidatei-me a esta vaga' }}
+            </span>
+
+            <div class="status-buttons">
+              <button mat-stroked-button class="btn-status status-accepted" (click)="updateStatus('accepted')" [class.active]="vacancy.application_status === 'accepted'" title="Clica para marcar/desmarcar">
+                <mat-icon>check_circle</mat-icon> Fui Aceite
+              </button>
+              <button mat-stroked-button class="btn-status status-rejected" (click)="updateStatus('rejected')" [class.active]="vacancy.application_status === 'rejected'" title="Clica para marcar/desmarcar">
+                <mat-icon>cancel</mat-icon> Fui Rejeitado
+              </button>
+            </div>
+          </div>
+        </ng-container>
+
+        <a *ngIf="vacancy.application_url" [href]="vacancy.application_url" target="_blank" rel="noopener" mat-stroked-button class="external-link-btn">
+          Ver anúncio original <mat-icon>open_in_new</mat-icon>
+        </a>
       </div>
     </div>
 

@@ -100,6 +100,19 @@
   border-bottom: 1px solid v.$color-border;
   background: rgba(v.$color-bg, 0.5);
 
+  .card-title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .card-subtitle {
+    font-size: 0.82rem;
+    color: v.$color-text-soft;
+    margin: 2px 0 0 0;
+    font-weight: v.$font-weight-regular;
+  }
+
   .card-title {
     display: flex;
     align-items: center;
@@ -716,4 +729,152 @@
     font-size: 13px;
     margin: 0;
   }
+}
+
+/* ── Tailored Skeleton Loaders ────────────────── */
+.skeleton-box {
+  background: linear-gradient(
+    90deg,
+    rgba(104, 0, 122, 0.04) 25%,
+    rgba(104, 0, 122, 0.09) 50%,
+    rgba(104, 0, 122, 0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite ease-in-out;
+  border-radius: v.$radius-sm;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+// 1. Vertical Row Skeleton (Vagas Recomendadas)
+.skeleton-vcard-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: v.$space-3 v.$space-4;
+  border-radius: v.$radius-md;
+  background: v.$color-surface;
+  border: 1px solid v.$color-border;
+  gap: v.$space-4;
+
+  .vcard-row-left {
+    display: flex;
+    align-items: center;
+    gap: v.$space-3;
+    flex: 1;
+  }
+
+  .skeleton-logo {
+    width: 44px;
+    height: 44px;
+    border-radius: v.$radius-md;
+    flex-shrink: 0;
+  }
+
+  .skeleton-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .skeleton-line {
+    height: 14px;
+    &.title { width: 65%; height: 16px; }
+    &.sub { width: 40%; height: 12px; }
+    &.desc { width: 90%; height: 12px; }
+  }
+
+  .skeleton-chips {
+    display: flex;
+    gap: 4px;
+  }
+
+  .skeleton-chip {
+    width: 60px;
+    height: 20px;
+    border-radius: 12px;
+  }
+
+  .skeleton-star-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+  }
+}
+
+// 2. Compact Project Card Skeleton (Projetos Recomendados Grid)
+.skeleton-pcard {
+  display: flex;
+  gap: v.$space-3;
+  padding: v.$space-3;
+  border-radius: v.$radius-md;
+  background: v.$color-surface;
+  border: 1px solid v.$color-border;
+
+  .skeleton-pcard-img {
+    width: 80px;
+    height: 80px;
+    border-radius: v.$radius-md;
+    flex-shrink: 0;
+  }
+
+  .skeleton-pcard-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+
+// 3. Favorites Row Skeleton
+.skeleton-fav-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: v.$space-3 v.$space-4;
+  border-radius: v.$radius-md;
+  background: v.$color-surface;
+  border: 1px solid v.$color-border;
+  gap: v.$space-4;
+
+  .skeleton-fav-left {
+    display: flex;
+    align-items: center;
+    gap: v.$space-3;
+    flex: 1;
+  }
+
+  .skeleton-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: v.$radius-md;
+    flex-shrink: 0;
+  }
+
+  .skeleton-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .skeleton-btn {
+    width: 180px;
+    height: 38px;
+    border-radius: v.$radius-sm;
+  }
+}
+
+// 4. Metric Box Skeleton
+.skeleton-metric-box {
+  height: 80px;
+  border-radius: v.$radius-md;
 }

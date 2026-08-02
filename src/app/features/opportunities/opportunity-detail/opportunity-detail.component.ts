@@ -174,9 +174,37 @@ export class OpportunityDetailComponent implements OnInit {
 
     this.recruiterService.applyToVacancy(this.vacancy.id).subscribe();
     this.vacancy.applied = true;
+    this.vacancy.application_status = 'pending';
     this.snackBar.open('Candidatura registada! Em 1 semana enviaremos um email de acompanhamento.', 'OK', { duration: 4000 });
 
-    window.open(this.vacancy.application_url, '_blank');
+    if (this.vacancy.application_url) {
+      window.open(this.vacancy.application_url, '_blank');
+    }
+  }
+
+  updateStatus(status: string): void {
+    if (!this.vacancy) return;
+    if (!this.auth.isLoggedIn) {
+      this.promptLogin();
+      return;
+    }
+
+    const newStatus = (this.vacancy.application_status === status) ? 'pending' : status;
+
+    this.recruiterService.updateApplicationStatus(this.vacancy.id, newStatus).subscribe({
+      next: (res) => {
+        if (this.vacancy) {
+          this.vacancy.application_status = newStatus;
+          const msg = newStatus === 'pending'
+            ? 'Estado de candidatura removido.'
+            : (res.message || 'Estado da candidatura atualizado!');
+          this.snackBar.open(msg, 'OK', { duration: 3000 });
+        }
+      },
+      error: () => {
+        this.snackBar.open('Erro ao atualizar estado da candidatura.', 'OK', { duration: 3000 });
+      }
+    });
   }
 
   isWhiteTransparentLogo(url?: string): boolean {

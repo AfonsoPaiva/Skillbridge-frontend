@@ -13,12 +13,41 @@
 }
 
 .detail-card {
+  position: relative;
   background: v.$color-surface;
   border-radius: v.$radius-lg;
   box-shadow: v.$shadow-md;
   overflow: hidden;
   max-width: 800px;
   margin: 0 auto;
+}
+
+.detail-fav-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  color: v.$color-text-soft;
+  transition: all 0.2s ease;
+  z-index: 5;
+
+  mat-icon {
+    font-size: 26px;
+    width: 26px;
+    height: 26px;
+    transition: color 0.2s ease;
+  }
+
+  &:hover {
+    color: #6366f1;
+    background: rgba(99, 102, 241, 0.08);
+  }
+
+  &.is-fav {
+    color: #6366f1;
+    mat-icon {
+      color: #6366f1;
+    }
+  }
 }
 
 .detail-header {
@@ -213,7 +242,10 @@
   padding: v.$space-6 v.$space-8;
   background: rgba(v.$color-primary, 0.03);
   display: flex;
+  align-items: center;
   justify-content: flex-end;
+  gap: v.$space-4;
+  flex-wrap: wrap;
 
   @media (max-width: v.$bp-sm) {
     justify-content: center;
@@ -225,7 +257,7 @@
     height: 48px;
     border-radius: v.$radius-sm;
     font-size: 1rem;
-    font-weight: v.$font-weight-medium;
+    font-weight: v.$font-weight-semibold;
 
     mat-icon {
       margin-right: 8px;
@@ -233,6 +265,86 @@
 
     @media (max-width: v.$bp-sm) {
       width: 100%;
+    }
+  }
+
+  .applied-status-group {
+    display: flex;
+    align-items: center;
+    gap: v.$space-4;
+    flex-wrap: wrap;
+  }
+
+  .applied-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 999px;
+    background: rgba(99, 102, 241, 0.12);
+    color: #6366f1;
+    font-weight: v.$font-weight-semibold;
+    font-size: 0.95rem;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+
+    &.badge-accepted {
+      background: rgba(16, 185, 129, 0.12);
+      color: #10b981;
+    }
+
+    &.badge-rejected {
+      background: rgba(239, 68, 68, 0.12);
+      color: #ef4444;
+    }
+  }
+
+  .status-buttons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+
+    .btn-status {
+      height: 40px;
+      border-radius: v.$radius-sm;
+      font-size: 0.88rem;
+
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        margin-right: 4px;
+      }
+
+      &.status-accepted.active {
+        background: #10b981;
+        color: white;
+        border-color: #10b981;
+      }
+
+      &.status-rejected.active {
+        background: #ef4444;
+        color: white;
+        border-color: #ef4444;
+      }
+    }
+  }
+
+  .external-link-btn {
+    height: 48px;
+    padding: 0 v.$space-6;
+    border-radius: v.$radius-sm;
+    font-size: 0.95rem;
+
+    mat-icon {
+      margin-left: 6px;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
     }
   }
 }

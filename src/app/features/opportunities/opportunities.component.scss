@@ -94,6 +94,35 @@
     flex-direction: column;
     gap: v.$space-4;
     margin: 0 !important;
+    position: relative;
+  }
+
+  .star-fav-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    color: v.$color-text-soft;
+    transition: all 0.2s ease;
+    z-index: 2;
+
+    mat-icon {
+      font-size: 22px;
+      width: 22px;
+      height: 22px;
+      transition: color 0.2s ease;
+    }
+
+    &:hover {
+      color: #6366f1;
+      background: rgba(99, 102, 241, 0.08);
+    }
+
+    &.is-fav {
+      color: #6366f1;
+      mat-icon {
+        color: #6366f1;
+      }
+    }
   }
 
   &__header {

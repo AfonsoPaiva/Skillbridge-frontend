@@ -6,6 +6,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { Vacancy } from '../../core/models/models';
 import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
 
+import { MatSnackBar } from '@angular/material/snack-bar';
+
 const DIALOG_CONFIG = {
   width: '540px',
   maxWidth: '95vw',
@@ -73,6 +75,7 @@ export class OpportunitiesComponent implements OnInit {
     public auth: AuthService,
     private recruiterService: RecruiterService,
     private dialog: MatDialog,
+    private snackBar: MatSnackBar,
     private router: Router
   ) {}
 
@@ -85,11 +88,50 @@ export class OpportunitiesComponent implements OnInit {
     this.recruiterService.listPublicVacancies().subscribe({
       next: (res) => {
         this.vacancies = res.vacancies || [];
-        this.applyFilters();
-        this.loading = false;
+        if (this.auth.isLoggedIn) {
+          this.recruiterService.getMyFavoriteVacancies().subscribe({
+            next: (favRes) => {
+              if (favRes?.vacancies) {
+                const favSet = new Set(favRes.vacancies.map(f => f.id));
+                this.vacancies.forEach(v => {
+                  if (favSet.has(v.id)) {
+                    v.is_favorite = true;
+                  }
+                });
+              }
+              this.applyFilters();
+              this.loading = false;
+            },
+            error: () => {
+              this.applyFilters();
+              this.loading = false;
+            }
+          });
+        } else {
+          this.applyFilters();
+          this.loading = false;
+        }
       },
       error: () => {
         this.loading = false;
+      }
+    });
+  }
+
+  toggleFavorite(vacancy: Vacancy, event: Event): void {
+    event.stopPropagation();
+    if (!this.auth.isLoggedIn) {
+      this.viewDetails(vacancy.id);
+      return;
+    }
+    this.recruiterService.toggleFavoriteVacancy(vacancy.id).subscribe({
+      next: (res) => {
+        vacancy.is_favorite = res.is_favorite;
+        this.snackBar.open(res.message, 'OK', { duration: 3000 });
+      },
+      error: (err) => {
+        const errorMsg = err.error?.error || 'Erro ao atualizar favoritos.';
+        this.snackBar.open(errorMsg, 'OK', { duration: 3000 });
       }
     });
   }

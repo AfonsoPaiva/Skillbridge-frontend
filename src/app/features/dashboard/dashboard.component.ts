@@ -292,10 +292,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
       event.stopPropagation();
     }
 
-    this.recruiterService.updateApplicationStatus(vacancy.id, status).subscribe({
+    const newStatus = (vacancy.application_status === status) ? 'pending' : status;
+
+    this.recruiterService.updateApplicationStatus(vacancy.id, newStatus).subscribe({
       next: (res) => {
-        vacancy.application_status = status;
-        this.snackBar.open(res.message || 'Estado da candidatura atualizado com sucesso!', 'OK', { duration: 3000 });
+        vacancy.application_status = newStatus;
+        const msg = newStatus === 'pending'
+          ? 'Estado de candidatura removido.'
+          : (res.message || 'Estado da candidatura atualizado com sucesso!');
+        this.snackBar.open(msg, 'OK', { duration: 3000 });
         this.loadMyFavorites();
         this.loadCommunityStats();
       },

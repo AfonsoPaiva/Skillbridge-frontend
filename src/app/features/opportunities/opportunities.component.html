@@ -70,6 +70,9 @@
     <div class="grid" *ngIf="!loading && displayed.length > 0" [@list]="displayed.length">
       <mat-card class="vcard" *ngFor="let v of displayed; trackBy: trackByVacancyId" (click)="viewDetails(v.id)" style="cursor: pointer;">
         <mat-card-content class="vcard__body">
+          <button mat-icon-button class="star-fav-btn" [class.is-fav]="v.is_favorite" (click)="toggleFavorite(v, $event)" [title]="v.is_favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'">
+            <mat-icon>{{ v.is_favorite ? 'star' : 'star_border' }}</mat-icon>
+          </button>
           <div class="vcard__header">
             <div class="company-logo-square" [class.bg-purple]="isWhiteTransparentLogo(v.recruiter?.logo_url)">
               <img *ngIf="v.recruiter?.logo_url" [src]="v.recruiter?.logo_url | imageProxy"

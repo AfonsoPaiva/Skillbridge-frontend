@@ -53,7 +53,22 @@
 
         <div class="card-body">
           <div class="cards-vertical-list" *ngIf="loadingVacancies">
-            <app-vcard-skeleton *ngFor="let _ of [1,2,3,4]"></app-vcard-skeleton>
+            <div class="skeleton-vcard-row" *ngFor="let _ of [1,2,3,4]">
+              <div class="vcard-row-left">
+                <div class="skeleton-box skeleton-logo"></div>
+                <div class="skeleton-info">
+                  <div class="skeleton-box skeleton-line title"></div>
+                  <div class="skeleton-box skeleton-line sub"></div>
+                  <div class="skeleton-chips">
+                    <div class="skeleton-box skeleton-chip"></div>
+                    <div class="skeleton-box skeleton-chip"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="vcard-row-right">
+                <div class="skeleton-box skeleton-star-icon"></div>
+              </div>
+            </div>
           </div>
 
           <div class="cards-vertical-list" *ngIf="!loadingVacancies && recommendedVacancies.length > 0" [@list]="recommendedVacancies.length">
@@ -105,7 +120,17 @@
 
         <div class="card-body">
           <div class="cards-compact-grid" *ngIf="loadingProjects">
-            <app-card-skeleton *ngFor="let _ of [1,2,3,4]"></app-card-skeleton>
+            <div class="skeleton-pcard" *ngFor="let _ of [1,2,3,4]">
+              <div class="skeleton-box skeleton-pcard-img"></div>
+              <div class="skeleton-pcard-info">
+                <div class="skeleton-box skeleton-line title"></div>
+                <div class="skeleton-box skeleton-line desc"></div>
+                <div class="skeleton-chips">
+                  <div class="skeleton-box skeleton-chip"></div>
+                  <div class="skeleton-box skeleton-chip"></div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="cards-compact-grid" *ngIf="!loadingProjects && recommendedProjects.length > 0" [@list]="recommendedProjects.length">
@@ -144,6 +169,20 @@
         </div>
 
         <div class="card-body">
+          <div class="fav-vagas-list" *ngIf="loadingFavorites">
+            <div class="skeleton-fav-row" *ngFor="let _ of [1,2]">
+              <div class="skeleton-fav-left">
+                <div class="skeleton-box skeleton-logo"></div>
+                <div class="skeleton-info">
+                  <div class="skeleton-box skeleton-line title"></div>
+                  <div class="skeleton-box skeleton-line sub"></div>
+                </div>
+              </div>
+              <div class="skeleton-fav-actions">
+                <div class="skeleton-box skeleton-btn"></div>
+              </div>
+            </div>
+          </div>
           <div class="fav-vagas-list" *ngIf="!loadingFavorites && favoriteVacancies.length > 0">
             <div class="fav-vaga-row" *ngFor="let fav of favoriteVacancies">
               <div class="fav-vaga-left" (click)="viewVacancyDetails(fav.id)">
@@ -201,15 +240,23 @@
       <!-- ── SECTION 4: Vagas Favoritas da Comunidade & Métricas ── -->
       <div class="grid-card grid-card--full-width">
         <div class="card-header">
-          <div class="card-title">
-            <mat-icon color="accent">insights</mat-icon>
-            <h2>Vagas Favoritas da Comunidade & Métricas</h2>
+          <div class="card-title-group">
+            <div class="card-title">
+              <mat-icon color="accent">insights</mat-icon>
+              <h2>Vagas Favoritas da Comunidade & Métricas</h2>
+            </div>
+            <p class="card-subtitle">As métricas são atualizadas diariamente, pelo que os valores podem variar ao longo do tempo.</p>
           </div>
         </div>
 
         <div class="card-body">
+          <!-- Metrics Overview Stats Bar Skeleton -->
+          <div class="metrics-summary-grid" *ngIf="loadingStats || !communityStats">
+            <div class="skeleton-box skeleton-metric-box" *ngFor="let _ of [1,2,3,4]"></div>
+          </div>
+
           <!-- Metrics Overview Stats Bar -->
-          <div class="metrics-summary-grid" *ngIf="communityStats">
+          <div class="metrics-summary-grid" *ngIf="!loadingStats && communityStats">
             <div class="metric-box">
               <div class="metric-icon purple"><mat-icon>star</mat-icon></div>
               <div class="metric-data">
