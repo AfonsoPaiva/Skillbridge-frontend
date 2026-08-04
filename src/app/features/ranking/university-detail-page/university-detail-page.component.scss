@@ -389,6 +389,11 @@
   border-radius: v.$radius-md;
   padding: v.$space-8;
 
+  @include m.sm {
+    padding: v.$space-4;
+    border-radius: v.$radius-sm;
+  }
+
   .eval-header {
     display: flex;
     justify-content: space-between;
@@ -398,11 +403,21 @@
     padding-bottom: v.$space-4;
     border-bottom: 1px solid v.$color-border;
 
+    .eval-title-group {
+      flex: 1;
+      min-width: 0;
+    }
+
     h3 {
       margin: 0 0 v.$space-1;
-      font-size: 1.3rem;
+      font-size: 1.15rem;
       font-weight: v.$font-weight-bold;
       color: v.$color-text;
+      word-break: break-word;
+
+      @include m.sm {
+        font-size: 1rem;
+      }
     }
 
     p {
@@ -446,6 +461,13 @@
       border: 1px solid v.$color-border;
       border-radius: v.$radius-sm;
 
+      @include m.sm {
+        flex-direction: column;
+        align-items: stretch;
+        gap: v.$space-2;
+        padding: v.$space-3;
+      }
+
       .slider-label {
         flex: 1;
 
@@ -468,6 +490,11 @@
         align-items: center;
         gap: v.$space-3;
         min-width: 220px;
+
+        @include m.sm {
+          min-width: 0;
+          width: 100%;
+        }
 
         mat-slider {
           flex: 1;
@@ -551,5 +578,31 @@
     margin-top: v.$space-6;
     padding-top: v.$space-4;
     border-top: 1px solid v.$color-border;
+
+    @include m.sm {
+      flex-wrap: wrap;
+
+      button {
+        flex: 1 1 auto;
+        min-width: 120px;
+      }
+    }
+  }
+}
+
+/* White checkbox checkmark for mat-checkbox in evaluate section */
+::ng-deep .evaluate-section {
+  .mdc-checkbox__background {
+    background-color: v.$color-primary !important;
+    border-color: v.$color-primary !important;
+  }
+
+  .mdc-checkbox__checkmark-path {
+    stroke: #ffffff !important;
+  }
+
+  .mdc-checkbox__native-control:checked ~ .mdc-checkbox__background {
+    background-color: v.$color-primary !important;
+    border-color: v.$color-primary !important;
   }
 }
