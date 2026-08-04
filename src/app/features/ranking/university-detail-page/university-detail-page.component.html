@@ -30,10 +30,16 @@
             </span>
           </div>
         </div>
-        <div class="summary-score" *ngIf="universitySummary">
-          <span class="score-val">{{ universitySummary.average_rating > 0 ? (universitySummary.average_rating | number:'1.1-1') : 'N/A' }}</span>
-          <span class="score-max" *ngIf="universitySummary.average_rating > 0">/10</span>
-          <mat-icon class="star-icon" *ngIf="universitySummary.average_rating > 0">star</mat-icon>
+
+        <div class="header-right-actions">
+          <div class="summary-score-badge" [ngClass]="getScoreColorClass(universitySummary.average_rating)" *ngIf="universitySummary">
+            <span class="score-val">{{ universitySummary.average_rating > 0 ? (universitySummary.average_rating | number:'1.1-1') + '/10' : 'N/A' }}</span>
+          </div>
+
+          <button *ngIf="canUserReview && viewMode === 'details'" mat-flat-button color="primary" (click)="startEvaluation()" class="header-rate-btn">
+            <mat-icon>{{ myExistingReview ? 'edit' : 'rate_review' }}</mat-icon>
+            {{ myExistingReview ? 'Editar Avaliação' : 'Avaliar esta Universidade' }}
+          </button>
         </div>
       </div>
     </div>
@@ -48,11 +54,6 @@
             <mat-option *ngFor="let c of courses" [value]="c">{{ c }}</mat-option>
           </mat-select>
         </mat-form-field>
-
-        <button *ngIf="canUserReview" mat-flat-button color="primary" (click)="startEvaluation()" class="rate-btn">
-          <mat-icon>{{ myExistingReview ? 'edit' : 'rate_review' }}</mat-icon>
-          {{ myExistingReview ? 'Editar Avaliação' : 'Avaliar esta Universidade' }}
-        </button>
       </div>
 
       <div class="reviews-section">

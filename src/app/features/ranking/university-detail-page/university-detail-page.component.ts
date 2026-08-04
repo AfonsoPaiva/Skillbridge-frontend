@@ -16,6 +16,7 @@ import {
   styleUrls: ['./university-detail-page.component.scss']
 })
 export class UniversityDetailPageComponent implements OnInit {
+  universitySlugParam: string = '';
   universityName: string = '';
   universitySummary: UniversityRankingSummary | null = null;
   courses: string[] = [];
@@ -47,10 +48,14 @@ export class UniversityDetailPageComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    if (this.auth.isLoggedIn && !this.auth.cachedProfile) {
+      this.auth.prefetchUserProfile(this.api);
+    }
+
     this.route.paramMap.subscribe(params => {
       const nameParam = params.get('name');
       if (nameParam) {
-        this.universityName = decodeURIComponent(nameParam);
+        this.universitySlugParam = nameParam;
         this.initData();
       } else {
         this.router.navigate(['/ranking']);
@@ -73,9 +78,9 @@ export class UniversityDetailPageComponent implements OnInit {
     const profile = this.currentUser;
     if (!profile) return false;
 
-    const target = (this.universityName || '').trim().toLowerCase();
-    const currentUniv = (profile.university || '').trim().toLowerCase();
-    const licUniv = (profile.licenciatura_university || '').trim().toLowerCase();
+    const target = this.normalizeStr(this.universityName);
+    const currentUniv = this.normalizeStr(profile.university || '');
+    const licUniv = this.normalizeStr(profile.licenciatura_university || '');
 
     return (currentUniv !== '' && currentUniv === target) || (licUniv !== '' && licUniv === target);
   }
@@ -87,7 +92,7 @@ export class UniversityDetailPageComponent implements OnInit {
   }
 
   get fallbackLogo(): string {
-    const domain = this.universityName
+    const domain = (this.universityName || '')
       .toLowerCase()
       .replace(/[^a-z0-9]/g, '') + '.pt';
     return `https://icons.duckduckgo.com/ip3/${domain}.ico`;
@@ -97,19 +102,51 @@ export class UniversityDetailPageComponent implements OnInit {
     event.target.src = this.fallbackLogo;
   }
 
+  getScoreColorClass(score: number): string {
+    if (!score || score <= 0) return 'score-neutral';
+    if (score <= 2) return 'score-red';
+    if (score <= 6) return 'score-yellow';
+    return 'score-green';
+  }
+
+  slugify(text: string): string {
+    if (!text) return '';
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)+/g, '');
+  }
+
+  normalizeStr(str: string): string {
+    if (!str) return '';
+    return str
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '');
+  }
+
   private initData(): void {
     this.isLoading = true;
 
-    // Load university rankings to get exact summary & courses
-    this.api.getUniversityRankings(this.universityName).subscribe({
+    // Load university rankings to get exact summary & courses matching slug or name
+    this.api.getUniversityRankings().subscribe({
       next: (summaries) => {
+        const targetSlug = this.slugify(this.universitySlugParam);
+        const targetNorm = this.normalizeStr(this.universitySlugParam);
+
         const found = summaries.find(
-          s => s.estabelecimento.trim().toLowerCase() === this.universityName.trim().toLowerCase()
+          s => this.slugify(s.estabelecimento) === targetSlug || this.normalizeStr(s.estabelecimento) === targetNorm
         );
+
         if (found) {
+          this.universityName = found.estabelecimento;
           this.universitySummary = found;
           this.courses = found.cursos || [];
         } else {
+          this.universityName = decodeURIComponent(this.universitySlugParam);
           this.universitySummary = {
             estabelecimento: this.universityName,
             total_cursos: 0,
@@ -123,7 +160,7 @@ export class UniversityDetailPageComponent implements OnInit {
         }
 
         // Fetch courses if empty
-        if (this.courses.length === 0) {
+        if (this.courses.length === 0 && this.universityName) {
           this.api.listCourses(this.universityName).subscribe({
             next: (c) => { this.courses = c || []; },
             error: () => {}
@@ -134,6 +171,7 @@ export class UniversityDetailPageComponent implements OnInit {
         this.isLoading = false;
       },
       error: () => {
+        this.universityName = decodeURIComponent(this.universitySlugParam);
         this.universitySummary = {
           estabelecimento: this.universityName,
           total_cursos: 0,
@@ -151,6 +189,7 @@ export class UniversityDetailPageComponent implements OnInit {
   }
 
   loadReviews(): void {
+    if (!this.universityName) return;
     this.isLoadingReviews = true;
     this.api.getUniversityReviews(this.universityName, this.selectedCourse).subscribe({
       next: (res) => {
@@ -181,16 +220,16 @@ export class UniversityDetailPageComponent implements OnInit {
     if (existing) {
       this.userCourse = existing.course_name || '';
     } else {
-      const target = (this.universityName || '').trim().toLowerCase();
-      const currentUniv = (profile?.university || '').trim().toLowerCase();
-      const licUniv = (profile?.licenciatura_university || '').trim().toLowerCase();
+      const target = this.normalizeStr(this.universityName);
+      const currentUniv = this.normalizeStr(profile?.university || '');
+      const licUniv = this.normalizeStr(profile?.licenciatura_university || '');
 
-      if (currentUniv === target) {
+      if (licUniv !== '' && licUniv === target) {
+        this.userCourse = profile?.licenciatura_course || profile?.course || '';
+      } else if (currentUniv !== '' && currentUniv === target) {
         this.userCourse = profile?.course || '';
-      } else if (licUniv === target) {
-        this.userCourse = profile?.licenciatura_course || '';
       } else {
-        this.userCourse = profile?.course || '';
+        this.userCourse = profile?.licenciatura_course || profile?.course || '';
       }
     }
 

@@ -2,7 +2,7 @@
 @use '../../../../styles/mixins' as m;
 
 .univ-page {
-  padding: calc(64px + max(0px, env(safe-area-inset-top))) 0 v.$space-16;
+  padding: calc(96px + max(0px, env(safe-area-inset-top))) 0 v.$space-16;
   min-height: 100vh;
 
   &.container {
@@ -120,35 +120,57 @@
       }
     }
 
-    .summary-score {
+    .header-right-actions {
       display: flex;
-      align-items: baseline;
-      gap: 2px;
-      background: rgba(v.$color-primary, 0.08);
-      padding: v.$space-3 v.$space-5;
-      border-radius: v.$radius-sm;
-      border: 1px solid rgba(v.$color-primary, 0.15);
+      align-items: center;
+      gap: v.$space-4;
+      flex-wrap: wrap;
 
-      .score-val {
-        font-size: 1.8rem;
+      .summary-score-badge {
+        width: 60px;
+        height: 60px;
+        border-radius: v.$radius-sm;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
         font-weight: v.$font-weight-extrabold;
-        color: v.$color-primary;
-        line-height: 1;
+        color: #ffffff;
+        text-align: center;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+
+        &.score-red {
+          background-color: #dc2626;
+        }
+
+        &.score-yellow {
+          background-color: #d97706;
+        }
+
+        &.score-green {
+          background-color: #16a34a;
+        }
+
+        &.score-neutral {
+          background-color: #6b7280;
+        }
       }
 
-      .score-max {
-        font-size: 1rem;
-        font-weight: v.$font-weight-bold;
-        color: v.$color-text-soft;
-      }
+      .header-rate-btn {
+        height: 44px !important;
+        padding: 0 v.$space-5 !important;
+        font-size: 0.92rem !important;
+        font-weight: v.$font-weight-bold !important;
+        border-radius: v.$radius-sm !important;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
 
-      .star-icon {
-        font-size: 20px;
-        width: 20px;
-        height: 20px;
-        color: #eab308;
-        margin-left: 4px;
-        align-self: center;
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
       }
     }
   }
@@ -166,14 +188,6 @@
   .course-filter {
     flex: 1 1 260px;
     max-width: 320px;
-  }
-
-  .rate-btn {
-    height: 44px !important;
-    padding: 0 v.$space-6 !important;
-    font-size: 0.95rem !important;
-    font-weight: v.$font-weight-medium !important;
-    border-radius: v.$radius-sm !important;
   }
 }
 

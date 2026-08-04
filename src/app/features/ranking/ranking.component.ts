@@ -24,10 +24,8 @@ export class RankingComponent implements OnInit {
   selectedSort = 'ranking_desc';
 
   sortOptions = [
-    { value: 'ranking_desc', label: 'Mais Bem Classificadas (10 - 0)' },
-    { value: 'reviews_desc', label: 'Mais Avaliadas' },
-    { value: 'name_asc', label: 'Nome da Universidade (A-Z)' },
-    { value: 'ranking_asc', label: 'Menos Classificadas' }
+    { value: 'ranking_desc', label: 'Mais Bem Classificadas' },
+    { value: 'name_asc', label: 'Por Nome' }
   ];
 
   constructor(
@@ -109,8 +107,18 @@ export class RankingComponent implements OnInit {
     event.target.src = this.fallbackLogo(univ);
   }
 
+  slugify(text: string): string {
+    if (!text) return '';
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)+/g, '');
+  }
+
   openUniversityDetails(univ: UniversityRankingSummary): void {
-    this.router.navigate(['/ranking', encodeURIComponent(univ.estabelecimento)]);
+    this.router.navigate(['/ranking', this.slugify(univ.estabelecimento)]);
   }
 
   openReviewDirect(event: MouseEvent, univ: UniversityRankingSummary): void {
@@ -119,6 +127,6 @@ export class RankingComponent implements OnInit {
       this.snackBar.open('Tens de ter uma conta para avaliar a tua instituição.', 'Fechar', { duration: 4000 });
       return;
     }
-    this.router.navigate(['/ranking', encodeURIComponent(univ.estabelecimento)], { queryParams: { mode: 'evaluate' } });
+    this.router.navigate(['/ranking', this.slugify(univ.estabelecimento)], { queryParams: { mode: 'evaluate' } });
   }
 }
