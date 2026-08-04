@@ -225,7 +225,7 @@
     <!-- PASSO 4: RESUMO & SUBMISSÃO -->
     <mat-step label="Resumo & Submeter">
       <div class="summary-box">
-        <div class="score-display">
+        <div class="score-display" [ngClass]="getScoreColorClass(calculatedScore)">
           <span class="score-num">{{ calculatedScore }}</span>
           <span class="score-max">/ 10</span>
           <p class="score-label">Classificação Geral Calculada</p>

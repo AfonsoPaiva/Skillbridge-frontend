@@ -79,12 +79,30 @@
     }
 
     .badge {
-      background: rgba(v.$color-primary, 0.08);
-      color: v.$color-primary;
-      font-weight: v.$font-weight-bold;
+      min-width: 48px;
+      text-align: center;
+      color: #ffffff;
+      font-weight: v.$font-weight-extrabold;
       font-size: 0.8rem;
-      padding: 2px 8px;
+      padding: 3px 8px;
       border-radius: v.$radius-sm;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+
+      &.score-red {
+        background-color: #dc2626;
+      }
+
+      &.score-yellow {
+        background-color: #d97706;
+      }
+
+      &.score-green {
+        background-color: #16a34a;
+      }
+
+      &.score-neutral {
+        background-color: #6b7280;
+      }
     }
   }
 
@@ -112,29 +130,45 @@
 
   .score-display {
     text-align: center;
-    background: rgba(v.$color-primary, 0.04);
-    border: 1px solid rgba(v.$color-primary, 0.15);
     border-radius: v.$radius-md;
     padding: v.$space-6;
     margin-bottom: v.$space-6;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+    &.score-red {
+      background-color: #dc2626;
+    }
+
+    &.score-yellow {
+      background-color: #d97706;
+    }
+
+    &.score-green {
+      background-color: #16a34a;
+    }
+
+    &.score-neutral {
+      background-color: #6b7280;
+    }
 
     .score-num {
       font-size: 3rem;
       font-weight: v.$font-weight-extrabold;
-      color: v.$color-primary;
+      color: #ffffff;
       line-height: 1;
     }
 
     .score-max {
       font-size: 1.2rem;
       font-weight: v.$font-weight-semibold;
-      color: v.$color-text-soft;
+      color: rgba(255, 255, 255, 0.85);
     }
 
     .score-label {
       margin: v.$space-2 0 0;
       font-size: 0.9rem;
-      color: v.$color-text-soft;
+      color: rgba(255, 255, 255, 0.9);
     }
   }
 

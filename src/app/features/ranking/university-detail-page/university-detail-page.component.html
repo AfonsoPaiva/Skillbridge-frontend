@@ -88,7 +88,7 @@
                 </div>
               </div>
               <div class="review-top-right">
-                <div class="review-score">
+                <div class="review-score" [ngClass]="getScoreColorClass(review.overall_score)">
                   <span>{{ review.overall_score | number:'1.1-1' }}</span><small>/10</small>
                 </div>
                 <!-- DELETE OWN REVIEW BUTTON -->
