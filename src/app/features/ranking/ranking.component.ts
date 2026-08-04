@@ -39,7 +39,25 @@ export class RankingComponent implements OnInit {
     if (this.auth.isLoggedIn && !this.auth.cachedProfile) {
       this.auth.prefetchUserProfile(this.api);
     }
+
+    this.auth.user$.subscribe(() => {
+      if (this.universities.length > 0) {
+        this.universities = this.sortUserEligibleFirst([...this.universities]);
+        this.filteredUniversities = this.universities;
+        this.updateDisplayed();
+      }
+    });
+
     this.loadRankings();
+  }
+
+  normalizeStr(str: string): string {
+    if (!str) return '';
+    return str
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '');
   }
 
   canUserReview(univ: UniversityRankingSummary): boolean {
@@ -47,11 +65,38 @@ export class RankingComponent implements OnInit {
     const profile = this.auth.cachedProfile;
     if (!profile) return false;
 
-    const target = (univ.estabelecimento || '').trim().toLowerCase();
-    const currentUniv = (profile.university || '').trim().toLowerCase();
-    const licUniv = (profile.licenciatura_university || '').trim().toLowerCase();
+    const target = this.normalizeStr(univ.estabelecimento);
+    const currentUniv = this.normalizeStr(profile.university || '');
+    const licUniv = this.normalizeStr(profile.licenciatura_university || '');
 
     return (currentUniv !== '' && currentUniv === target) || (licUniv !== '' && licUniv === target);
+  }
+
+  sortUserEligibleFirst(list: UniversityRankingSummary[]): UniversityRankingSummary[] {
+    const profile = this.auth.cachedProfile;
+    if (!profile) return list;
+
+    const userCurrentNorm = this.normalizeStr(profile.university || '');
+    const userLicNorm = this.normalizeStr(profile.licenciatura_university || '');
+
+    if (!userCurrentNorm && !userLicNorm) return list;
+
+    const eligible: UniversityRankingSummary[] = [];
+    const others: UniversityRankingSummary[] = [];
+
+    for (const item of list) {
+      const itemNorm = this.normalizeStr(item.estabelecimento);
+      const isEligible = (userCurrentNorm !== '' && itemNorm === userCurrentNorm) ||
+                         (userLicNorm !== '' && itemNorm === userLicNorm);
+
+      if (isEligible) {
+        eligible.push(item);
+      } else {
+        others.push(item);
+      }
+    }
+
+    return [...eligible, ...others];
   }
 
   loadRankings(): void {
@@ -59,7 +104,8 @@ export class RankingComponent implements OnInit {
     this.api.getUniversityRankings(this.searchQuery, this.selectedSort).subscribe({
       next: (data) => {
         this.isLoading = false;
-        this.universities = data || [];
+        const raw = data || [];
+        this.universities = this.sortUserEligibleFirst(raw);
         this.filteredUniversities = this.universities;
         this.page = 1;
         this.updateDisplayed();

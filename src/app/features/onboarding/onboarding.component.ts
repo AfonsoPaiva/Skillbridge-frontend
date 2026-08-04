@@ -106,6 +106,24 @@ export class OnboardingComponent implements OnInit, OnDestroy {
     { value: 'outro', label: 'Outro' }
   ];
 
+  get showLicenciaturaSection(): boolean {
+    const licUniv = (this.academicForm?.get('licenciatura_university')?.value || '').trim();
+    if (licUniv) return true;
+
+    const yearVal = (this.academicForm?.get('year')?.value || '').toString().toLowerCase();
+    if (!yearVal) return false;
+
+    const selectedOption = this.yearOptions.find(o => o.value === yearVal);
+    const label = (selectedOption?.label || '').toLowerCase();
+    const str = `${yearVal} ${label}`;
+
+    return str.includes('mestrado') ||
+           str.includes('posgrad') ||
+           str.includes('pós') ||
+           str.includes('phd') ||
+           str.includes('doutora');
+  }
+
   universities: string[] = [];
   loadingUniversities = false;
   filteredUniversities$!: Observable<string[]>;
@@ -115,6 +133,13 @@ export class OnboardingComponent implements OnInit, OnDestroy {
   filteredCourses$!: Observable<string[]>;
   loadingCourses = false;
   private lastUniversitySelection = '';
+
+  // licenciatura autocomplete state
+  filteredLicUniversities$!: Observable<string[]>;
+  licCourses: string[] = [];
+  filteredLicCourses$!: Observable<string[]>;
+  loadingLicCourses = false;
+  private lastLicUniversitySelection = '';
 
   // Step 0: role choice
   roleForm!: FormGroup;
@@ -163,7 +188,9 @@ export class OnboardingComponent implements OnInit, OnDestroy {
     this.academicForm = this.fb.group({
       university: ['', Validators.required],
       course: ['', Validators.required],
-      year: ['', Validators.required]
+      year: ['', Validators.required],
+      licenciatura_university: [''],
+      licenciatura_course: ['']
     });
     this.skillsForm = this.fb.group({});
     this.accountForm = this.fb.group({
@@ -280,6 +307,65 @@ export class OnboardingComponent implements OnInit, OnDestroy {
       map((q: string) => {
         const query = typeof q === 'string' ? q : '';
         return rankedAutocomplete(this.courses, query, 50);
+      })
+    );
+
+    // Setup reactive local licenciatura university search
+    this.filteredLicUniversities$ = this.academicForm.get('licenciatura_university')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(120),
+      distinctUntilChanged(),
+      map(query => {
+        const q = typeof query === 'string' ? query : '';
+        return rankedAutocomplete(this.universities, q, 20);
+      })
+    );
+
+    // fetch courses when licenciatura_university changes
+    this.academicForm.get('licenciatura_university')!.valueChanges.pipe(
+      distinctUntilChanged()
+    ).subscribe(val => {
+      const selectedUniversity = typeof val === 'string' ? val.trim() : '';
+      const courseCtrl = this.academicForm.get('licenciatura_course')!;
+
+      if (selectedUniversity !== this.lastLicUniversitySelection) {
+        this.lastLicUniversitySelection = selectedUniversity;
+        this.licCourses = [];
+      }
+
+      if (
+        selectedUniversity !== '' &&
+        selectedUniversity !== 'Outra' &&
+        this.universities.includes(selectedUniversity)
+      ) {
+        this.loadingLicCourses = true;
+        this.api.listCourses(selectedUniversity).subscribe({
+          next: c => {
+            const currentUniversity = this.academicForm.get('licenciatura_university')!.value;
+            if (currentUniversity !== selectedUniversity) {
+              return;
+            }
+            this.licCourses = c;
+            this.loadingLicCourses = false;
+            courseCtrl.setValue(courseCtrl.value, { emitEvent: true });
+          },
+          error: () => {
+            this.licCourses = [];
+            this.loadingLicCourses = false;
+          }
+        });
+      } else {
+        this.licCourses = [];
+      }
+    });
+
+    this.filteredLicCourses$ = this.academicForm.get('licenciatura_course')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(120),
+      distinctUntilChanged(),
+      map((q: string) => {
+        const query = typeof q === 'string' ? q : '';
+        return rankedAutocomplete(this.licCourses, query, 50);
       })
     );
 
@@ -614,6 +700,8 @@ export class OnboardingComponent implements OnInit, OnDestroy {
         name: this.personalForm.get('name')!.value,
         university: this.academicForm.get('university')!.value,
         course: this.academicForm.get('course')!.value,
+        licenciatura_university: (this.academicForm.get('licenciatura_university')?.value || '').trim(),
+        licenciatura_course: (this.academicForm.get('licenciatura_course')?.value || '').trim(),
         year: this.academicForm.get('year')!.value,
         bio: '',
         role: this.roleForm.get('role')!.value,
@@ -954,6 +1042,8 @@ export class OnboardingComponent implements OnInit, OnDestroy {
       name: this.personalForm.get('name')!.value,
       university: this.academicForm.get('university')!.value,
       course: this.academicForm.get('course')!.value,
+      licenciatura_university: (this.academicForm.get('licenciatura_university')?.value || '').trim(),
+      licenciatura_course: (this.academicForm.get('licenciatura_course')?.value || '').trim(),
       year: this.academicForm.get('year')!.value,
       bio: '',
       role: this.roleForm.get('role')!.value,

@@ -77,6 +77,24 @@ export class EditProfileComponent implements OnInit {
     { value: 'outro', label: 'Outro' }
   ];
 
+  get showLicenciaturaSection(): boolean {
+    const licUniv = (this.form?.get('licenciatura_university')?.value || '').trim();
+    if (licUniv) return true;
+
+    const yearVal = (this.form?.get('year')?.value || '').toString().toLowerCase();
+    if (!yearVal) return false;
+
+    const selectedOption = this.yearOptions.find(o => o.value === yearVal);
+    const label = (selectedOption?.label || '').toLowerCase();
+    const str = `${yearVal} ${label}`;
+
+    return str.includes('mestrado') ||
+           str.includes('posgrad') ||
+           str.includes('pós') ||
+           str.includes('phd') ||
+           str.includes('doutora');
+  }
+
   private readonly emptyContactLinks: ContactLinks = {
     facebook: '',
     instagram: '',

@@ -179,6 +179,8 @@ export interface RegisterInput {
   name: string;
   university?: string;
   course?: string;
+  licenciatura_university?: string;
+  licenciatura_course?: string;
   year?: string;
   bio?: string;
   role?: string;

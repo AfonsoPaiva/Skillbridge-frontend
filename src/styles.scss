@@ -1593,3 +1593,29 @@ body {
   
   // Ripple effect remains interactive on touch devices
 }
+
+// ── Custom Select Dropdown Panel ─────────────────────────
+.custom-select-panel,
+.mat-mdc-select-panel {
+  max-width: 90vw !important;
+  min-width: 280px !important;
+  
+  .mat-mdc-option {
+    white-space: normal !important;
+    word-break: break-word !important;
+    line-height: 1.4 !important;
+    min-height: 48px !important;
+    height: auto !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+
+    .mdc-list-item__primary-text {
+      white-space: normal !important;
+      word-break: break-word !important;
+      display: block !important;
+      overflow: visible !important;
+      text-overflow: clip !important;
+    }
+  }
+}
+

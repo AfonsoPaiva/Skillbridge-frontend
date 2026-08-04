@@ -133,11 +133,44 @@
       </mat-form-field>
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Ano / ciclo de estudos</mat-label>
-        <mat-select formControlName="year">
+        <mat-select formControlName="year" panelClass="custom-select-panel">
           <mat-option *ngFor="let y of yearOptions" [value]="y.value">{{ y.label }}</mat-option>
         </mat-select>
         <mat-error *ngIf="academicForm.get('year')?.errors?.['required']">Seleciona o ano.</mat-error>
       </mat-form-field>
+
+      <!-- Optional Licenciatura fields if studying Mestrado / Pós-graduação / Doutoramento -->
+      <div *ngIf="showLicenciaturaSection" style="margin-top: 12px; padding: 16px; background: rgba(104, 0, 122, 0.03); border: 1px solid rgba(104, 0, 122, 0.12); border-radius: 12px;">
+        <h3 style="font-size: 0.95rem; font-weight: 600; margin: 0 0 4px 0; color: #68007A; display: flex; align-items: center; gap: 6px;">
+          <mat-icon style="font-size: 18px; width: 18px; height: 18px;">history_edu</mat-icon>
+          Licenciatura / Formação Anterior (Opcional)
+        </h3>
+        <p style="font-size: 0.825rem; color: #666; margin: 0 0 12px 0;">
+          Se estudaste noutra instituição anteriormente, indica aqui para poderes participar no ranking de ambas.
+        </p>
+
+        <mat-form-field appearance="outline" class="full-width" style="margin-bottom: 8px;">
+          <mat-label>Universidade da Licenciatura</mat-label>
+          <input matInput formControlName="licenciatura_university" placeholder="Ex: Universidade de Coimbra…" [matAutocomplete]="licUniAuto" autocomplete="off">
+          <mat-icon matSuffix>school</mat-icon>
+          <mat-autocomplete #licUniAuto="matAutocomplete">
+            <mat-option *ngFor="let u of filteredLicUniversities$ | async" [value]="u">
+              {{ u }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Curso da Licenciatura</mat-label>
+          <input matInput formControlName="licenciatura_course" placeholder="Ex: Engenharia Informática" [matAutocomplete]="licCourseAuto" autocomplete="off">
+          <mat-spinner matSuffix *ngIf="loadingLicCourses" diameter="16"></mat-spinner>
+          <mat-autocomplete #licCourseAuto="matAutocomplete">
+            <mat-option *ngFor="let c of filteredLicCourses$ | async" [value]="c">
+              {{ c }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
     </div>
 
     <!-- ── STEP 3: Skills ── -->

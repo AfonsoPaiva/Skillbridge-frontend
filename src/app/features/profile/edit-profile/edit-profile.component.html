@@ -118,15 +118,15 @@
             </mat-form-field>
           </div>
 
-          <mat-form-field appearance="outline" style="max-width:240px">
-            <mat-label>Ano curricular</mat-label>
-            <mat-select formControlName="year">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Ano / ciclo de estudos</mat-label>
+            <mat-select formControlName="year" panelClass="custom-select-panel">
               <mat-option *ngFor="let y of yearOptions" [value]="y.value">{{ y.label }}</mat-option>
             </mat-select>
           </mat-form-field>
         </div>
 
-        <div class="section-card" style="margin-bottom: 24px;">
+        <div class="section-card" style="margin-bottom: 24px;" *ngIf="showLicenciaturaSection">
           <h3><mat-icon>history_edu</mat-icon> Licenciatura / Formação Anterior (Opcional)</h3>
           <p class="text-soft" style="margin-top:-8px; margin-bottom: 16px;">Se estudaste noutra instituição anteriormente, indica aqui para poderes participar no ranking de ambas.</p>
           <div class="two-cols">
