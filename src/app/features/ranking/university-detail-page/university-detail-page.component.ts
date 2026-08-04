@@ -103,8 +103,8 @@ export class UniversityDetailPageComponent implements OnInit {
   }
 
   getScoreColorClass(score: number): string {
-    if (!score || score <= 0) return 'score-neutral';
-    if (score <= 2) return 'score-red';
+    if (score === undefined || score === null) return 'score-neutral';
+    if (score <= 4) return 'score-red';
     if (score <= 6) return 'score-yellow';
     return 'score-green';
   }

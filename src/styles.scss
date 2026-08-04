@@ -859,6 +859,10 @@ body {
   background: transparent !important;
 }
 
+.mat-horizontal-content-container {
+  padding-top: 16px !important;
+}
+
 .mat-step-header {
   .mat-step-icon {
     background-color: v.$color-border !important;

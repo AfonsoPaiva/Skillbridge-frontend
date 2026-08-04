@@ -127,17 +127,18 @@
       flex-wrap: wrap;
 
       .summary-score-badge {
-        width: 60px;
-        height: 60px;
-        border-radius: v.$radius-sm;
+        width: 72px;
+        height: 72px;
+        padding: 8px;
+        border-radius: 14px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.1rem;
+        font-size: 1.25rem;
         font-weight: v.$font-weight-extrabold;
         color: #ffffff;
         text-align: center;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.16);
 
         &.score-red {
           background-color: #dc2626;
@@ -320,14 +321,34 @@
 
       .tag {
         font-size: 0.78rem;
-        background: v.$color-bg;
-        border: 1px solid v.$color-border;
-        padding: 2px 8px;
+        padding: 3px 9px;
         border-radius: v.$radius-sm;
-        color: v.$color-text-soft;
+        color: #ffffff;
+        font-weight: v.$font-weight-medium;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 
         strong {
-          color: v.$color-text;
+          color: #ffffff;
+          font-weight: v.$font-weight-extrabold;
+        }
+
+        &.score-red {
+          background-color: #dc2626;
+        }
+
+        &.score-yellow {
+          background-color: #d97706;
+        }
+
+        &.score-green {
+          background-color: #16a34a;
+        }
+
+        &.score-neutral {
+          background-color: #6b7280;
         }
       }
     }
@@ -367,6 +388,10 @@
       color: v.$color-text-soft;
       font-size: 0.9rem;
     }
+  }
+
+  .step-form {
+    padding-top: 16px;
   }
 
   .step-subtitle {
@@ -427,14 +452,31 @@
         }
 
         .score-pill {
-          min-width: 48px;
+          min-width: 52px;
           text-align: center;
-          font-weight: v.$font-weight-bold;
+          font-weight: v.$font-weight-extrabold;
           font-size: 0.85rem;
-          background: rgba(v.$color-primary, 0.1);
-          color: v.$color-primary;
-          padding: 2px 8px;
+          color: #ffffff;
+          padding: 3px 10px;
           border-radius: v.$radius-sm;
+          transition: background-color 150ms ease;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+
+          &.score-red {
+            background-color: #dc2626;
+          }
+
+          &.score-yellow {
+            background-color: #d97706;
+          }
+
+          &.score-green {
+            background-color: #16a34a;
+          }
+
+          &.score-neutral {
+            background-color: #6b7280;
+          }
         }
       }
     }

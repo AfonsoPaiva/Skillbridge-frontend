@@ -54,14 +54,30 @@
 
         <div class="univ-info">
           <h3 class="univ-name">{{ univ.estabelecimento }}</h3>
-          <span class="univ-courses">
-            <mat-icon>school</mat-icon> {{ univ.total_cursos }} Cursos
-          </span>
+          
+          <div class="univ-meta">
+            <span class="meta-item">
+              <mat-icon>school</mat-icon> {{ univ.total_cursos }} Cursos
+            </span>
+            <span class="meta-item">
+              <mat-icon>rate_review</mat-icon> {{ univ.total_reviews || 0 }} {{ (univ.total_reviews || 0) === 1 ? 'Avaliação' : 'Avaliações' }}
+            </span>
+          </div>
+
+          <div *ngIf="canUserReview(univ)" class="user-institution-badge">
+            <mat-icon>verified</mat-icon> Tua Instituição
+          </div>
         </div>
       </div>
 
+      <!-- COURSES PREVIEW CHIPS -->
+      <div *ngIf="univ.cursos && univ.cursos.length > 0" class="courses-preview">
+        <span *ngFor="let c of univ.cursos.slice(0, 2)" class="course-chip" [title]="c">{{ c }}</span>
+        <span *ngIf="univ.cursos.length > 2" class="more-courses-chip">+{{ univ.cursos.length - 2 }}</span>
+      </div>
+
       <div class="vcard-actions">
-        <button mat-stroked-button color="primary" class="detail-btn">
+        <button mat-button class="detail-btn">
           Ver Avaliações
         </button>
         <button *ngIf="canUserReview(univ)" mat-flat-button color="primary" class="rate-btn" (click)="openReviewDirect($event, univ)">

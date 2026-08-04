@@ -55,7 +55,7 @@
     </mat-step>
 
     <!-- PASSO 2: CRITÉRIOS DA UNIVERSIDADE -->
-    <mat-step [stepControl]="step2Form" label="Universidade (0-10)">
+    <mat-step [stepControl]="step2Form" label="Universidade">
       <form [formGroup]="step2Form" class="step-form">
         <p class="step-desc">Classifica os 7 aspetos gerais da universidade de 0 a 10:</p>
 
@@ -63,7 +63,7 @@
           <div class="slider-row">
             <div class="slider-info">
               <span>Qualidade do campus <small>(instalações, espaços verdes)</small></span>
-              <span class="badge">{{ step2Form.get('campusQuality')?.value }}/10</span>
+              <span class="badge" [ngClass]="getScoreColorClass(step2Form.get('campusQuality')?.value)">{{ step2Form.get('campusQuality')?.value }}/10</span>
             </div>
             <mat-slider min="0" max="10" step="1" discrete class="slider">
               <input matSliderThumb formControlName="campusQuality">
@@ -73,7 +73,7 @@
           <div class="slider-row">
             <div class="slider-info">
               <span>Localização e acessibilidade <small>(transportes, acessos)</small></span>
-              <span class="badge">{{ step2Form.get('locationAccessibility')?.value }}/10</span>
+              <span class="badge" [ngClass]="getScoreColorClass(step2Form.get('locationAccessibility')?.value)">{{ step2Form.get('locationAccessibility')?.value }}/10</span>
             </div>
             <mat-slider min="0" max="10" step="1" discrete class="slider">
               <input matSliderThumb formControlName="locationAccessibility">
@@ -83,7 +83,7 @@
           <div class="slider-row">
             <div class="slider-info">
               <span>Custo de vida na cidade <small>(alojamento, alimentação)</small></span>
-              <span class="badge">{{ step2Form.get('costOfLiving')?.value }}/10</span>
+              <span class="badge" [ngClass]="getScoreColorClass(step2Form.get('costOfLiving')?.value)">{{ step2Form.get('costOfLiving')?.value }}/10</span>
             </div>
             <mat-slider min="0" max="10" step="1" discrete class="slider">
               <input matSliderThumb formControlName="costOfLiving">
@@ -93,7 +93,7 @@
           <div class="slider-row">
             <div class="slider-info">
               <span>Ambiente e vida social <small>(associações, eventos)</small></span>
-              <span class="badge">{{ step2Form.get('socialEnvironment')?.value }}/10</span>
+              <span class="badge" [ngClass]="getScoreColorClass(step2Form.get('socialEnvironment')?.value)">{{ step2Form.get('socialEnvironment')?.value }}/10</span>
             </div>
             <mat-slider min="0" max="10" step="1" discrete class="slider">
               <input matSliderThumb formControlName="socialEnvironment">
@@ -103,7 +103,7 @@
           <div class="slider-row">
             <div class="slider-info">
               <span>Reputação e prestígio percebido</span>
-              <span class="badge">{{ step2Form.get('reputation')?.value }}/10</span>
+              <span class="badge" [ngClass]="getScoreColorClass(step2Form.get('reputation')?.value)">{{ step2Form.get('reputation')?.value }}/10</span>
             </div>
             <mat-slider min="0" max="10" step="1" discrete class="slider">
               <input matSliderThumb formControlName="reputation">
@@ -113,7 +113,7 @@
           <div class="slider-row">
             <div class="slider-info">
               <span>Qualidade das bibliotecas e estudo</span>
-              <span class="badge">{{ step2Form.get('librariesQuality')?.value }}/10</span>
+              <span class="badge" [ngClass]="getScoreColorClass(step2Form.get('librariesQuality')?.value)">{{ step2Form.get('librariesQuality')?.value }}/10</span>
             </div>
             <mat-slider min="0" max="10" step="1" discrete class="slider">
               <input matSliderThumb formControlName="librariesQuality">
@@ -123,7 +123,7 @@
           <div class="slider-row">
             <div class="slider-info">
               <span>Comida e serviços no campus <small>(cantina, bar)</small></span>
-              <span class="badge">{{ step2Form.get('foodServices')?.value }}/10</span>
+              <span class="badge" [ngClass]="getScoreColorClass(step2Form.get('foodServices')?.value)">{{ step2Form.get('foodServices')?.value }}/10</span>
             </div>
             <mat-slider min="0" max="10" step="1" discrete class="slider">
               <input matSliderThumb formControlName="foodServices">
@@ -139,7 +139,7 @@
     </mat-step>
 
     <!-- PASSO 3: CRITÉRIOS DO CURSO -->
-    <mat-step [stepControl]="step3Form" label="Curso (0-10)">
+    <mat-step [stepControl]="step3Form" label="Curso">
       <form [formGroup]="step3Form" class="step-form">
         <p class="step-desc">Classifica os 7 aspetos específicos do teu curso de 0 a 10:</p>
 
@@ -147,7 +147,7 @@
           <div class="slider-row">
             <div class="slider-info">
               <span>Qualidade dos professores <small>(didática, disponibilidade)</small></span>
-              <span class="badge">{{ step3Form.get('teachersQuality')?.value }}/10</span>
+              <span class="badge" [ngClass]="getScoreColorClass(step3Form.get('teachersQuality')?.value)">{{ step3Form.get('teachersQuality')?.value }}/10</span>
             </div>
             <mat-slider min="0" max="10" step="1" discrete class="slider">
               <input matSliderThumb formControlName="teachersQuality">
@@ -157,7 +157,7 @@
           <div class="slider-row">
             <div class="slider-info">
               <span>Interesse pessoal na matéria</span>
-              <span class="badge">{{ step3Form.get('subjectInterest')?.value }}/10</span>
+              <span class="badge" [ngClass]="getScoreColorClass(step3Form.get('subjectInterest')?.value)">{{ step3Form.get('subjectInterest')?.value }}/10</span>
             </div>
             <mat-slider min="0" max="10" step="1" discrete class="slider">
               <input matSliderThumb formControlName="subjectInterest">
@@ -167,7 +167,7 @@
           <div class="slider-row">
             <div class="slider-info">
               <span>Instalações do curso <small>(labs, equipamento)</small></span>
-              <span class="badge">{{ step3Form.get('courseFacilities')?.value }}/10</span>
+              <span class="badge" [ngClass]="getScoreColorClass(step3Form.get('courseFacilities')?.value)">{{ step3Form.get('courseFacilities')?.value }}/10</span>
             </div>
             <mat-slider min="0" max="10" step="1" discrete class="slider">
               <input matSliderThumb formControlName="courseFacilities">
@@ -177,7 +177,7 @@
           <div class="slider-row">
             <div class="slider-info">
               <span>Colegas de curso <small>(ambiente, entreajuda)</small></span>
-              <span class="badge">{{ step3Form.get('classmatesEnvironment')?.value }}/10</span>
+              <span class="badge" [ngClass]="getScoreColorClass(step3Form.get('classmatesEnvironment')?.value)">{{ step3Form.get('classmatesEnvironment')?.value }}/10</span>
             </div>
             <mat-slider min="0" max="10" step="1" discrete class="slider">
               <input matSliderThumb formControlName="classmatesEnvironment">
@@ -187,7 +187,7 @@
           <div class="slider-row">
             <div class="slider-info">
               <span>Carga de trabalho vs. tempo livre</span>
-              <span class="badge">{{ step3Form.get('workloadBalance')?.value }}/10</span>
+              <span class="badge" [ngClass]="getScoreColorClass(step3Form.get('workloadBalance')?.value)">{{ step3Form.get('workloadBalance')?.value }}/10</span>
             </div>
             <mat-slider min="0" max="10" step="1" discrete class="slider">
               <input matSliderThumb formControlName="workloadBalance">
@@ -197,7 +197,7 @@
           <div class="slider-row">
             <div class="slider-info">
               <span>Oportunidades práticas <small>(projetos, estágios)</small></span>
-              <span class="badge">{{ step3Form.get('practicalOpportunities')?.value }}/10</span>
+              <span class="badge" [ngClass]="getScoreColorClass(step3Form.get('practicalOpportunities')?.value)">{{ step3Form.get('practicalOpportunities')?.value }}/10</span>
             </div>
             <mat-slider min="0" max="10" step="1" discrete class="slider">
               <input matSliderThumb formControlName="practicalOpportunities">
@@ -207,7 +207,7 @@
           <div class="slider-row">
             <div class="slider-info">
               <span>Perspetivas de futuro</span>
-              <span class="badge">{{ step3Form.get('futureProspects')?.value }}/10</span>
+              <span class="badge" [ngClass]="getScoreColorClass(step3Form.get('futureProspects')?.value)">{{ step3Form.get('futureProspects')?.value }}/10</span>
             </div>
             <mat-slider min="0" max="10" step="1" discrete class="slider">
               <input matSliderThumb formControlName="futureProspects">

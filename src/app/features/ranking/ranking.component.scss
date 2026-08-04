@@ -139,18 +139,19 @@
     position: absolute;
     top: 20px;
     right: 20px;
-    width: 52px;
-    height: 52px;
-    border-radius: v.$radius-sm;
+    width: 64px;
+    height: 64px;
+    padding: 6px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.95rem;
+    font-size: 1.15rem;
     font-weight: v.$font-weight-extrabold;
     color: #ffffff;
     line-height: 1;
     text-align: center;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.16);
 
     &.score-red {
       background-color: #dc2626;
@@ -197,10 +198,10 @@
     .univ-info {
       flex: 1;
       min-width: 0;
-      padding-right: 60px;
+      padding-right: 68px;
 
       .univ-name {
-        margin: 0;
+        margin: 0 0 6px 0;
         font-size: 1.05rem;
         font-weight: v.$font-weight-bold;
         color: v.$color-text;
@@ -208,21 +209,75 @@
         word-break: break-word;
       }
 
-      .univ-courses {
+      .univ-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 4px;
+
+        .meta-item {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 0.82rem;
+          color: v.$color-text-soft;
+
+          mat-icon {
+            font-size: 14px;
+            width: 14px;
+            height: 14px;
+            color: v.$color-primary;
+          }
+        }
+      }
+
+      .user-institution-badge {
         display: inline-flex;
         align-items: center;
         gap: 4px;
-        font-size: 0.85rem;
-        color: v.$color-text-soft;
-        margin-top: 6px;
+        margin-top: 8px;
+        padding: 3px 8px;
+        background: rgba(v.$color-primary, 0.08);
+        color: v.$color-primary;
+        font-size: 0.76rem;
+        font-weight: v.$font-weight-bold;
+        border-radius: 6px;
 
         mat-icon {
-          font-size: 15px;
-          width: 15px;
-          height: 15px;
-          color: v.$color-primary;
+          font-size: 13px;
+          width: 13px;
+          height: 13px;
         }
       }
+    }
+  }
+
+  .courses-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 4px 0 14px 0;
+
+    .course-chip {
+      font-size: 0.75rem;
+      background: v.$color-bg;
+      border: 1px solid v.$color-border;
+      padding: 3px 8px;
+      border-radius: 6px;
+      color: v.$color-text-soft;
+      max-width: 160px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .more-courses-chip {
+      font-size: 0.75rem;
+      background: rgba(v.$color-primary, 0.08);
+      padding: 3px 8px;
+      border-radius: 6px;
+      color: v.$color-primary;
+      font-weight: v.$font-weight-bold;
     }
   }
 
@@ -231,26 +286,36 @@
     justify-content: space-between;
     align-items: center;
     gap: 10px;
-    padding-top: v.$space-4;
-    border-top: 1px solid v.$color-border;
+    margin-top: auto;
+    padding-top: 6px;
 
     .detail-btn {
       flex: 1;
-      height: 40px !important;
-      line-height: 40px !important;
-      padding: 0 v.$space-4 !important;
-      font-size: 0.88rem !important;
+      height: 36px !important;
+      line-height: 36px !important;
+      padding: 0 12px !important;
+      font-size: 0.84rem !important;
       font-weight: v.$font-weight-semibold !important;
-      border-radius: v.$radius-sm !important;
+      border-radius: 8px !important;
+      background: rgba(v.$color-primary, 0.05) !important;
+      border: 1px solid rgba(v.$color-primary, 0.15) !important;
+      color: v.$color-primary !important;
+      box-shadow: none !important;
+      transition: all v.$transition-fast;
+
+      &:hover {
+        background: rgba(v.$color-primary, 0.1) !important;
+        border-color: rgba(v.$color-primary, 0.3) !important;
+      }
     }
 
     .rate-btn {
-      height: 40px !important;
-      line-height: 40px !important;
-      padding: 0 v.$space-4 !important;
-      font-size: 0.88rem !important;
-      font-weight: v.$font-weight-semibold !important;
-      border-radius: v.$radius-sm !important;
+      height: 36px !important;
+      line-height: 36px !important;
+      padding: 0 16px !important;
+      font-size: 0.84rem !important;
+      font-weight: v.$font-weight-bold !important;
+      border-radius: 8px !important;
     }
   }
 }

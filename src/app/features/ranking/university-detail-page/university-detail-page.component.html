@@ -106,11 +106,20 @@
             <p class="review-text">"{{ review.comment }}"</p>
 
             <div class="review-tags">
-              <span class="tag">Campus: <strong>{{ review.campus_quality }}/10</strong></span>
-              <span class="tag">Professores: <strong>{{ review.teachers_quality }}/10</strong></span>
-              <span class="tag">Instalações: <strong>{{ review.course_facilities }}/10</strong></span>
-              <span class="tag">Vida Social: <strong>{{ review.social_environment }}/10</strong></span>
-              <span class="tag">Futuro: <strong>{{ review.future_prospects }}/10</strong></span>
+              <span class="tag" [ngClass]="getScoreColorClass(review.campus_quality)">Campus: <strong>{{ review.campus_quality }}/10</strong></span>
+              <span class="tag" [ngClass]="getScoreColorClass(review.location_accessibility)">Localização: <strong>{{ review.location_accessibility }}/10</strong></span>
+              <span class="tag" [ngClass]="getScoreColorClass(review.cost_of_living)">Custo de Vida: <strong>{{ review.cost_of_living }}/10</strong></span>
+              <span class="tag" [ngClass]="getScoreColorClass(review.social_environment)">Vida Social: <strong>{{ review.social_environment }}/10</strong></span>
+              <span class="tag" [ngClass]="getScoreColorClass(review.reputation)">Reputação: <strong>{{ review.reputation }}/10</strong></span>
+              <span class="tag" [ngClass]="getScoreColorClass(review.libraries_quality)">Bibliotecas: <strong>{{ review.libraries_quality }}/10</strong></span>
+              <span class="tag" [ngClass]="getScoreColorClass(review.food_services)">Alimentação: <strong>{{ review.food_services }}/10</strong></span>
+              <span class="tag" [ngClass]="getScoreColorClass(review.teachers_quality)">Professores: <strong>{{ review.teachers_quality }}/10</strong></span>
+              <span class="tag" [ngClass]="getScoreColorClass(review.subject_interest)">Matérias: <strong>{{ review.subject_interest }}/10</strong></span>
+              <span class="tag" [ngClass]="getScoreColorClass(review.course_facilities)">Inst. Curso: <strong>{{ review.course_facilities }}/10</strong></span>
+              <span class="tag" [ngClass]="getScoreColorClass(review.classmates_environment)">Colegas: <strong>{{ review.classmates_environment }}/10</strong></span>
+              <span class="tag" [ngClass]="getScoreColorClass(review.workload_balance)">Carga Trabalho: <strong>{{ review.workload_balance }}/10</strong></span>
+              <span class="tag" [ngClass]="getScoreColorClass(review.practical_opportunities)">Oportunidades: <strong>{{ review.practical_opportunities }}/10</strong></span>
+              <span class="tag" [ngClass]="getScoreColorClass(review.future_prospects)">Futuro: <strong>{{ review.future_prospects }}/10</strong></span>
             </div>
 
             <div class="review-date">
@@ -185,7 +194,7 @@
                   <mat-slider min="0" max="10" step="1" discrete>
                     <input matSliderThumb formControlName="campusQuality">
                   </mat-slider>
-                  <span class="score-pill">{{ step2Form.get('campusQuality')?.value }}/10</span>
+                  <span class="score-pill" [ngClass]="getScoreColorClass(step2Form.get('campusQuality')?.value)">{{ step2Form.get('campusQuality')?.value }}/10</span>
                 </div>
               </div>
 
@@ -198,7 +207,7 @@
                   <mat-slider min="0" max="10" step="1" discrete>
                     <input matSliderThumb formControlName="locationAccessibility">
                   </mat-slider>
-                  <span class="score-pill">{{ step2Form.get('locationAccessibility')?.value }}/10</span>
+                  <span class="score-pill" [ngClass]="getScoreColorClass(step2Form.get('locationAccessibility')?.value)">{{ step2Form.get('locationAccessibility')?.value }}/10</span>
                 </div>
               </div>
 
@@ -211,7 +220,7 @@
                   <mat-slider min="0" max="10" step="1" discrete>
                     <input matSliderThumb formControlName="costOfLiving">
                   </mat-slider>
-                  <span class="score-pill">{{ step2Form.get('costOfLiving')?.value }}/10</span>
+                  <span class="score-pill" [ngClass]="getScoreColorClass(step2Form.get('costOfLiving')?.value)">{{ step2Form.get('costOfLiving')?.value }}/10</span>
                 </div>
               </div>
 
@@ -224,7 +233,7 @@
                   <mat-slider min="0" max="10" step="1" discrete>
                     <input matSliderThumb formControlName="socialEnvironment">
                   </mat-slider>
-                  <span class="score-pill">{{ step2Form.get('socialEnvironment')?.value }}/10</span>
+                  <span class="score-pill" [ngClass]="getScoreColorClass(step2Form.get('socialEnvironment')?.value)">{{ step2Form.get('socialEnvironment')?.value }}/10</span>
                 </div>
               </div>
 
@@ -237,7 +246,7 @@
                   <mat-slider min="0" max="10" step="1" discrete>
                     <input matSliderThumb formControlName="reputation">
                   </mat-slider>
-                  <span class="score-pill">{{ step2Form.get('reputation')?.value }}/10</span>
+                  <span class="score-pill" [ngClass]="getScoreColorClass(step2Form.get('reputation')?.value)">{{ step2Form.get('reputation')?.value }}/10</span>
                 </div>
               </div>
 
@@ -250,7 +259,7 @@
                   <mat-slider min="0" max="10" step="1" discrete>
                     <input matSliderThumb formControlName="librariesQuality">
                   </mat-slider>
-                  <span class="score-pill">{{ step2Form.get('librariesQuality')?.value }}/10</span>
+                  <span class="score-pill" [ngClass]="getScoreColorClass(step2Form.get('librariesQuality')?.value)">{{ step2Form.get('librariesQuality')?.value }}/10</span>
                 </div>
               </div>
 
@@ -263,7 +272,7 @@
                   <mat-slider min="0" max="10" step="1" discrete>
                     <input matSliderThumb formControlName="foodServices">
                   </mat-slider>
-                  <span class="score-pill">{{ step2Form.get('foodServices')?.value }}/10</span>
+                  <span class="score-pill" [ngClass]="getScoreColorClass(step2Form.get('foodServices')?.value)">{{ step2Form.get('foodServices')?.value }}/10</span>
                 </div>
               </div>
             </div>
@@ -292,7 +301,7 @@
                   <mat-slider min="0" max="10" step="1" discrete>
                     <input matSliderThumb formControlName="teachersQuality">
                   </mat-slider>
-                  <span class="score-pill">{{ step3Form.get('teachersQuality')?.value }}/10</span>
+                  <span class="score-pill" [ngClass]="getScoreColorClass(step3Form.get('teachersQuality')?.value)">{{ step3Form.get('teachersQuality')?.value }}/10</span>
                 </div>
               </div>
 
@@ -305,7 +314,7 @@
                   <mat-slider min="0" max="10" step="1" discrete>
                     <input matSliderThumb formControlName="subjectInterest">
                   </mat-slider>
-                  <span class="score-pill">{{ step3Form.get('subjectInterest')?.value }}/10</span>
+                  <span class="score-pill" [ngClass]="getScoreColorClass(step3Form.get('subjectInterest')?.value)">{{ step3Form.get('subjectInterest')?.value }}/10</span>
                 </div>
               </div>
 
@@ -318,7 +327,7 @@
                   <mat-slider min="0" max="10" step="1" discrete>
                     <input matSliderThumb formControlName="courseFacilities">
                   </mat-slider>
-                  <span class="score-pill">{{ step3Form.get('courseFacilities')?.value }}/10</span>
+                  <span class="score-pill" [ngClass]="getScoreColorClass(step3Form.get('courseFacilities')?.value)">{{ step3Form.get('courseFacilities')?.value }}/10</span>
                 </div>
               </div>
 
@@ -331,7 +340,7 @@
                   <mat-slider min="0" max="10" step="1" discrete>
                     <input matSliderThumb formControlName="classmatesEnvironment">
                   </mat-slider>
-                  <span class="score-pill">{{ step3Form.get('classmatesEnvironment')?.value }}/10</span>
+                  <span class="score-pill" [ngClass]="getScoreColorClass(step3Form.get('classmatesEnvironment')?.value)">{{ step3Form.get('classmatesEnvironment')?.value }}/10</span>
                 </div>
               </div>
 
@@ -344,7 +353,7 @@
                   <mat-slider min="0" max="10" step="1" discrete>
                     <input matSliderThumb formControlName="workloadBalance">
                   </mat-slider>
-                  <span class="score-pill">{{ step3Form.get('workloadBalance')?.value }}/10</span>
+                  <span class="score-pill" [ngClass]="getScoreColorClass(step3Form.get('workloadBalance')?.value)">{{ step3Form.get('workloadBalance')?.value }}/10</span>
                 </div>
               </div>
 
@@ -357,7 +366,7 @@
                   <mat-slider min="0" max="10" step="1" discrete>
                     <input matSliderThumb formControlName="practicalOpportunities">
                   </mat-slider>
-                  <span class="score-pill">{{ step3Form.get('practicalOpportunities')?.value }}/10</span>
+                  <span class="score-pill" [ngClass]="getScoreColorClass(step3Form.get('practicalOpportunities')?.value)">{{ step3Form.get('practicalOpportunities')?.value }}/10</span>
                 </div>
               </div>
 
@@ -370,7 +379,7 @@
                   <mat-slider min="0" max="10" step="1" discrete>
                     <input matSliderThumb formControlName="futureProspects">
                   </mat-slider>
-                  <span class="score-pill">{{ step3Form.get('futureProspects')?.value }}/10</span>
+                  <span class="score-pill" [ngClass]="getScoreColorClass(step3Form.get('futureProspects')?.value)">{{ step3Form.get('futureProspects')?.value }}/10</span>
                 </div>
               </div>
             </div>
