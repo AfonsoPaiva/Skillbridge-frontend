@@ -301,10 +301,12 @@ export class UniversityDetailPageComponent implements OnInit {
     }
     this.setupForms();
     this.viewMode = 'evaluate';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   cancelEvaluation(): void {
     this.viewMode = 'details';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   async submitReview(): Promise<void> {
@@ -367,6 +369,7 @@ export class UniversityDetailPageComponent implements OnInit {
           { duration: 4000 }
         );
         this.viewMode = 'details';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         this.initData();
       },
       error: (err) => {

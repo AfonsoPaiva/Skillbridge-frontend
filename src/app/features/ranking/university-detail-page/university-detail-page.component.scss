@@ -228,16 +228,25 @@
   }
 
   .review-card {
+    position: relative;
     background: v.$color-surface;
     border: 1px solid v.$color-border;
     border-radius: v.$radius-md;
     padding: v.$space-6;
+
+    @media (max-width: 600px) {
+      padding: v.$space-4;
+    }
 
     .review-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: v.$space-4;
+
+      @media (max-width: 600px) {
+        padding-right: 40px;
+      }
 
       .user-meta {
         display: flex;
@@ -247,6 +256,7 @@
         .user-avatar {
           width: 40px;
           height: 40px;
+          flex-shrink: 0;
           border-radius: 50%;
           background: v.$color-bg;
           border: 1px solid v.$color-border;
@@ -326,6 +336,14 @@
           width: 36px !important;
           height: 36px !important;
           padding: 0 !important;
+          margin-left: 8px !important;
+
+          @media (max-width: 600px) {
+            position: absolute !important;
+            top: 12px !important;
+            right: 12px !important;
+            margin-left: 0 !important;
+          }
 
           mat-icon {
             font-size: 20px !important;
@@ -629,11 +647,11 @@
     padding: v.$space-3 !important;
 
     .mat-vertical-content-container {
-      margin-left: 0 !important;
+      margin-left: 12px !important;
     }
 
     .mat-vertical-content {
-      padding: 0 0 16px 0 !important;
+      padding: 0 0 16px 12px !important;
     }
 
     .mat-vertical-stepper-header {
