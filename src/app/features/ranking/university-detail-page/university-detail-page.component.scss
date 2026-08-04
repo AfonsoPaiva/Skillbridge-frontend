@@ -52,17 +52,26 @@
 }
 
 .univ-header-card {
+  position: relative;
   background: v.$color-surface;
   border: 1px solid v.$color-border;
   border-radius: v.$radius-md;
   padding: v.$space-6;
   margin-bottom: v.$space-8;
 
+  @media (max-width: 600px) {
+    padding: v.$space-4;
+  }
+
   .univ-summary {
     display: flex;
     align-items: center;
     gap: v.$space-6;
     flex-wrap: wrap;
+
+    @media (max-width: 600px) {
+      gap: v.$space-3;
+    }
 
     .summary-logo {
       width: 72px;
@@ -87,12 +96,21 @@
       flex: 1;
       min-width: 240px;
 
+      @media (max-width: 600px) {
+        min-width: 0;
+        padding-right: 60px;
+      }
+
       h2 {
         margin: 0 0 v.$space-2;
         font-size: 1.5rem;
         font-weight: v.$font-weight-bold;
         color: v.$color-text;
         line-height: 1.25;
+
+        @media (max-width: 600px) {
+          font-size: 1.15rem;
+        }
       }
 
       .meta-tags {
@@ -126,6 +144,11 @@
       gap: v.$space-4;
       flex-wrap: wrap;
 
+      @media (max-width: 600px) {
+        width: 100%;
+        margin-top: v.$space-2;
+      }
+
       .summary-score-badge {
         width: 72px;
         height: 72px;
@@ -139,6 +162,16 @@
         color: #ffffff;
         text-align: center;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.16);
+
+        @media (max-width: 600px) {
+          position: absolute;
+          top: 16px;
+          right: 16px;
+          width: 56px;
+          height: 56px;
+          font-size: 0.95rem;
+          border-radius: 12px;
+        }
 
         &.score-red {
           background-color: #dc2626;
@@ -166,6 +199,11 @@
         display: inline-flex;
         align-items: center;
         gap: 6px;
+
+        @media (max-width: 600px) {
+          width: 100%;
+          justify-content: center;
+        }
 
         mat-icon {
           font-size: 18px;
