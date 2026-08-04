@@ -49,6 +49,11 @@ export class EditProfileComponent implements OnInit {
   loadingCourses = false;
   private lastUniversitySelection = '';
 
+  licCourses: string[] = [];
+  filteredLicCourses$ = of<string[]>([]);
+  loadingLicCourses = false;
+  private lastLicUniversitySelection = '';
+
   yearOptions = [
     { value: '1', label: '1.º ano (Licenciatura)' },
     { value: '2', label: '2.º ano (Licenciatura)' },
@@ -204,6 +209,42 @@ export class EditProfileComponent implements OnInit {
       }
     });
 
+    // fetch courses when licenciatura_university changes
+    this.form.get('licenciatura_university')!.valueChanges.pipe(distinctUntilChanged()).subscribe(val => {
+      const selectedUniversity = typeof val === 'string' ? val.trim() : '';
+      const courseCtrl = this.form.get('licenciatura_course')!;
+
+      if (selectedUniversity !== this.lastLicUniversitySelection) {
+        this.lastLicUniversitySelection = selectedUniversity;
+        this.licCourses = [];
+      }
+
+      if (
+        selectedUniversity !== '' &&
+        selectedUniversity !== 'Outra' &&
+        this.universities.includes(selectedUniversity)
+      ) {
+        this.loadingLicCourses = true;
+        this.api.listCourses(selectedUniversity).subscribe({
+          next: c => {
+            const currentUniversity = this.form.get('licenciatura_university')!.value;
+            if (currentUniversity !== selectedUniversity) {
+              return;
+            }
+            this.licCourses = c;
+            this.loadingLicCourses = false;
+            courseCtrl.setValue(courseCtrl.value, { emitEvent: true });
+          },
+          error: () => {
+            this.licCourses = [];
+            this.loadingLicCourses = false;
+          }
+        });
+      } else {
+        this.licCourses = [];
+      }
+    });
+
     // Reactive autocomplete for courses
     this.filteredCourses$ = this.form.get('course')!.valueChanges.pipe(
       startWith(''),
@@ -212,6 +253,16 @@ export class EditProfileComponent implements OnInit {
       map((q: string) => {
         const query = typeof q === 'string' ? q : '';
         return rankedAutocomplete(this.courses, query, 50);
+      })
+    );
+
+    this.filteredLicCourses$ = this.form.get('licenciatura_course')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(120),
+      distinctUntilChanged(),
+      map((q: string) => {
+        const query = typeof q === 'string' ? q : '';
+        return rankedAutocomplete(this.licCourses, query, 50);
       })
     );
 
@@ -232,6 +283,16 @@ export class EditProfileComponent implements OnInit {
               ctrl.setValue(ctrl.value, { emitEvent: true });
             },
             error: () => { this.courses = []; }
+          });
+        }
+        if (u.licenciatura_university) {
+          this.api.listCourses(u.licenciatura_university).subscribe({
+            next: c => {
+              this.licCourses = c;
+              const ctrl = this.form.get('licenciatura_course')!;
+              ctrl.setValue(ctrl.value, { emitEvent: true });
+            },
+            error: () => { this.licCourses = []; }
           });
         }
         this.loading = false;
@@ -419,32 +480,16 @@ export class EditProfileComponent implements OnInit {
   private validateAcademicSelection(): boolean {
     const university = (this.form.get('university')?.value || '').trim();
     const course = (this.form.get('course')?.value || '').trim();
+    const licUniversity = (this.form.get('licenciatura_university')?.value || '').trim();
+    const licCourse = (this.form.get('licenciatura_course')?.value || '').trim();
 
-    if (!university && !course) {
-      return true;
-    }
-
-    if (!university || !course) {
+    if ((university && !course) || (!university && course)) {
       this.snack.open('Universidade e curso devem ser preenchidos em conjunto.', 'Fechar', { duration: 3500 });
       return false;
     }
 
-    if (university === 'Outra') {
-      return true;
-    }
-
-    if (!this.universities.includes(university)) {
-      this.snack.open('Seleciona uma universidade válida da lista.', 'Fechar', { duration: 3500 });
-      return false;
-    }
-
-    if (this.courses.length === 0) {
-      this.snack.open('Não foi possível validar os cursos dessa universidade. Seleciona novamente.', 'Fechar', { duration: 3500 });
-      return false;
-    }
-
-    if (!this.courses.includes(course)) {
-      this.snack.open('O curso selecionado não pertence à universidade escolhida.', 'Fechar', { duration: 3500 });
+    if ((licUniversity && !licCourse) || (!licUniversity && licCourse)) {
+      this.snack.open('Universidade e curso da licenciatura devem ser preenchidos em conjunto.', 'Fechar', { duration: 3500 });
       return false;
     }
 

@@ -148,7 +148,14 @@
               <input matInput
                      formControlName="licenciatura_course"
                      placeholder="Ex: Engenharia Informática"
+                     [matAutocomplete]="licCourseAuto"
                      autocomplete="off">
+              <mat-spinner matSuffix *ngIf="loadingLicCourses" diameter="16"></mat-spinner>
+              <mat-autocomplete #licCourseAuto="matAutocomplete">
+                <mat-option *ngFor="let c of filteredLicCourses$ | async" [value]="c">
+                  {{ c }}
+                </mat-option>
+              </mat-autocomplete>
             </mat-form-field>
           </div>
         </div>
