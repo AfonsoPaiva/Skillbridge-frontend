@@ -14,11 +14,13 @@
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Curso frequentado</mat-label>
-          <mat-select formControlName="courseName" placeholder="Seleciona o teu curso">
+          <input *ngIf="userCourse" matInput formControlName="courseName" readonly>
+          <mat-select *ngIf="!userCourse" formControlName="courseName" placeholder="Seleciona o teu curso">
             <mat-option *ngFor="let course of courses" [value]="course">
               {{ course }}
             </mat-option>
           </mat-select>
+          <mat-hint *ngIf="userCourse">Curso associado ao teu perfil de estudante.</mat-hint>
           <mat-error *ngIf="step1Form.get('courseName')?.hasError('required')">
             Por favor seleciona um curso.
           </mat-error>

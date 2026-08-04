@@ -35,7 +35,17 @@ export class RankingComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    if (this.auth.isLoggedIn && !this.auth.cachedProfile) {
+      this.auth.prefetchUserProfile(this.api);
+    }
     this.loadRankings();
+  }
+
+  canUserReview(univ: UniversityRankingSummary): boolean {
+    if (!this.auth.isLoggedIn) return false;
+    const profile = this.auth.cachedProfile;
+    if (!profile || !profile.university) return false;
+    return profile.university.trim().toLowerCase() === univ.estabelecimento.trim().toLowerCase();
   }
 
   loadRankings(): void {

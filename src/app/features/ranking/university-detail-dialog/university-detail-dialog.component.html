@@ -40,7 +40,7 @@
       </mat-select>
     </mat-form-field>
 
-    <button mat-flat-button color="primary" (click)="openReviewDialog()" class="rate-btn">
+    <button *ngIf="canUserReview" mat-flat-button color="primary" (click)="openReviewDialog()" class="rate-btn">
       <mat-icon>rate_review</mat-icon> Avaliar esta Universidade
     </button>
   </div>
@@ -58,7 +58,7 @@
     <div *ngIf="!isLoadingReviews && filteredReviews.length === 0" class="empty-reviews">
       <mat-icon>forum</mat-icon>
       <p>Ainda não existem avaliações submetidas para esta seleção.</p>
-      <button mat-stroked-button color="primary" (click)="openReviewDialog()">
+      <button *ngIf="canUserReview" mat-stroked-button color="primary" (click)="openReviewDialog()">
         Sê o primeiro a avaliar!
       </button>
     </div>

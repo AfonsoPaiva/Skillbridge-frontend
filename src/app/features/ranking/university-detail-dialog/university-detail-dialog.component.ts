@@ -34,7 +34,17 @@ export class UniversityDetailDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (this.auth.isLoggedIn && !this.auth.cachedProfile) {
+      this.auth.prefetchUserProfile(this.api);
+    }
     this.loadReviews();
+  }
+
+  get canUserReview(): boolean {
+    if (!this.auth.isLoggedIn) return false;
+    const profile = this.auth.cachedProfile;
+    if (!profile || !profile.university) return false;
+    return profile.university.trim().toLowerCase() === this.university.estabelecimento.trim().toLowerCase();
   }
 
   loadReviews(): void {

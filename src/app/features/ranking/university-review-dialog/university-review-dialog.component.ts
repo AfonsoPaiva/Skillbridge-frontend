@@ -5,6 +5,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from '../../../core/services/api.service';
 import { CreateUniversityReviewPayload } from '../../../core/models/models';
 
+import { AuthService } from '../../../core/services/auth.service';
+
 export interface UniversityReviewDialogData {
   universityName: string;
   courses: string[];
@@ -19,6 +21,7 @@ export class UniversityReviewDialogComponent implements OnInit {
   isSubmitting = false;
   courses: string[] = [];
   universityName: string = '';
+  userCourse: string = '';
 
   step1Form!: FormGroup;
   step2Form!: FormGroup;
@@ -27,6 +30,7 @@ export class UniversityReviewDialogComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private api: ApiService,
+    private auth: AuthService,
     private snackBar: MatSnackBar,
     public dialogRef: MatDialogRef<UniversityReviewDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: UniversityReviewDialogData
@@ -36,8 +40,11 @@ export class UniversityReviewDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const profile = this.auth.cachedProfile;
+    this.userCourse = profile?.course || '';
+
     this.step1Form = this.fb.group({
-      courseName: ['', Validators.required],
+      courseName: [{ value: this.userCourse, disabled: !!this.userCourse }, Validators.required],
       comment: ['', [Validators.required, Validators.minLength(10)]],
       isAnonymous: [false]
     });
@@ -108,7 +115,7 @@ export class UniversityReviewDialogComponent implements OnInit {
     }
 
     this.isSubmitting = true;
-    const s1 = this.step1Form.value;
+    const s1 = this.step1Form.getRawValue();
     const s2 = this.step2Form.value;
     const s3 = this.step3Form.value;
 

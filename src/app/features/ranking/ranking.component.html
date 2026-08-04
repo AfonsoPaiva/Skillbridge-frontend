@@ -73,7 +73,7 @@
         <button mat-button color="primary" class="detail-btn">
           Ver Avaliações
         </button>
-        <button mat-flat-button color="primary" class="rate-btn" (click)="openReviewDirect($event, univ)">
+        <button *ngIf="canUserReview(univ)" mat-flat-button color="primary" class="rate-btn" (click)="openReviewDirect($event, univ)">
           Avaliar
         </button>
       </div>
