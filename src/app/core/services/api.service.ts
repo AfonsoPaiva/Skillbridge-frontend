@@ -141,6 +141,12 @@ export class ApiService {
     });
   }
 
+  deleteUniversityReview(id: number): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.base}/universities/reviews/${id}`, {
+      headers: this.authHeaders()
+    });
+  }
+
   removeSkill(skill: string): Observable<{ skills: string[] }> {
     const params = new HttpParams().set('skill', skill);
     return this.http.delete<{ skills: string[] }>(`${this.base}/users/me/skills`, {

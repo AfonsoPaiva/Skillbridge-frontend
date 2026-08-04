@@ -1,0 +1,477 @@
+@use '../../../../styles/variables' as v;
+@use '../../../../styles/mixins' as m;
+
+.univ-page {
+  padding: calc(64px + max(0px, env(safe-area-inset-top))) 0 v.$space-16;
+  min-height: 100vh;
+
+  &.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding-left: v.$space-6;
+    padding-right: v.$space-6;
+  }
+}
+
+.top-bar {
+  margin-bottom: v.$space-6;
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: v.$space-2;
+    color: v.$color-text-soft;
+    font-size: 0.95rem;
+    font-weight: v.$font-weight-medium;
+    text-decoration: none;
+    transition: color v.$transition-fast;
+
+    &:hover {
+      color: v.$color-primary;
+    }
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: v.$space-12 0;
+  color: v.$color-text-soft;
+
+  p {
+    margin-top: v.$space-4;
+    font-size: 0.95rem;
+  }
+}
+
+.univ-header-card {
+  background: v.$color-surface;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-md;
+  padding: v.$space-6;
+  margin-bottom: v.$space-8;
+
+  .univ-summary {
+    display: flex;
+    align-items: center;
+    gap: v.$space-6;
+    flex-wrap: wrap;
+
+    .summary-logo {
+      width: 72px;
+      height: 72px;
+      border-radius: v.$radius-sm;
+      background: v.$color-bg;
+      border: 1px solid v.$color-border;
+      padding: v.$space-2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+
+      img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+      }
+    }
+
+    .summary-info {
+      flex: 1;
+      min-width: 240px;
+
+      h2 {
+        margin: 0 0 v.$space-2;
+        font-size: 1.5rem;
+        font-weight: v.$font-weight-bold;
+        color: v.$color-text;
+        line-height: 1.25;
+      }
+
+      .meta-tags {
+        display: flex;
+        gap: v.$space-3;
+        flex-wrap: wrap;
+
+        .meta-tag {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 0.85rem;
+          color: v.$color-text-soft;
+          background: rgba(v.$color-primary, 0.05);
+          padding: 4px 10px;
+          border-radius: v.$radius-sm;
+
+          mat-icon {
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+            color: v.$color-primary;
+          }
+        }
+      }
+    }
+
+    .summary-score {
+      display: flex;
+      align-items: baseline;
+      gap: 2px;
+      background: rgba(v.$color-primary, 0.08);
+      padding: v.$space-3 v.$space-5;
+      border-radius: v.$radius-sm;
+      border: 1px solid rgba(v.$color-primary, 0.15);
+
+      .score-val {
+        font-size: 1.8rem;
+        font-weight: v.$font-weight-extrabold;
+        color: v.$color-primary;
+        line-height: 1;
+      }
+
+      .score-max {
+        font-size: 1rem;
+        font-weight: v.$font-weight-bold;
+        color: v.$color-text-soft;
+      }
+
+      .star-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        color: #eab308;
+        margin-left: 4px;
+        align-self: center;
+      }
+    }
+  }
+}
+
+/* DETAILS & REVIEWS MODE */
+.actions-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: v.$space-4;
+  flex-wrap: wrap;
+  margin-bottom: v.$space-6;
+
+  .course-filter {
+    flex: 1 1 260px;
+    max-width: 320px;
+  }
+
+  .rate-btn {
+    height: 44px !important;
+    padding: 0 v.$space-6 !important;
+    font-size: 0.95rem !important;
+    font-weight: v.$font-weight-medium !important;
+    border-radius: v.$radius-sm !important;
+  }
+}
+
+.reviews-section {
+  .section-title {
+    font-size: 1.2rem;
+    font-weight: v.$font-weight-bold;
+    color: v.$color-text;
+    margin: 0 0 v.$space-5;
+  }
+
+  .empty-reviews {
+    text-align: center;
+    padding: v.$space-12 v.$space-6;
+    background: v.$color-surface;
+    border: 1px solid v.$color-border;
+    border-radius: v.$radius-md;
+
+    mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      color: v.$color-text-soft;
+      margin-bottom: v.$space-3;
+    }
+
+    p {
+      margin: 0 0 v.$space-4;
+      color: v.$color-text-soft;
+    }
+  }
+
+  .reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: v.$space-4;
+  }
+
+  .review-card {
+    background: v.$color-surface;
+    border: 1px solid v.$color-border;
+    border-radius: v.$radius-md;
+    padding: v.$space-6;
+
+    .review-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: v.$space-4;
+
+      .user-meta {
+        display: flex;
+        align-items: center;
+        gap: v.$space-3;
+
+        .user-avatar {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: v.$color-bg;
+          border: 1px solid v.$color-border;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+
+          mat-icon {
+            font-size: 24px;
+            width: 24px;
+            height: 24px;
+            color: v.$color-text-soft;
+          }
+        }
+
+        .user-name {
+          font-weight: v.$font-weight-bold;
+          font-size: 0.95rem;
+          color: v.$color-text;
+        }
+
+        .user-course {
+          font-size: 0.82rem;
+          color: v.$color-text-soft;
+        }
+      }
+
+      .review-top-right {
+        display: flex;
+        align-items: center;
+        gap: v.$space-2;
+
+        .review-score {
+          font-size: 1.1rem;
+          font-weight: v.$font-weight-extrabold;
+          color: v.$color-primary;
+
+          small {
+            font-size: 0.75rem;
+            color: v.$color-text-soft;
+          }
+        }
+
+        .delete-review-btn {
+          width: 36px;
+          height: 36px;
+          line-height: 36px;
+        }
+      }
+    }
+
+    .review-text {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: v.$color-text;
+      margin: 0 0 v.$space-4;
+      font-style: italic;
+    }
+
+    .review-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: v.$space-2;
+      margin-bottom: v.$space-3;
+
+      .tag {
+        font-size: 0.78rem;
+        background: v.$color-bg;
+        border: 1px solid v.$color-border;
+        padding: 2px 8px;
+        border-radius: v.$radius-sm;
+        color: v.$color-text-soft;
+
+        strong {
+          color: v.$color-text;
+        }
+      }
+    }
+
+    .review-date {
+      font-size: 0.75rem;
+      color: v.$color-text-soft;
+    }
+  }
+}
+
+/* EVALUATE MODE */
+.evaluate-section {
+  background: v.$color-surface;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-md;
+  padding: v.$space-8;
+
+  .eval-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: v.$space-4;
+    margin-bottom: v.$space-6;
+    padding-bottom: v.$space-4;
+    border-bottom: 1px solid v.$color-border;
+
+    h3 {
+      margin: 0 0 v.$space-1;
+      font-size: 1.3rem;
+      font-weight: v.$font-weight-bold;
+      color: v.$color-text;
+    }
+
+    p {
+      margin: 0;
+      color: v.$color-text-soft;
+      font-size: 0.9rem;
+    }
+  }
+
+  .step-subtitle {
+    font-size: 0.92rem;
+    color: v.$color-text-soft;
+    margin-bottom: v.$space-6;
+  }
+
+  .form-group {
+    margin-bottom: v.$space-4;
+
+    .full-width {
+      width: 100%;
+    }
+  }
+
+  .rating-sliders {
+    display: flex;
+    flex-direction: column;
+    gap: v.$space-4;
+    margin-bottom: v.$space-6;
+
+    .slider-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: v.$space-4;
+      padding: v.$space-3 v.$space-4;
+      background: v.$color-bg;
+      border: 1px solid v.$color-border;
+      border-radius: v.$radius-sm;
+
+      .slider-label {
+        flex: 1;
+
+        span {
+          display: block;
+          font-size: 0.9rem;
+          font-weight: v.$font-weight-semibold;
+          color: v.$color-text;
+        }
+
+        small {
+          display: block;
+          font-size: 0.78rem;
+          color: v.$color-text-soft;
+        }
+      }
+
+      .slider-control {
+        display: flex;
+        align-items: center;
+        gap: v.$space-3;
+        min-width: 220px;
+
+        mat-slider {
+          flex: 1;
+        }
+
+        .score-pill {
+          min-width: 48px;
+          text-align: center;
+          font-weight: v.$font-weight-bold;
+          font-size: 0.85rem;
+          background: rgba(v.$color-primary, 0.1);
+          color: v.$color-primary;
+          padding: 2px 8px;
+          border-radius: v.$radius-sm;
+        }
+      }
+    }
+  }
+
+  .review-summary-card {
+    background: v.$color-bg;
+    border: 1px solid v.$color-border;
+    border-radius: v.$radius-sm;
+    padding: v.$space-4;
+    margin-bottom: v.$space-6;
+
+    h4 {
+      margin: 0 0 v.$space-3;
+      font-size: 1rem;
+      font-weight: v.$font-weight-bold;
+      color: v.$color-text;
+    }
+
+    .detail-row {
+      margin-bottom: v.$space-2;
+      font-size: 0.88rem;
+      color: v.$color-text-soft;
+
+      strong {
+        color: v.$color-text;
+      }
+    }
+
+    .comment-box {
+      margin-top: v.$space-3;
+      font-size: 0.88rem;
+
+      strong {
+        color: v.$color-text;
+      }
+
+      p {
+        margin: v.$space-1 0 0;
+        font-style: italic;
+        color: v.$color-text-soft;
+      }
+    }
+  }
+
+  .step-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: v.$space-3;
+    margin-top: v.$space-6;
+    padding-top: v.$space-4;
+    border-top: 1px solid v.$color-border;
+  }
+}

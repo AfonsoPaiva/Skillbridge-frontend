@@ -1,0 +1,406 @@
+<div class="univ-page container">
+  <!-- TOP BACK BAR -->
+  <div class="top-bar">
+    <a routerLink="/ranking" class="back-link">
+      <mat-icon>arrow_back</mat-icon> Voltar ao Ranking
+    </a>
+  </div>
+
+  <!-- LOADING SPINNER -->
+  <div *ngIf="isLoading" class="loading-state">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>A carregar informações da universidade...</p>
+  </div>
+
+  <div *ngIf="!isLoading">
+    <!-- HEADER SUMMARY CARD -->
+    <div class="univ-header-card">
+      <div class="univ-summary">
+        <div class="summary-logo">
+          <img [src]="universitySummary?.icon | imageProxy" (error)="onImageError($event)" [alt]="universityName">
+        </div>
+        <div class="summary-info">
+          <h2>{{ universityName }}</h2>
+          <div class="meta-tags">
+            <span class="meta-tag">
+              <mat-icon>school</mat-icon> {{ universitySummary?.total_cursos || courses.length }} Cursos
+            </span>
+            <span class="meta-tag">
+              <mat-icon>rate_review</mat-icon> {{ reviews.length }} Avaliações
+            </span>
+          </div>
+        </div>
+        <div class="summary-score" *ngIf="universitySummary">
+          <span class="score-val">{{ universitySummary.average_rating > 0 ? (universitySummary.average_rating | number:'1.1-1') : 'N/A' }}</span>
+          <span class="score-max" *ngIf="universitySummary.average_rating > 0">/10</span>
+          <mat-icon class="star-icon" *ngIf="universitySummary.average_rating > 0">star</mat-icon>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW MODE: DETAILS & REVIEWS -->
+    <div *ngIf="viewMode === 'details'" class="details-section">
+      <div class="actions-bar">
+        <mat-form-field appearance="outline" class="course-filter" *ngIf="courses.length > 0">
+          <mat-label>Filtrar por curso</mat-label>
+          <mat-select [(value)]="selectedCourse" (selectionChange)="onCourseChange()">
+            <mat-option value="">Todos os cursos</mat-option>
+            <mat-option *ngFor="let c of courses" [value]="c">{{ c }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button *ngIf="canUserReview" mat-flat-button color="primary" (click)="startEvaluation()" class="rate-btn">
+          <mat-icon>{{ myExistingReview ? 'edit' : 'rate_review' }}</mat-icon>
+          {{ myExistingReview ? 'Editar Avaliação' : 'Avaliar esta Universidade' }}
+        </button>
+      </div>
+
+      <div class="reviews-section">
+        <h3 class="section-title">
+          Avaliações ({{ filteredReviews.length }})
+        </h3>
+
+        <div *ngIf="isLoadingReviews" class="loading-state">
+          <mat-spinner diameter="32"></mat-spinner>
+          <p>A carregar avaliações...</p>
+        </div>
+
+        <div *ngIf="!isLoadingReviews && filteredReviews.length === 0" class="empty-reviews">
+          <mat-icon>forum</mat-icon>
+          <p>Ainda não existem avaliações submetidas para esta seleção.</p>
+          <button *ngIf="canUserReview" mat-stroked-button color="primary" (click)="startEvaluation()">
+            Sê o primeiro a avaliar!
+          </button>
+        </div>
+
+        <div *ngIf="!isLoadingReviews && filteredReviews.length > 0" class="reviews-list">
+          <div *ngFor="let review of filteredReviews" class="review-card">
+            <div class="review-top">
+              <div class="user-meta">
+                <div class="user-avatar">
+                  <img *ngIf="!review.is_anonymous && review.author_avatar" [src]="review.author_avatar" [alt]="review.author_name">
+                  <mat-icon *ngIf="review.is_anonymous || !review.author_avatar">person</mat-icon>
+                </div>
+                <div>
+                  <div class="user-name">{{ review.is_anonymous ? 'Estudante Anónimo' : review.author_name }}</div>
+                  <div class="user-course">{{ review.course_name }}</div>
+                </div>
+              </div>
+              <div class="review-top-right">
+                <div class="review-score">
+                  <span>{{ review.overall_score | number:'1.1-1' }}</span><small>/10</small>
+                </div>
+                <!-- DELETE OWN REVIEW BUTTON -->
+                <button *ngIf="currentUser && review.user_id === currentUser.id"
+                        mat-icon-button
+                        color="warn"
+                        (click)="deleteReview(review.id)"
+                        matTooltip="Apagar a minha avaliação"
+                        class="delete-review-btn">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <p class="review-text">"{{ review.comment }}"</p>
+
+            <div class="review-tags">
+              <span class="tag">Campus: <strong>{{ review.campus_quality }}/10</strong></span>
+              <span class="tag">Professores: <strong>{{ review.teachers_quality }}/10</strong></span>
+              <span class="tag">Instalações: <strong>{{ review.course_facilities }}/10</strong></span>
+              <span class="tag">Vida Social: <strong>{{ review.social_environment }}/10</strong></span>
+              <span class="tag">Futuro: <strong>{{ review.future_prospects }}/10</strong></span>
+            </div>
+
+            <div class="review-date">
+              {{ review.created_at | date:'dd/MM/yyyy' }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW MODE: EVALUATION STEPPER PAGE -->
+    <div *ngIf="viewMode === 'evaluate'" class="evaluate-section">
+      <div class="eval-header">
+        <div class="eval-title-group">
+          <h3>{{ isEditMode ? 'Editar Avaliação' : 'Avaliar' }} — {{ universityName }}</h3>
+          <p>A tua opinião sincera ajuda outros estudantes a escolher a sua formação.</p>
+        </div>
+        <button mat-stroked-button (click)="cancelEvaluation()">
+          <mat-icon>close</mat-icon> Cancelar
+        </button>
+      </div>
+
+      <mat-stepper linear #stepper class="eval-stepper">
+        <!-- FASE 1: Informação Inicial & Comentário -->
+        <mat-step [stepControl]="step1Form">
+          <form [formGroup]="step1Form" class="step-form">
+            <ng-template matStepLabel>Curso & Comentário</ng-template>
+
+            <div class="form-group">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>O teu Curso</mat-label>
+                <input matInput formControlName="courseName" placeholder="Ex: Engenharia Informática">
+                <mat-hint>Automaticamente associado à tua conta</mat-hint>
+              </mat-form-field>
+            </div>
+
+            <div class="form-group">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Comentário Geral sobre a Universidade e Curso</mat-label>
+                <textarea matInput formControlName="comment" rows="4" placeholder="Partilha a tua experiência sincera sobre as instalações, os professores, ambiente social, etc..."></textarea>
+                <mat-error *ngIf="step1Form.get('comment')?.hasError('required')">Comentário é obrigatório.</mat-error>
+                <mat-error *ngIf="step1Form.get('comment')?.hasError('minlength')">Escreve pelo menos 10 caracteres.</mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="form-group checkbox-group">
+              <mat-checkbox formControlName="isAnonymous">
+                Submeter avaliação como Anónimo (o teu nome e foto não serão visíveis)
+              </mat-checkbox>
+            </div>
+
+            <div class="step-actions">
+              <button mat-button (click)="cancelEvaluation()">Cancelar</button>
+              <button mat-flat-button color="primary" matStepperNext [disabled]="step1Form.invalid">Seguinte: Avaliar Universidade</button>
+            </div>
+          </form>
+        </mat-step>
+
+        <!-- FASE 2: Avaliação por Universidade -->
+        <mat-step [stepControl]="step2Form">
+          <form [formGroup]="step2Form" class="step-form">
+            <ng-template matStepLabel>Por Universidade (0 a 10)</ng-template>
+            <p class="step-subtitle">Classifica cada aspeto da instituição de 0 (Péssimo) a 10 (Excelente):</p>
+
+            <div class="rating-sliders">
+              <div class="slider-row">
+                <div class="slider-label">
+                  <span>Qualidade do Campus</span>
+                  <small>(instalações, espaços verdes, conforto)</small>
+                </div>
+                <div class="slider-control">
+                  <mat-slider min="0" max="10" step="1" discrete>
+                    <input matSliderThumb formControlName="campusQuality">
+                  </mat-slider>
+                  <span class="score-pill">{{ step2Form.get('campusQuality')?.value }}/10</span>
+                </div>
+              </div>
+
+              <div class="slider-row">
+                <div class="slider-label">
+                  <span>Localização e Acessibilidade</span>
+                  <small>(transportes, proximidade)</small>
+                </div>
+                <div class="slider-control">
+                  <mat-slider min="0" max="10" step="1" discrete>
+                    <input matSliderThumb formControlName="locationAccessibility">
+                  </mat-slider>
+                  <span class="score-pill">{{ step2Form.get('locationAccessibility')?.value }}/10</span>
+                </div>
+              </div>
+
+              <div class="slider-row">
+                <div class="slider-label">
+                  <span>Custo de Vida na Cidade</span>
+                  <small>(alojamento, alimentação, custo geral)</small>
+                </div>
+                <div class="slider-control">
+                  <mat-slider min="0" max="10" step="1" discrete>
+                    <input matSliderThumb formControlName="costOfLiving">
+                  </mat-slider>
+                  <span class="score-pill">{{ step2Form.get('costOfLiving')?.value }}/10</span>
+                </div>
+              </div>
+
+              <div class="slider-row">
+                <div class="slider-label">
+                  <span>Ambiente e Vida Social</span>
+                  <small>(associações, eventos, praxe/convívio)</small>
+                </div>
+                <div class="slider-control">
+                  <mat-slider min="0" max="10" step="1" discrete>
+                    <input matSliderThumb formControlName="socialEnvironment">
+                  </mat-slider>
+                  <span class="score-pill">{{ step2Form.get('socialEnvironment')?.value }}/10</span>
+                </div>
+              </div>
+
+              <div class="slider-row">
+                <div class="slider-label">
+                  <span>Reputação Geral</span>
+                  <small>(prestígio e prestígio no mercado)</small>
+                </div>
+                <div class="slider-control">
+                  <mat-slider min="0" max="10" step="1" discrete>
+                    <input matSliderThumb formControlName="reputation">
+                  </mat-slider>
+                  <span class="score-pill">{{ step2Form.get('reputation')?.value }}/10</span>
+                </div>
+              </div>
+
+              <div class="slider-row">
+                <div class="slider-label">
+                  <span>Qualidade das Bibliotecas e Apoios</span>
+                  <small>(recursos de estudo, salas 24h)</small>
+                </div>
+                <div class="slider-control">
+                  <mat-slider min="0" max="10" step="1" discrete>
+                    <input matSliderThumb formControlName="librariesQuality">
+                  </mat-slider>
+                  <span class="score-pill">{{ step2Form.get('librariesQuality')?.value }}/10</span>
+                </div>
+              </div>
+
+              <div class="slider-row">
+                <div class="slider-label">
+                  <span>Serviços de Alimentação</span>
+                  <small>(cantinas, bares, preços e qualidade)</small>
+                </div>
+                <div class="slider-control">
+                  <mat-slider min="0" max="10" step="1" discrete>
+                    <input matSliderThumb formControlName="foodServices">
+                  </mat-slider>
+                  <span class="score-pill">{{ step2Form.get('foodServices')?.value }}/10</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="step-actions">
+              <button mat-button matStepperPrevious>Anterior</button>
+              <button mat-flat-button color="primary" matStepperNext [disabled]="step2Form.invalid">Seguinte: Avaliar Curso</button>
+            </div>
+          </form>
+        </mat-step>
+
+        <!-- FASE 3: Avaliação por Curso & Submissão -->
+        <mat-step [stepControl]="step3Form">
+          <form [formGroup]="step3Form" class="step-form">
+            <ng-template matStepLabel>Por Curso (0 a 10)</ng-template>
+
+            <p class="step-subtitle">Classifica o teu curso específico ({{ userCourse }}):</p>
+
+            <div class="rating-sliders">
+              <div class="slider-row">
+                <div class="slider-label">
+                  <span>Qualidade dos Professores</span>
+                  <small>(pedagogia, disponibilidade, exigência)</small>
+                </div>
+                <div class="slider-control">
+                  <mat-slider min="0" max="10" step="1" discrete>
+                    <input matSliderThumb formControlName="teachersQuality">
+                  </mat-slider>
+                  <span class="score-pill">{{ step3Form.get('teachersQuality')?.value }}/10</span>
+                </div>
+              </div>
+
+              <div class="slider-row">
+                <div class="slider-label">
+                  <span>Interesse das Unidades Curriculares</span>
+                  <small>(plano de estudos, utilidade)</small>
+                </div>
+                <div class="slider-control">
+                  <mat-slider min="0" max="10" step="1" discrete>
+                    <input matSliderThumb formControlName="subjectInterest">
+                  </mat-slider>
+                  <span class="score-pill">{{ step3Form.get('subjectInterest')?.value }}/10</span>
+                </div>
+              </div>
+
+              <div class="slider-row">
+                <div class="slider-label">
+                  <span>Instalações Específicas do Curso</span>
+                  <small>(laboratórios, computadores, equipamentos)</small>
+                </div>
+                <div class="slider-control">
+                  <mat-slider min="0" max="10" step="1" discrete>
+                    <input matSliderThumb formControlName="courseFacilities">
+                  </mat-slider>
+                  <span class="score-pill">{{ step3Form.get('courseFacilities')?.value }}/10</span>
+                </div>
+              </div>
+
+              <div class="slider-row">
+                <div class="slider-label">
+                  <span>Ambiente entre Colegas</span>
+                  <small>(trabalho em equipa, espírito de interajuda)</small>
+                </div>
+                <div class="slider-control">
+                  <mat-slider min="0" max="10" step="1" discrete>
+                    <input matSliderThumb formControlName="classmatesEnvironment">
+                  </mat-slider>
+                  <span class="score-pill">{{ step3Form.get('classmatesEnvironment')?.value }}/10</span>
+                </div>
+              </div>
+
+              <div class="slider-row">
+                <div class="slider-label">
+                  <span>Equilíbrio da Carga de Trabalho</span>
+                  <small>(projetos, exames, gestão de tempo)</small>
+                </div>
+                <div class="slider-control">
+                  <mat-slider min="0" max="10" step="1" discrete>
+                    <input matSliderThumb formControlName="workloadBalance">
+                  </mat-slider>
+                  <span class="score-pill">{{ step3Form.get('workloadBalance')?.value }}/10</span>
+                </div>
+              </div>
+
+              <div class="slider-row">
+                <div class="slider-label">
+                  <span>Oportunidades Práticas e Estágios</span>
+                  <small>(ligação a empresas, projetos reais)</small>
+                </div>
+                <div class="slider-control">
+                  <mat-slider min="0" max="10" step="1" discrete>
+                    <input matSliderThumb formControlName="practicalOpportunities">
+                  </mat-slider>
+                  <span class="score-pill">{{ step3Form.get('practicalOpportunities')?.value }}/10</span>
+                </div>
+              </div>
+
+              <div class="slider-row">
+                <div class="slider-label">
+                  <span>Perspetivas de Empregabilidade</span>
+                  <small>(saídas profissionais e futuro)</small>
+                </div>
+                <div class="slider-control">
+                  <mat-slider min="0" max="10" step="1" discrete>
+                    <input matSliderThumb formControlName="futureProspects">
+                  </mat-slider>
+                  <span class="score-pill">{{ step3Form.get('futureProspects')?.value }}/10</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- RESUMO FINAL -->
+            <div class="review-summary-card">
+              <h4>Resumo da Avaliação</h4>
+              <div class="detail-row">
+                <strong>Curso:</strong> {{ userCourse }}
+              </div>
+              <div class="detail-row">
+                <strong>Visibilidade:</strong>
+                <span *ngIf="step1Form.get('isAnonymous')?.value">Estudante Anónimo</span>
+                <span *ngIf="!step1Form.get('isAnonymous')?.value">Público</span>
+              </div>
+              <div class="comment-box">
+                <strong>Comentário:</strong>
+                <p>"{{ step1Form.get('comment')?.value }}"</p>
+              </div>
+            </div>
+
+            <div class="step-actions">
+              <button mat-button matStepperPrevious [disabled]="isSubmitting">Anterior</button>
+              <button mat-flat-button color="primary" (click)="submitReview()" [disabled]="isSubmitting">
+                <mat-spinner diameter="20" *ngIf="isSubmitting"></mat-spinner>
+                <span *ngIf="!isSubmitting">{{ isEditMode ? 'Guardar Alterações' : 'Submeter Avaliação' }}</span>
+              </button>
+            </div>
+          </form>
+        </mat-step>
+      </mat-stepper>
+    </div>
+  </div>
+</div>

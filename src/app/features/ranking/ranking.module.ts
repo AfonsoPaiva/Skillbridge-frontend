@@ -6,6 +6,7 @@ import { RankingRoutingModule } from './ranking-routing.module';
 import { RankingComponent } from './ranking.component';
 import { UniversityDetailDialogComponent } from './university-detail-dialog/university-detail-dialog.component';
 import { UniversityReviewDialogComponent } from './university-review-dialog/university-review-dialog.component';
+import { UniversityDetailPageComponent } from './university-detail-page/university-detail-page.component';
 
 import { SharedModule } from '../../shared/shared.module';
 
@@ -13,7 +14,8 @@ import { SharedModule } from '../../shared/shared.module';
   declarations: [
     RankingComponent,
     UniversityDetailDialogComponent,
-    UniversityReviewDialogComponent
+    UniversityReviewDialogComponent,
+    UniversityDetailPageComponent
   ],
   imports: [
     CommonModule,

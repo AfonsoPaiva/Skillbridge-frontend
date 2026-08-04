@@ -1,0 +1,309 @@
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ApiService } from '../../../core/services/api.service';
+import { AuthService } from '../../../core/services/auth.service';
+import {
+  UniversityRankingSummary,
+  UniversityReviewItem,
+  CreateUniversityReviewPayload
+} from '../../../core/models/models';
+
+@Component({
+  selector: 'app-university-detail-page',
+  templateUrl: './university-detail-page.component.html',
+  styleUrls: ['./university-detail-page.component.scss']
+})
+export class UniversityDetailPageComponent implements OnInit {
+  universityName: string = '';
+  universitySummary: UniversityRankingSummary | null = null;
+  courses: string[] = [];
+  selectedCourse: string = '';
+
+  reviews: UniversityReviewItem[] = [];
+  filteredReviews: UniversityReviewItem[] = [];
+
+  isLoading: boolean = true;
+  isLoadingReviews: boolean = false;
+  isSubmitting: boolean = false;
+
+  viewMode: 'details' | 'evaluate' = 'details';
+  isEditMode: boolean = false;
+
+  step1Form!: FormGroup;
+  step2Form!: FormGroup;
+  step3Form!: FormGroup;
+  userCourse: string = '';
+  existingReview?: UniversityReviewItem;
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private fb: FormBuilder,
+    private api: ApiService,
+    public auth: AuthService,
+    private snackBar: MatSnackBar
+  ) {}
+
+  ngOnInit(): void {
+    this.route.paramMap.subscribe(params => {
+      const nameParam = params.get('name');
+      if (nameParam) {
+        this.universityName = decodeURIComponent(nameParam);
+        this.initData();
+      } else {
+        this.router.navigate(['/ranking']);
+      }
+    });
+
+    this.route.queryParams.subscribe(q => {
+      if (q['mode'] === 'evaluate') {
+        this.viewMode = 'evaluate';
+      }
+    });
+  }
+
+  get currentUser() {
+    return this.auth.cachedProfile;
+  }
+
+  get canUserReview(): boolean {
+    if (!this.auth.isLoggedIn) return false;
+    const profile = this.currentUser;
+    if (!profile) return false;
+
+    const target = (this.universityName || '').trim().toLowerCase();
+    const currentUniv = (profile.university || '').trim().toLowerCase();
+    const licUniv = (profile.licenciatura_university || '').trim().toLowerCase();
+
+    return (currentUniv !== '' && currentUniv === target) || (licUniv !== '' && licUniv === target);
+  }
+
+  get myExistingReview(): UniversityReviewItem | undefined {
+    const profile = this.currentUser;
+    if (!profile) return undefined;
+    return this.reviews.find(r => r.user_id === profile.id);
+  }
+
+  get fallbackLogo(): string {
+    const domain = this.universityName
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '') + '.pt';
+    return `https://icons.duckduckgo.com/ip3/${domain}.ico`;
+  }
+
+  onImageError(event: any): void {
+    event.target.src = this.fallbackLogo;
+  }
+
+  private initData(): void {
+    this.isLoading = true;
+
+    // Load university rankings to get exact summary & courses
+    this.api.getUniversityRankings(this.universityName).subscribe({
+      next: (summaries) => {
+        const found = summaries.find(
+          s => s.estabelecimento.trim().toLowerCase() === this.universityName.trim().toLowerCase()
+        );
+        if (found) {
+          this.universitySummary = found;
+          this.courses = found.cursos || [];
+        } else {
+          this.universitySummary = {
+            estabelecimento: this.universityName,
+            total_cursos: 0,
+            cursos: [],
+            average_rating: 0,
+            total_reviews: 0,
+            icon: '',
+            univ_avg_rating: 0,
+            course_avg_rating: 0
+          };
+        }
+
+        // Fetch courses if empty
+        if (this.courses.length === 0) {
+          this.api.listCourses(this.universityName).subscribe({
+            next: (c) => { this.courses = c || []; },
+            error: () => {}
+          });
+        }
+
+        this.loadReviews();
+        this.isLoading = false;
+      },
+      error: () => {
+        this.universitySummary = {
+          estabelecimento: this.universityName,
+          total_cursos: 0,
+          cursos: [],
+          average_rating: 0,
+          total_reviews: 0,
+          icon: '',
+          univ_avg_rating: 0,
+          course_avg_rating: 0
+        };
+        this.loadReviews();
+        this.isLoading = false;
+      }
+    });
+  }
+
+  loadReviews(): void {
+    this.isLoadingReviews = true;
+    this.api.getUniversityReviews(this.universityName, this.selectedCourse).subscribe({
+      next: (res) => {
+        this.reviews = res || [];
+        this.filteredReviews = this.reviews;
+        this.isLoadingReviews = false;
+        this.existingReview = this.myExistingReview;
+        this.setupForms();
+      },
+      error: () => {
+        this.reviews = [];
+        this.filteredReviews = [];
+        this.isLoadingReviews = false;
+        this.setupForms();
+      }
+    });
+  }
+
+  onCourseChange(): void {
+    this.loadReviews();
+  }
+
+  setupForms(): void {
+    const profile = this.currentUser;
+    const existing = this.existingReview;
+    this.isEditMode = !!existing;
+
+    if (existing) {
+      this.userCourse = existing.course_name || '';
+    } else {
+      const target = (this.universityName || '').trim().toLowerCase();
+      const currentUniv = (profile?.university || '').trim().toLowerCase();
+      const licUniv = (profile?.licenciatura_university || '').trim().toLowerCase();
+
+      if (currentUniv === target) {
+        this.userCourse = profile?.course || '';
+      } else if (licUniv === target) {
+        this.userCourse = profile?.licenciatura_course || '';
+      } else {
+        this.userCourse = profile?.course || '';
+      }
+    }
+
+    this.step1Form = this.fb.group({
+      courseName: [{ value: this.userCourse, disabled: !!this.userCourse }, Validators.required],
+      comment: [existing ? existing.comment : '', [Validators.required, Validators.minLength(10)]],
+      isAnonymous: [existing ? existing.is_anonymous : false]
+    });
+
+    this.step2Form = this.fb.group({
+      campusQuality: [existing ? existing.campus_quality : 7, [Validators.required, Validators.min(0), Validators.max(10)]],
+      locationAccessibility: [existing ? existing.location_accessibility : 7, [Validators.required, Validators.min(0), Validators.max(10)]],
+      costOfLiving: [existing ? existing.cost_of_living : 5, [Validators.required, Validators.min(0), Validators.max(10)]],
+      socialEnvironment: [existing ? existing.social_environment : 7, [Validators.required, Validators.min(0), Validators.max(10)]],
+      reputation: [existing ? existing.reputation : 8, [Validators.required, Validators.min(0), Validators.max(10)]],
+      librariesQuality: [existing ? existing.libraries_quality : 7, [Validators.required, Validators.min(0), Validators.max(10)]],
+      foodServices: [existing ? existing.food_services : 6, [Validators.required, Validators.min(0), Validators.max(10)]]
+    });
+
+    this.step3Form = this.fb.group({
+      teachersQuality: [existing ? existing.teachers_quality : 7, [Validators.required, Validators.min(0), Validators.max(10)]],
+      subjectInterest: [existing ? existing.subject_interest : 8, [Validators.required, Validators.min(0), Validators.max(10)]],
+      courseFacilities: [existing ? existing.course_facilities : 7, [Validators.required, Validators.min(0), Validators.max(10)]],
+      classmatesEnvironment: [existing ? existing.classmates_environment : 8, [Validators.required, Validators.min(0), Validators.max(10)]],
+      workloadBalance: [existing ? existing.workload_balance : 6, [Validators.required, Validators.min(0), Validators.max(10)]],
+      practicalOpportunities: [existing ? existing.practical_opportunities : 7, [Validators.required, Validators.min(0), Validators.max(10)]],
+      futureProspects: [existing ? existing.future_prospects : 8, [Validators.required, Validators.min(0), Validators.max(10)]]
+    });
+  }
+
+  startEvaluation(): void {
+    if (!this.auth.isLoggedIn) {
+      this.snackBar.open('Tens de ter uma conta para avaliar a tua instituição.', 'Fechar', { duration: 4000 });
+      return;
+    }
+    this.setupForms();
+    this.viewMode = 'evaluate';
+  }
+
+  cancelEvaluation(): void {
+    this.viewMode = 'details';
+  }
+
+  submitReview(): void {
+    if (this.step1Form.invalid || this.step2Form.invalid || this.step3Form.invalid) {
+      this.snackBar.open('Por favor preenche todos os campos requeridos nas várias fases.', 'Fechar', { duration: 4000 });
+      return;
+    }
+
+    const courseName = this.step1Form.get('courseName')?.value || this.userCourse;
+    if (!courseName) {
+      this.snackBar.open('Por favor seleciona ou indica o teu curso.', 'Fechar', { duration: 4000 });
+      return;
+    }
+
+    this.isSubmitting = true;
+
+    const payload: CreateUniversityReviewPayload = {
+      university_name: this.universityName,
+      course_name: courseName,
+      comment: this.step1Form.get('comment')?.value,
+      is_anonymous: !!this.step1Form.get('isAnonymous')?.value,
+
+      campus_quality: Number(this.step2Form.get('campusQuality')?.value),
+      location_accessibility: Number(this.step2Form.get('locationAccessibility')?.value),
+      cost_of_living: Number(this.step2Form.get('costOfLiving')?.value),
+      social_environment: Number(this.step2Form.get('socialEnvironment')?.value),
+      reputation: Number(this.step2Form.get('reputation')?.value),
+      libraries_quality: Number(this.step2Form.get('librariesQuality')?.value),
+      food_services: Number(this.step2Form.get('foodServices')?.value),
+
+      teachers_quality: Number(this.step3Form.get('teachersQuality')?.value),
+      subject_interest: Number(this.step3Form.get('subjectInterest')?.value),
+      course_facilities: Number(this.step3Form.get('courseFacilities')?.value),
+      classmates_environment: Number(this.step3Form.get('classmatesEnvironment')?.value),
+      workload_balance: Number(this.step3Form.get('workloadBalance')?.value),
+      practical_opportunities: Number(this.step3Form.get('practicalOpportunities')?.value),
+      future_prospects: Number(this.step3Form.get('futureProspects')?.value)
+    };
+
+    this.api.createUniversityReview(payload).subscribe({
+      next: () => {
+        this.isSubmitting = false;
+        this.snackBar.open(
+          this.isEditMode ? 'Avaliação atualizada com sucesso!' : 'Avaliação submetida com sucesso!',
+          'Fechar',
+          { duration: 4000 }
+        );
+        this.viewMode = 'details';
+        this.initData();
+      },
+      error: (err) => {
+        this.isSubmitting = false;
+        const msg = err?.error?.error || 'Erro ao submeter avaliação.';
+        this.snackBar.open(msg, 'Fechar', { duration: 4000 });
+      }
+    });
+  }
+
+  deleteReview(reviewId: number): void {
+    if (!confirm('Tens a certeza que desejas apagar a tua avaliação?')) {
+      return;
+    }
+
+    this.api.deleteUniversityReview(reviewId).subscribe({
+      next: () => {
+        this.snackBar.open('Avaliação eliminada com sucesso.', 'Fechar', { duration: 4000 });
+        this.initData();
+      },
+      error: (err) => {
+        const msg = err?.error?.error || 'Erro ao eliminar avaliação.';
+        this.snackBar.open(msg, 'Fechar', { duration: 4000 });
+      }
+    });
+  }
+}

@@ -41,8 +41,8 @@
   </div>
 
   <!-- UNIVERSITIES GRID -->
-  <div *ngIf="!isLoading && filteredUniversities.length > 0" class="grid">
-    <div *ngFor="let univ of filteredUniversities" class="vcard" (click)="openUniversityDetails(univ)">
+  <div *ngIf="!isLoading && displayedUniversities.length > 0" class="grid">
+    <div *ngFor="let univ of displayedUniversities" class="vcard" (click)="openUniversityDetails(univ)">
       <div class="vcard-score-badge" [ngClass]="getScoreColorClass(univ.average_rating)">
         {{ univ.average_rating > 0 ? (univ.average_rating | number:'1.1-1') + '/10' : 'N/A' }}
       </div>
@@ -61,7 +61,7 @@
       </div>
 
       <div class="vcard-actions">
-        <button mat-button color="primary" class="detail-btn">
+        <button mat-stroked-button color="primary" class="detail-btn">
           Ver Avaliações
         </button>
         <button *ngIf="canUserReview(univ)" mat-flat-button color="primary" class="rate-btn" (click)="openReviewDirect($event, univ)">
@@ -69,5 +69,12 @@
         </button>
       </div>
     </div>
+  </div>
+
+  <!-- LOAD MORE SECTION -->
+  <div *ngIf="!isLoading && hasMore" class="load-more-container">
+    <button mat-stroked-button color="primary" class="load-more-btn" (click)="loadMore()">
+      Carregar Mais Universidades ({{ displayedUniversities.length }} de {{ filteredUniversities.length }})
+    </button>
   </div>
 </div>

@@ -1,11 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { UniversityRankingSummary } from '../../core/models/models';
-import { UniversityDetailDialogComponent } from './university-detail-dialog/university-detail-dialog.component';
-import { UniversityReviewDialogComponent } from './university-review-dialog/university-review-dialog.component';
 
 @Component({
   selector: 'app-ranking',
@@ -15,7 +13,12 @@ import { UniversityReviewDialogComponent } from './university-review-dialog/univ
 export class RankingComponent implements OnInit {
   universities: UniversityRankingSummary[] = [];
   filteredUniversities: UniversityRankingSummary[] = [];
+  displayedUniversities: UniversityRankingSummary[] = [];
   isLoading = true;
+
+  page = 1;
+  pageSize = 20;
+  hasMore = false;
 
   searchQuery = '';
   selectedSort = 'ranking_desc';
@@ -29,8 +32,8 @@ export class RankingComponent implements OnInit {
 
   constructor(
     private api: ApiService,
-    private auth: AuthService,
-    private dialog: MatDialog,
+    public auth: AuthService,
+    private router: Router,
     private snackBar: MatSnackBar
   ) {}
 
@@ -60,12 +63,24 @@ export class RankingComponent implements OnInit {
         this.isLoading = false;
         this.universities = data || [];
         this.filteredUniversities = this.universities;
+        this.page = 1;
+        this.updateDisplayed();
       },
-      error: (err) => {
+      error: () => {
         this.isLoading = false;
         this.snackBar.open('Erro ao carregar ranking das universidades.', 'Fechar', { duration: 4000 });
       }
     });
+  }
+
+  updateDisplayed(): void {
+    this.displayedUniversities = this.filteredUniversities.slice(0, this.page * this.pageSize);
+    this.hasMore = this.displayedUniversities.length < this.filteredUniversities.length;
+  }
+
+  loadMore(): void {
+    this.page++;
+    this.updateDisplayed();
   }
 
   onSearch(): void {
@@ -95,65 +110,15 @@ export class RankingComponent implements OnInit {
   }
 
   openUniversityDetails(univ: UniversityRankingSummary): void {
-    this.dialog.open(UniversityDetailDialogComponent, {
-      width: '820px',
-      data: { university: univ }
-    }).afterClosed().subscribe(() => {
-      this.loadRankings();
-    });
+    this.router.navigate(['/ranking', encodeURIComponent(univ.estabelecimento)]);
   }
 
   openReviewDirect(event: MouseEvent, univ: UniversityRankingSummary): void {
     event.stopPropagation();
-
     if (!this.auth.isLoggedIn) {
       this.snackBar.open('Tens de ter uma conta para avaliar a tua instituição.', 'Fechar', { duration: 4000 });
       return;
     }
-
-    const profile = this.auth.cachedProfile;
-    const target = (univ.estabelecimento || '').trim().toLowerCase();
-    const currentUniv = (profile?.university || '').trim().toLowerCase();
-    const licUniv = (profile?.licenciatura_university || '').trim().toLowerCase();
-
-    let userCourse = '';
-    if (currentUniv === target) {
-      userCourse = profile?.course || '';
-    } else if (licUniv === target) {
-      userCourse = profile?.licenciatura_course || '';
-    }
-
-    this.api.getUniversityReviews(univ.estabelecimento).subscribe({
-      next: (reviews) => {
-        const existing = reviews.find(r => profile && r.user_id === profile.id);
-        this.dialog.open(UniversityReviewDialogComponent, {
-          width: '750px',
-          data: {
-            universityName: univ.estabelecimento,
-            courses: univ.cursos || [],
-            userCourse: userCourse,
-            existingReview: existing
-          }
-        }).afterClosed().subscribe((submitted) => {
-          if (submitted) {
-            this.loadRankings();
-          }
-        });
-      },
-      error: () => {
-        this.dialog.open(UniversityReviewDialogComponent, {
-          width: '750px',
-          data: {
-            universityName: univ.estabelecimento,
-            courses: univ.cursos || [],
-            userCourse: userCourse
-          }
-        }).afterClosed().subscribe((submitted) => {
-          if (submitted) {
-            this.loadRankings();
-          }
-        });
-      }
-    });
+    this.router.navigate(['/ranking', encodeURIComponent(univ.estabelecimento)], { queryParams: { mode: 'evaluate' } });
   }
 }
