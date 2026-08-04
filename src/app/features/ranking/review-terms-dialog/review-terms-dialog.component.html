@@ -10,11 +10,6 @@
   </div>
 
   <div #termsContainer class="terms-content" (scroll)="onScroll()">
-    <div class="terms-callout">
-      <mat-icon>info</mat-icon>
-      <span>A tua opinião é valiosa para ajudar futuros alunos, mas deve ser fundamentada e construtiva.</span>
-    </div>
-
     <h3>1. Responsabilidade do Autor</h3>
     <p>
       O conteúdo da avaliação publicada (texto, classificações e comentários) é de <strong>inteira e exclusiva responsabilidade da pessoa que o escreve</strong>. O SkillBridge atua como plataforma neutra de partilha de experiências académicas.
@@ -34,11 +29,6 @@
     <p>
       Ao submeteres esta avaliação, declaras que os dados e a tua experiência descrita correspondem à verdade sobre o teu percurso académico na instituição.
     </p>
-
-    <div class="bottom-sentinel" [class.reached]="hasScrolledToBottom">
-      <mat-icon>check_circle</mat-icon>
-      <span>Chegaste ao fim do documento. Podes agora confirmar a publicação.</span>
-    </div>
   </div>
 
   <div class="scroll-hint" *ngIf="!hasScrolledToBottom">
