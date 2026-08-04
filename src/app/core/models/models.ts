@@ -256,4 +256,72 @@ export interface CommunityVacancyStats {
   top_community_vacancies: CommunityVacancyStatItem[];
 }
 
+export interface UniversityRankingSummary {
+  estabelecimento: string;
+  total_cursos: number;
+  cursos?: string[];
+  icon: string;
+  average_rating: number;
+  total_reviews: number;
+  univ_avg_rating: number;
+  course_avg_rating: number;
+}
+
+export interface UniversityReviewItem {
+  id: number;
+  user_id: number;
+  university_name: string;
+  course_name: string;
+  is_anonymous: boolean;
+  comment: string;
+
+  // University Criteria
+  campus_quality: number;
+  location_accessibility: number;
+  cost_of_living: number;
+  social_environment: number;
+  reputation: number;
+  libraries_quality: number;
+  food_services: number;
+
+  // Course Criteria
+  teachers_quality: number;
+  subject_interest: number;
+  course_facilities: number;
+  classmates_environment: number;
+  workload_balance: number;
+  practical_opportunities: number;
+  future_prospects: number;
+
+  overall_score: number;
+  created_at: string;
+  author_name: string;
+  author_avatar: string;
+  author_role: string;
+}
+
+export interface CreateUniversityReviewPayload {
+  university_name: string;
+  course_name: string;
+  is_anonymous: boolean;
+  comment: string;
+
+  campus_quality: number;
+  location_accessibility: number;
+  cost_of_living: number;
+  social_environment: number;
+  reputation: number;
+  libraries_quality: number;
+  food_services: number;
+
+  teachers_quality: number;
+  subject_interest: number;
+  course_facilities: number;
+  classmates_environment: number;
+  workload_balance: number;
+  practical_opportunities: number;
+  future_prospects: number;
+}
+
+
 

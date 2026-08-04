@@ -1,0 +1,120 @@
+<div class="univ-detail-dialog">
+  <!-- BANNER HEADER -->
+  <div class="detail-header">
+    <div class="header-content">
+      <div class="univ-logo-wrap">
+        <img [src]="university.icon || fallbackLogo" (error)="onImageError($event)" [alt]="university.estabelecimento">
+      </div>
+      <div class="univ-meta">
+        <h2>{{ university.estabelecimento }}</h2>
+        <div class="meta-badges">
+          <span class="badge-courses">
+            <mat-icon>school</mat-icon> {{ university.total_cursos }} Cursos
+          </span>
+          <span class="badge-reviews">
+            <mat-icon>rate_review</mat-icon> {{ university.total_reviews }} Avaliações
+          </span>
+        </div>
+      </div>
+
+      <div class="score-box">
+        <span class="score-val">{{ university.average_rating > 0 ? (university.average_rating | number:'1.1-1') : 'N/A' }}</span>
+        <span class="score-max">/ 10</span>
+        <div class="stars">
+          <mat-icon class="star-icon">star</mat-icon>
+        </div>
+      </div>
+    </div>
+
+    <button mat-icon-button mat-dialog-close class="close-btn">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="detail-body">
+    <!-- ACTION BAR -->
+    <div class="action-bar">
+      <div class="filter-wrap">
+        <mat-form-field appearance="outline" class="course-filter-select">
+          <mat-label>Filtrar por curso</mat-label>
+          <mat-select [(value)]="selectedCourseFilter" (selectionChange)="applyFilter()">
+            <mat-option value="">Todos os cursos</mat-option>
+            <mat-option *ngFor="let course of university.cursos" [value]="course">
+              {{ course }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <button mat-raised-button color="primary" (click)="openReviewDialog()" class="rate-btn">
+        <mat-icon>rate_review</mat-icon> Avaliar esta Universidade
+      </button>
+    </div>
+
+    <!-- REVIEWS LIST -->
+    <div class="reviews-section">
+      <h3 class="section-title">
+        Avaliações dos Alunos ({{ filteredReviews.length }})
+      </h3>
+
+      <div *ngIf="isLoadingReviews" class="loading-state">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>A carregar avaliações...</p>
+      </div>
+
+      <div *ngIf="!isLoadingReviews && filteredReviews.length === 0" class="empty-reviews">
+        <mat-icon>forum</mat-icon>
+        <p>Ainda não existem avaliações submetidas para este curso/universidade.</p>
+        <button mat-stroked-button color="primary" (click)="openReviewDialog()">
+          Sê o primeiro a avaliar!
+        </button>
+      </div>
+
+      <div *ngIf="!isLoadingReviews && filteredReviews.length > 0" class="reviews-list">
+        <div *ngFor="let review of filteredReviews" class="review-card">
+          <div class="review-header">
+            <div class="author-info">
+              <div class="avatar-circle">
+                <img *ngIf="review.author_avatar" [src]="review.author_avatar" [alt]="review.author_name">
+                <mat-icon *ngIf="!review.author_avatar">person</mat-icon>
+              </div>
+              <div class="author-meta">
+                <span class="author-name">{{ review.author_name }}</span>
+                <span class="author-course">{{ review.course_name }}</span>
+              </div>
+            </div>
+
+            <div class="review-rating">
+              <span class="review-score">{{ review.overall_score | number:'1.1-1' }}</span>
+              <span class="score-max">/10</span>
+            </div>
+          </div>
+
+          <p class="review-comment">"{{ review.comment }}"</p>
+
+          <div class="review-breakdown">
+            <div class="chip-item">
+              <span>Campus:</span> <strong>{{ review.campus_quality }}/10</strong>
+            </div>
+            <div class="chip-item">
+              <span>Professores:</span> <strong>{{ review.teachers_quality }}/10</strong>
+            </div>
+            <div class="chip-item">
+              <span>Instalações Curso:</span> <strong>{{ review.course_facilities }}/10</strong>
+            </div>
+            <div class="chip-item">
+              <span>Vida Social:</span> <strong>{{ review.social_environment }}/10</strong>
+            </div>
+            <div class="chip-item">
+              <span>Perspetivas Futuro:</span> <strong>{{ review.future_prospects }}/10</strong>
+            </div>
+          </div>
+
+          <div class="review-footer">
+            <span class="date">{{ review.created_at | date:'dd/MM/yyyy' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+</div>

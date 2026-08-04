@@ -121,6 +121,9 @@ const routes: Routes = [
   },
   { path: 'oportunidades', loadChildren: () => import('./features/opportunities/opportunities.module').then(m => m.OpportunitiesModule) },
   { path: 'opportunities', redirectTo: 'oportunidades', pathMatch: 'full' },
+  { path: 'ranking', loadChildren: () => import('./features/ranking/ranking.module').then(m => m.RankingModule) },
+  { path: 'avaliacoes', redirectTo: 'ranking', pathMatch: 'full' },
+  { path: 'ranking-universidades', redirectTo: 'ranking', pathMatch: 'full' },
   // TODO: Build Challenge desativado temporariamente (ninguém se inscreveu)
   // {
   //   path: 'contest',

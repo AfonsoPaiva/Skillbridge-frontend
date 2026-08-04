@@ -1,0 +1,295 @@
+.univ-detail-dialog {
+  display: flex;
+  flex-direction: column;
+  max-width: 800px;
+  width: 100%;
+
+  .detail-header {
+    position: relative;
+    background: linear-gradient(135deg, #1f102e 0%, #68007a 100%);
+    color: #ffffff;
+    padding: 28px 32px;
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .univ-logo-wrap {
+      width: 72px;
+      height: 72px;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+      img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+      }
+    }
+
+    .univ-meta {
+      flex: 1;
+
+      h2 {
+        margin: 0;
+        font-size: 1.45rem;
+        font-weight: 700;
+        line-height: 1.3;
+      }
+
+      .meta-badges {
+        display: flex;
+        gap: 12px;
+        margin-top: 8px;
+
+        span {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 0.85rem;
+          background: rgba(255, 255, 255, 0.15);
+          backdrop-filter: blur(4px);
+          padding: 4px 12px;
+          border-radius: 20px;
+
+          mat-icon {
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+          }
+        }
+      }
+    }
+
+    .score-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(8px);
+      padding: 12px 20px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+
+      .score-val {
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1;
+      }
+
+      .score-max {
+        font-size: 0.85rem;
+        opacity: 0.8;
+      }
+
+      .stars {
+        margin-top: 4px;
+        .star-icon {
+          color: #fbbf24;
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+        }
+      }
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      color: #ffffff;
+    }
+  }
+
+  .detail-body {
+    padding: 24px 32px;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+
+  .action-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+
+    .course-filter-select {
+      width: 280px;
+    }
+
+    .rate-btn {
+      border-radius: 12px;
+      padding: 0 24px;
+      height: 48px;
+      font-weight: 600;
+      font-size: 0.95rem;
+
+      mat-icon {
+        margin-right: 8px;
+      }
+    }
+  }
+
+  .section-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 16px;
+  }
+
+  .loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 0;
+    color: #6b7280;
+  }
+
+  .empty-reviews {
+    text-align: center;
+    padding: 48px 24px;
+    background: #f9fafb;
+    border-radius: 16px;
+    border: 2px dashed #e5e7eb;
+
+    mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      color: #9ca3af;
+      margin-bottom: 12px;
+    }
+
+    p {
+      color: #4b5563;
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+    }
+  }
+
+  .reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .review-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+
+    .review-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+
+      .author-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        .avatar-circle {
+          width: 42px;
+          height: 42px;
+          border-radius: 50%;
+          background: #f3e8ff;
+          color: #68007a;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+        }
+
+        .author-meta {
+          display: flex;
+          flex-direction: column;
+
+          .author-name {
+            font-weight: 700;
+            color: #111827;
+            font-size: 0.95rem;
+          }
+
+          .author-course {
+            font-size: 0.82rem;
+            color: #6b7280;
+          }
+        }
+      }
+
+      .review-rating {
+        background: #fdf4ff;
+        border: 1px solid #fae8ff;
+        padding: 4px 12px;
+        border-radius: 20px;
+
+        .review-score {
+          font-weight: 800;
+          font-size: 1.1rem;
+          color: #68007a;
+        }
+
+        .score-max {
+          font-size: 0.8rem;
+          color: #9333ea;
+        }
+      }
+    }
+
+    .review-comment {
+      font-size: 0.95rem;
+      color: #374151;
+      line-height: 1.6;
+      margin: 0 0 14px;
+
+    }
+
+    .review-breakdown {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+
+      .chip-item {
+        background: #f3f4f6;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.78rem;
+        color: #4b5563;
+
+        strong {
+          color: #111827;
+          margin-left: 2px;
+        }
+      }
+    }
+
+    .review-footer {
+      display: flex;
+      justify-content: flex-end;
+
+      .date {
+        font-size: 0.78rem;
+        color: #9ca3af;
+      }
+    }
+  }
+}

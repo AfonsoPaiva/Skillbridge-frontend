@@ -1,0 +1,97 @@
+<div class="ranking-container">
+  <!-- HERO BANNER -->
+  <section class="hero-banner">
+    <div class="hero-content">
+      <span class="hero-badge">
+        <mat-icon>star</mat-icon> Avaliações Autênticas de Estudantes
+      </span>
+      <h1>Ranking das Universidades</h1>
+      <p class="hero-subtitle">
+        Descobre como os estudantes classificam as universidades e politécnicos de Portugal de 0 a 10.
+        Explora a qualidade do campus, corpo docente, ambiente social e perspetivas de futuro.
+      </p>
+    </div>
+  </section>
+
+  <!-- SEARCH & FILTER TOOLBAR -->
+  <section class="toolbar-section">
+    <div class="search-bar-wrap">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Pesquisar universidade ou curso...</mat-label>
+        <input matInput [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" placeholder="Ex: Universidade do Porto, Engenharia Informática">
+        <button mat-icon-button matSuffix (click)="onSearch()">
+          <mat-icon>search</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="sort-field">
+        <mat-label>Ordenar por</mat-label>
+        <mat-select [(value)]="selectedSort" (selectionChange)="onSortChange()">
+          <mat-option *ngFor="let opt of sortOptions" [value]="opt.value">
+            {{ opt.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </section>
+
+  <!-- LOADING SPINNER -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="48"></mat-spinner>
+    <p>A carregar o ranking das universidades...</p>
+  </div>
+
+  <!-- EMPTY STATE -->
+  <div *ngIf="!isLoading && filteredUniversities.length === 0" class="empty-state">
+    <mat-icon>search_off</mat-icon>
+    <h3>Nenhuma universidade encontrada</h3>
+    <p>Tenta pesquisar por outro termo de pesquisa.</p>
+  </div>
+
+  <!-- UNIVERSITIES GRID -->
+  <section *ngIf="!isLoading && filteredUniversities.length > 0" class="grid-section">
+    <div class="grid">
+      <div *ngFor="let univ of filteredUniversities; let i = index" class="vcard" (click)="openUniversityDetails(univ)">
+        <!-- RANK POSITION BADGE -->
+        <div class="rank-position" [class.top-3]="i < 3">
+          #{{ i + 1 }}
+        </div>
+
+        <div class="vcard-header">
+          <div class="univ-icon-box">
+            <img [src]="univ.icon || fallbackLogo(univ)" (error)="onImageError($event, univ)" [alt]="univ.estabelecimento">
+          </div>
+
+          <div class="vcard-title-group">
+            <h3 class="univ-name">{{ univ.estabelecimento }}</h3>
+            <span class="univ-courses-count">
+              <mat-icon>school</mat-icon> {{ univ.total_cursos }} Cursos Disponíveis
+            </span>
+          </div>
+        </div>
+
+        <div class="vcard-body">
+          <div class="score-row">
+            <div class="score-display">
+              <span class="score-value">{{ univ.average_rating > 0 ? (univ.average_rating | number:'1.1-1') : 'N/A' }}</span>
+              <span class="score-max">/10</span>
+            </div>
+            <div class="star-rating">
+              <mat-icon class="star">star</mat-icon>
+              <span class="reviews-count">({{ univ.total_reviews }} {{ univ.total_reviews === 1 ? 'avaliação' : 'avaliações' }})</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="vcard-footer">
+          <button mat-button color="primary" class="detail-btn">
+            Ver Avaliações <mat-icon>chevron_right</mat-icon>
+          </button>
+          <button mat-stroked-button color="primary" class="rate-btn" (click)="openReviewDirect($event, univ)">
+            <mat-icon>rate_review</mat-icon> Avaliar
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

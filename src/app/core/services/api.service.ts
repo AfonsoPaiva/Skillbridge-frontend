@@ -6,7 +6,8 @@ import {
   User, Project, ProjectRole, ProjectMember, Review,
   GuestSession, GuestSessionInput, Conversation, Message,
   DonationStats, RegisterInput, FollowCounts, FollowList,
-  UniversitySearchResult, SkillsListResponse
+  UniversitySearchResult, SkillsListResponse,
+  UniversityRankingSummary, UniversityReviewItem, CreateUniversityReviewPayload
 } from '../models/models';
 import { AuthService } from './auth.service';
 import { environment } from '../../../environments/environment';
@@ -119,6 +120,25 @@ export class ApiService {
   listCourses(estabelecimento: string): Observable<string[]> {
     const params = new HttpParams().set('estabelecimento', estabelecimento);
     return this.http.get<string[]>(`${this.base}/universities/courses`, { params });
+  }
+
+  getUniversityRankings(query: string = '', sort: string = 'ranking_desc'): Observable<UniversityRankingSummary[]> {
+    let params = new HttpParams();
+    if (query) params = params.set('q', query);
+    if (sort) params = params.set('sort', sort);
+    return this.http.get<UniversityRankingSummary[]>(`${this.base}/universities/rankings`, { params });
+  }
+
+  getUniversityReviews(university: string, course?: string): Observable<UniversityReviewItem[]> {
+    let params = new HttpParams().set('university', university);
+    if (course) params = params.set('course', course);
+    return this.http.get<UniversityReviewItem[]>(`${this.base}/universities/reviews`, { params });
+  }
+
+  createUniversityReview(data: CreateUniversityReviewPayload): Observable<UniversityReviewItem> {
+    return this.http.post<UniversityReviewItem>(`${this.base}/universities/reviews`, data, {
+      headers: this.authHeaders()
+    });
   }
 
   removeSkill(skill: string): Observable<{ skills: string[] }> {
