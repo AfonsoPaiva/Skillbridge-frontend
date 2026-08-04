@@ -139,12 +139,18 @@
     position: absolute;
     top: v.$space-4;
     right: v.$space-4;
-    font-size: 0.85rem;
-    font-weight: v.$font-weight-bold;
-    padding: 4px 10px;
+    width: 48px;
+    height: 48px;
     border-radius: v.$radius-sm;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.92rem;
+    font-weight: v.$font-weight-extrabold;
     color: #ffffff;
     line-height: 1;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 
     &.score-red {
       background-color: #dc2626;
@@ -190,14 +196,16 @@
 
     .univ-info {
       flex: 1;
-      padding-right: 54px;
+      min-width: 0;
+      padding-right: 68px;
 
       .univ-name {
         margin: 0;
-        font-size: 1.05rem;
+        font-size: 1.02rem;
         font-weight: v.$font-weight-bold;
         color: v.$color-text;
         line-height: 1.35;
+        word-break: break-word;
       }
 
       .univ-courses {
