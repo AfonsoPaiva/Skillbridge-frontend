@@ -1,0 +1,56 @@
+<div class="review-terms-dialog">
+  <div class="dialog-header">
+    <div class="header-icon">
+      <mat-icon color="primary">gavel</mat-icon>
+    </div>
+    <div class="header-title">
+      <h2>Termos e Diretrizes da Avaliação</h2>
+      <p>Lê atentamente antes de publicar a tua opinião</p>
+    </div>
+  </div>
+
+  <div #termsContainer class="terms-content" (scroll)="onScroll()">
+    <div class="terms-callout">
+      <mat-icon>info</mat-icon>
+      <span>A tua opinião é valiosa para ajudar futuros alunos, mas deve ser fundamentada e construtiva.</span>
+    </div>
+
+    <h3>1. Responsabilidade do Autor</h3>
+    <p>
+      O conteúdo da avaliação publicada (texto, classificações e comentários) é de <strong>inteira e exclusiva responsabilidade da pessoa que o escreve</strong>. O SkillBridge atua como plataforma neutra de partilha de experiências académicas.
+    </p>
+
+    <h3>2. Proibição Absoluta de Discurso de Ódio e Difamação</h3>
+    <p>
+      <strong>Não é tolerado qualquer tipo de discurso de ódio</strong>, insultos dirigidos, assédio, linguagem discriminatória, calúnia ou difamação pessoal contra estudantes, professores, funcionários ou a instituição de ensino em causa.
+    </p>
+
+    <h3>3. Moderação e Consequências</h3>
+    <p>
+      Todas as avaliações estão sujeitas a reporte pela comunidade e moderação ativa. Avaliações que violem estas diretrizes serão <strong>imediatamente removidas</strong> e a conta do autor poderá ser permanentemente suspensa ou banida da plataforma.
+    </p>
+
+    <h3>4. Veracidade e Boa-Fé</h3>
+    <p>
+      Ao submeteres esta avaliação, declaras que os dados e a tua experiência descrita correspondem à verdade sobre o teu percurso académico na instituição.
+    </p>
+
+    <div class="bottom-sentinel" [class.reached]="hasScrolledToBottom">
+      <mat-icon>check_circle</mat-icon>
+      <span>Chegaste ao fim do documento. Podes agora confirmar a publicação.</span>
+    </div>
+  </div>
+
+  <div class="scroll-hint" *ngIf="!hasScrolledToBottom">
+    <mat-icon>arrow_downward</mat-icon>
+    <span>Desliza até ao fim para desbloquear a confirmação</span>
+  </div>
+
+  <div class="dialog-actions">
+    <button mat-button (click)="cancel()">Cancelar</button>
+    <button mat-flat-button color="primary" [disabled]="!hasScrolledToBottom" (click)="confirm()">
+      <mat-icon>send</mat-icon>
+      Confirmar e Publicar
+    </button>
+  </div>
+</div>

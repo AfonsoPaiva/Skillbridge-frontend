@@ -580,29 +580,83 @@
     border-top: 1px solid v.$color-border;
 
     @include m.sm {
-      flex-wrap: wrap;
+      flex-direction: column-reverse;
+      gap: v.$space-2;
 
       button {
-        flex: 1 1 auto;
-        min-width: 120px;
+        width: 100%;
+        margin: 0 !important;
       }
     }
   }
 }
 
-/* White checkbox checkmark for mat-checkbox in evaluate section */
+/* Checkbox styling: White background, light gray border, purple checkmark & purple border when checked */
 ::ng-deep .evaluate-section {
   .mdc-checkbox__background {
-    background-color: v.$color-primary !important;
-    border-color: v.$color-primary !important;
+    background-color: #ffffff !important;
+    border-color: #d1d5db !important;
+    border-width: 2px !important;
   }
 
   .mdc-checkbox__checkmark-path {
-    stroke: #ffffff !important;
+    stroke: v.$color-primary !important;
+    stroke-width: 3.2px !important;
   }
 
-  .mdc-checkbox__native-control:checked ~ .mdc-checkbox__background {
-    background-color: v.$color-primary !important;
+  .mdc-checkbox__native-control:checked ~ .mdc-checkbox__background,
+  .mat-mdc-checkbox-checked .mdc-checkbox__background {
+    background-color: #ffffff !important;
     border-color: v.$color-primary !important;
+  }
+
+  /* Mobile responsiveness for MatStepper & Rating Sliders */
+  @media (max-width: 600px) {
+    padding: v.$space-3 !important;
+
+    .mat-vertical-content-container {
+      margin-left: 0 !important;
+    }
+
+    .mat-vertical-content {
+      padding: 0 0 16px 0 !important;
+    }
+
+    .mat-vertical-stepper-header {
+      padding: 12px 4px !important;
+    }
+
+    .slider-row {
+      display: flex !direction: column;
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 10px !important;
+      padding: 12px !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+    }
+
+    .slider-label {
+      width: 100% !important;
+    }
+
+    .slider-control {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 12px !important;
+      width: 100% !important;
+
+      mat-slider {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        width: 100% !important;
+      }
+
+      .score-pill {
+        flex-shrink: 0 !important;
+        min-width: 48px !important;
+      }
+    }
   }
 }

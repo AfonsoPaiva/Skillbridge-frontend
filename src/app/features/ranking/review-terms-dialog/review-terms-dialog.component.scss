@@ -1,0 +1,173 @@
+@use '../../../../styles/variables' as v;
+
+.review-terms-dialog {
+  padding: v.$space-4;
+
+  .dialog-header {
+    display: flex;
+    align-items: center;
+    gap: v.$space-3;
+    margin-bottom: v.$space-4;
+    padding-bottom: v.$space-3;
+    border-bottom: 1px solid v.$color-border;
+
+    .header-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(v.$color-primary, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+
+      mat-icon {
+        color: v.$color-primary;
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+      }
+    }
+
+    .header-title {
+      h2 {
+        margin: 0 0 2px;
+        font-size: 1.2rem;
+        font-weight: v.$font-weight-bold;
+        color: v.$color-text;
+      }
+
+      p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: v.$color-text-soft;
+      }
+    }
+  }
+
+  .terms-content {
+    max-height: 260px;
+    overflow-y: auto;
+    padding: v.$space-4;
+    background: v.$color-bg;
+    border: 1px solid v.$color-border;
+    border-radius: v.$radius-sm;
+    margin-bottom: v.$space-3;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: v.$color-text;
+
+    .terms-callout {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 10px 12px;
+      background: rgba(v.$color-primary, 0.08);
+      border-left: 3px solid v.$color-primary;
+      border-radius: v.$radius-xs;
+      margin-bottom: v.$space-4;
+      font-size: 0.85rem;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        color: v.$color-primary;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+    }
+
+    h3 {
+      font-size: 0.92rem;
+      font-weight: v.$font-weight-bold;
+      color: v.$color-text;
+      margin: v.$space-3 0 v.$space-1;
+
+      &:first-of-type {
+        margin-top: 0;
+      }
+    }
+
+    p {
+      margin: 0 0 v.$space-3;
+      color: v.$color-text-soft;
+    }
+
+    .bottom-sentinel {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px;
+      margin-top: v.$space-4;
+      background: rgba(v.$color-border, 0.3);
+      border-radius: v.$radius-xs;
+      font-size: 0.82rem;
+      color: v.$color-text-soft;
+      transition: all 200ms ease;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        color: v.$color-text-soft;
+      }
+
+      &.reached {
+        background: rgba(#16a34a, 0.1);
+        color: #16a34a;
+
+        mat-icon {
+          color: #16a34a;
+        }
+      }
+    }
+  }
+
+  .scroll-hint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-weight: v.$font-weight-medium;
+    color: v.$color-primary;
+    margin-bottom: v.$space-4;
+    animation: bounce 1.5s infinite;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  .dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: v.$space-3;
+    padding-top: v.$space-3;
+    border-top: 1px solid v.$color-border;
+
+    button {
+      height: 42px;
+      font-weight: v.$font-weight-semibold;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        margin-right: 4px;
+      }
+    }
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(3px);
+  }
+}

@@ -307,7 +307,7 @@ export class UniversityDetailPageComponent implements OnInit {
     this.viewMode = 'details';
   }
 
-  submitReview(): void {
+  async submitReview(): Promise<void> {
     if (this.step1Form.invalid || this.step2Form.invalid || this.step3Form.invalid) {
       this.snackBar.open('Por favor preenche todos os campos requeridos nas várias fases.', 'Fechar', { duration: 4000 });
       return;
@@ -319,6 +319,20 @@ export class UniversityDetailPageComponent implements OnInit {
       return;
     }
 
+    const { ReviewTermsDialogComponent } = await import('../review-terms-dialog/review-terms-dialog.component');
+    const dialogRef = this.dialog.open(ReviewTermsDialogComponent, {
+      width: '520px',
+      maxWidth: '95vw',
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (!confirmed) return;
+      this.executeSubmitReview(courseName);
+    });
+  }
+
+  private executeSubmitReview(courseName: string): void {
     this.isSubmitting = true;
 
     const payload: CreateUniversityReviewPayload = {
