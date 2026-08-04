@@ -320,9 +320,23 @@
         }
 
         .delete-review-btn {
-          width: 36px;
-          height: 36px;
-          line-height: 36px;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          width: 36px !important;
+          height: 36px !important;
+          padding: 0 !important;
+
+          mat-icon {
+            font-size: 20px !important;
+            width: 20px !important;
+            height: 20px !important;
+            line-height: 20px !important;
+            margin: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+          }
         }
       }
     }
