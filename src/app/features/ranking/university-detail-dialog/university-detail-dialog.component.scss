@@ -1,211 +1,206 @@
-.univ-detail-dialog {
+@use '../../../../styles/variables' as v;
+@use '../../../../styles/mixins' as m;
+
+::ng-deep .mat-mdc-dialog-title.dialog-header {
+  padding: v.$space-5 v.$space-6 v.$space-4 !important;
+  margin: 0 !important;
+  border-bottom: 1px solid v.$color-border;
   display: flex;
-  flex-direction: column;
-  max-width: 800px;
-  width: 100%;
+  justify-content: space-between;
+  align-items: center;
 
-  .detail-header {
-    position: relative;
-    background: linear-gradient(135deg, #1f102e 0%, #68007a 100%);
-    color: #ffffff;
-    padding: 28px 32px;
-
-    .header-content {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .univ-logo-wrap {
-      width: 72px;
-      height: 72px;
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-
-      img {
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: contain;
-      }
-    }
-
-    .univ-meta {
-      flex: 1;
-
-      h2 {
-        margin: 0;
-        font-size: 1.45rem;
-        font-weight: 700;
-        line-height: 1.3;
-      }
-
-      .meta-badges {
-        display: flex;
-        gap: 12px;
-        margin-top: 8px;
-
-        span {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          font-size: 0.85rem;
-          background: rgba(255, 255, 255, 0.15);
-          backdrop-filter: blur(4px);
-          padding: 4px 12px;
-          border-radius: 20px;
-
-          mat-icon {
-            font-size: 16px;
-            width: 16px;
-            height: 16px;
-          }
-        }
-      }
-    }
-
-    .score-box {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background: rgba(255, 255, 255, 0.18);
-      backdrop-filter: blur(8px);
-      padding: 12px 20px;
-      border-radius: 14px;
-      border: 1px solid rgba(255, 255, 255, 0.25);
-
-      .score-val {
-        font-size: 2rem;
-        font-weight: 800;
-        line-height: 1;
-      }
-
-      .score-max {
-        font-size: 0.85rem;
-        opacity: 0.8;
-      }
-
-      .stars {
-        margin-top: 4px;
-        .star-icon {
-          color: #fbbf24;
-          font-size: 20px;
-          width: 20px;
-          height: 20px;
-        }
-      }
-    }
-
-    .close-btn {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      color: #ffffff;
-    }
+  h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: v.$font-weight-bold;
+    color: v.$color-text;
   }
 
-  .detail-body {
-    padding: 24px 32px;
-    max-height: 70vh;
-    overflow-y: auto;
+  button {
+    color: v.$color-text-soft;
+    &:hover { color: v.$color-text; }
   }
+}
 
-  .action-bar {
+.univ-summary {
+  display: flex;
+  align-items: center;
+  gap: v.$space-4;
+  padding: v.$space-4 0;
+  border-bottom: 1px solid v.$color-border;
+  margin-bottom: v.$space-5;
+
+  .summary-logo {
+    width: 52px;
+    height: 52px;
+    border-radius: v.$radius-sm;
+    border: 1px solid v.$color-border;
+    padding: v.$space-1;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    gap: 16px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
+    justify-content: center;
+    flex-shrink: 0;
 
-    .course-filter-select {
-      width: 280px;
+    img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
     }
+  }
 
-    .rate-btn {
-      border-radius: 12px;
-      padding: 0 24px;
-      height: 48px;
-      font-weight: 600;
-      font-size: 0.95rem;
+  .summary-info {
+    flex: 1;
 
-      mat-icon {
-        margin-right: 8px;
+    .meta-tags {
+      display: flex;
+      gap: v.$space-3;
+
+      .meta-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.85rem;
+        color: v.$color-text-soft;
+        background: rgba(11, 11, 11, 0.04);
+        padding: 4px 10px;
+        border-radius: v.$radius-sm;
+
+        mat-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+        }
       }
     }
   }
 
+  .summary-score {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    background: rgba(v.$color-primary, 0.08);
+    padding: v.$space-2 v.$space-4;
+    border-radius: v.$radius-md;
+
+    .score-val {
+      font-size: 1.5rem;
+      font-weight: v.$font-weight-extrabold;
+      color: v.$color-primary;
+    }
+
+    .score-max {
+      font-size: 0.85rem;
+      color: v.$color-text-soft;
+      font-weight: v.$font-weight-semibold;
+    }
+
+    .star-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: #eab308;
+      margin-left: 2px;
+    }
+  }
+}
+
+.actions-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: v.$space-4;
+  margin-bottom: v.$space-6;
+  flex-wrap: wrap;
+
+  .course-filter {
+    flex: 1 1 240px;
+  }
+
+  .rate-btn {
+    height: 44px !important;
+    border-radius: v.$radius-sm !important;
+    font-size: 0.9rem !important;
+    font-weight: v.$font-weight-medium !important;
+    box-shadow: none !important;
+
+    mat-icon {
+      margin-right: 6px;
+    }
+  }
+}
+
+.reviews-section {
   .section-title {
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: #111827;
-    margin: 0 0 16px;
+    font-size: 1.05rem;
+    font-weight: v.$font-weight-bold;
+    color: v.$color-text;
+    margin: 0 0 v.$space-4;
   }
 
   .loading-state {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 40px 0;
-    color: #6b7280;
+    padding: v.$space-8 0;
+    color: v.$color-text-soft;
+
+    p {
+      margin-top: v.$space-3;
+      font-size: 0.9rem;
+    }
   }
 
   .empty-reviews {
     text-align: center;
-    padding: 48px 24px;
-    background: #f9fafb;
-    border-radius: 16px;
-    border: 2px dashed #e5e7eb;
+    padding: v.$space-8 v.$space-4;
+    background: v.$color-surface;
+    border: 1px dashed v.$color-border;
+    border-radius: v.$radius-md;
 
     mat-icon {
-      font-size: 48px;
-      width: 48px;
-      height: 48px;
-      color: #9ca3af;
-      margin-bottom: 12px;
+      font-size: 40px;
+      width: 40px;
+      height: 40px;
+      color: v.$color-text-soft;
+      margin-bottom: v.$space-2;
     }
 
     p {
-      color: #4b5563;
-      margin-bottom: 16px;
-      font-size: 0.95rem;
+      color: v.$color-text-soft;
+      margin: 0 0 v.$space-4;
+      font-size: 0.9rem;
     }
   }
 
   .reviews-list {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: v.$space-4;
   }
 
   .review-card {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 14px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    background: v.$color-surface;
+    border: 1px solid v.$color-border;
+    border-radius: v.$radius-md;
+    padding: v.$space-4 v.$space-5;
 
-    .review-header {
+    .review-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 14px;
+      margin-bottom: v.$space-3;
 
-      .author-info {
+      .user-meta {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: v.$space-3;
 
-        .avatar-circle {
-          width: 42px;
-          height: 42px;
+        .user-avatar {
+          width: 36px;
+          height: 36px;
           border-radius: 50%;
-          background: #f3e8ff;
-          color: #68007a;
+          background: rgba(11, 11, 11, 0.06);
+          color: v.$color-text-soft;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -216,80 +211,71 @@
             height: 100%;
             object-fit: cover;
           }
-        }
 
-        .author-meta {
-          display: flex;
-          flex-direction: column;
-
-          .author-name {
-            font-weight: 700;
-            color: #111827;
-            font-size: 0.95rem;
-          }
-
-          .author-course {
-            font-size: 0.82rem;
-            color: #6b7280;
+          mat-icon {
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
           }
         }
-      }
 
-      .review-rating {
-        background: #fdf4ff;
-        border: 1px solid #fae8ff;
-        padding: 4px 12px;
-        border-radius: 20px;
-
-        .review-score {
-          font-weight: 800;
-          font-size: 1.1rem;
-          color: #68007a;
+        .user-name {
+          font-weight: v.$font-weight-semibold;
+          color: v.$color-text;
+          font-size: 0.9rem;
         }
 
-        .score-max {
+        .user-course {
           font-size: 0.8rem;
-          color: #9333ea;
+          color: v.$color-text-soft;
+        }
+      }
+
+      .review-score {
+        background: rgba(v.$color-primary, 0.08);
+        color: v.$color-primary;
+        font-weight: v.$font-weight-bold;
+        font-size: 0.95rem;
+        padding: 2px 10px;
+        border-radius: v.$radius-sm;
+
+        small {
+          font-size: 0.75rem;
+          opacity: 0.8;
         }
       }
     }
 
-    .review-comment {
-      font-size: 0.95rem;
-      color: #374151;
-      line-height: 1.6;
-      margin: 0 0 14px;
-
+    .review-text {
+      font-size: 0.9rem;
+      color: v.$color-text;
+      line-height: 1.5;
+      margin: 0 0 v.$space-3;
     }
 
-    .review-breakdown {
+    .review-tags {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 12px;
+      gap: 6px;
+      margin-bottom: v.$space-2;
 
-      .chip-item {
-        background: #f3f4f6;
-        padding: 4px 10px;
-        border-radius: 12px;
-        font-size: 0.78rem;
-        color: #4b5563;
+      .tag {
+        font-size: 0.75rem;
+        color: v.$color-text-soft;
+        background: rgba(11, 11, 11, 0.04);
+        padding: 2px 8px;
+        border-radius: 4px;
 
         strong {
-          color: #111827;
-          margin-left: 2px;
+          color: v.$color-text;
         }
       }
     }
 
-    .review-footer {
-      display: flex;
-      justify-content: flex-end;
-
-      .date {
-        font-size: 0.78rem;
-        color: #9ca3af;
-      }
+    .review-date {
+      font-size: 0.75rem;
+      color: v.$color-text-soft;
+      text-align: right;
     }
   }
 }

@@ -1,279 +1,259 @@
-<div class="review-dialog">
-  <div class="dialog-header">
-    <div class="dialog-title">
-      <mat-icon color="primary">star</mat-icon>
-      <div>
-        <h2>Avaliar {{ universityName }}</h2>
-        <p class="subtitle">A tua avaliação sincera ajuda futuros estudantes a tomarem decisões informadas.</p>
-      </div>
-    </div>
-    <button mat-icon-button mat-dialog-close class="close-btn">
-      <mat-icon>close</mat-icon>
-    </button>
-  </div>
+<div mat-dialog-title class="dialog-header">
+  <h2>Avaliar {{ universityName }}</h2>
+  <button mat-icon-button mat-dialog-close matTooltip="Fechar">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
 
-  <mat-dialog-content class="dialog-body">
-    <mat-stepper #stepper [linear]="true" class="custom-stepper">
-      <!-- PASSO 1: CURSO E COMENTÁRIO -->
-      <mat-step [stepControl]="step1Form" label="Curso e Comentário">
-        <form [formGroup]="step1Form" class="step-form">
-          <p class="step-desc">Indica o teu curso e partilha a tua experiência geral na instituição.</p>
+<mat-dialog-content class="custom-scrollbar">
+  <mat-stepper #stepper [linear]="true" class="custom-stepper">
+    <!-- PASSO 1: CURSO E COMENTÁRIO -->
+    <mat-step [stepControl]="step1Form" label="Curso e Comentário">
+      <form [formGroup]="step1Form" class="step-form">
+        <p class="step-desc">Indica o teu curso e partilha a tua experiência geral na instituição.</p>
 
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Curso frequentado</mat-label>
-            <mat-select formControlName="courseName" placeholder="Seleciona o teu curso">
-              <mat-option *ngFor="let course of courses" [value]="course">
-                {{ course }}
-              </mat-option>
-            </mat-select>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Curso frequentado</mat-label>
+          <mat-select formControlName="courseName" placeholder="Seleciona o teu curso">
+            <mat-option *ngFor="let course of courses" [value]="course">
+              {{ course }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="step1Form.get('courseName')?.hasError('required')">
+            Por favor seleciona um curso.
+          </mat-error>
+        </mat-form-field>
 
-            <mat-error *ngIf="step1Form.get('courseName')?.hasError('required')">
-              Por favor seleciona um curso.
-            </mat-error>
-          </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Comentário e opinião geral</mat-label>
+          <textarea matInput formControlName="comment" rows="4" placeholder="Conta como é estudar nesta universidade e curso..."></textarea>
+          <mat-error *ngIf="step1Form.get('comment')?.hasError('required')">
+            Escreve um pequeno comentário sobre a tua experiência.
+          </mat-error>
+          <mat-error *ngIf="step1Form.get('comment')?.hasError('minlength')">
+            O comentário deve ter no mínimo 10 caracteres.
+          </mat-error>
+        </mat-form-field>
 
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Comentário e opinião geral</mat-label>
-            <textarea matInput formControlName="comment" rows="4" placeholder="Conta como é estudar nesta universidade e neste curso (pontos fortes, pontos a melhorar, ambiente...)"></textarea>
+        <div class="anon-box">
+          <mat-checkbox formControlName="isAnonymous" color="primary">
+            Publicar como <strong>Estudante Anónimo</strong>
+          </mat-checkbox>
+          <p class="anon-hint">O teu nome e foto de perfil não serão mostrados na avaliação.</p>
+        </div>
 
-            <mat-error *ngIf="step1Form.get('comment')?.hasError('required')">
-              Escreve um pequeno comentário sobre a tua experiência.
-            </mat-error>
-            <mat-error *ngIf="step1Form.get('comment')?.hasError('minlength')">
-              O comentário deve ter no mínimo 10 caracteres.
-            </mat-error>
-          </mat-form-field>
+        <div class="step-actions">
+          <div></div>
+          <button mat-flat-button color="primary" matStepperNext [disabled]="step1Form.invalid">
+            Seguinte: Avaliar Universidade
+          </button>
+        </div>
+      </form>
+    </mat-step>
 
-          <div class="anon-toggle">
-            <mat-checkbox formControlName="isAnonymous" color="primary">
-              Publicar como <strong>Estudante Anónimo</strong>
-            </mat-checkbox>
-            <p class="anon-hint">Se ativo, o teu nome e fotografia de perfil não serão exibidos na avaliação.</p>
+    <!-- PASSO 2: CRITÉRIOS DA UNIVERSIDADE -->
+    <mat-step [stepControl]="step2Form" label="Universidade (0-10)">
+      <form [formGroup]="step2Form" class="step-form">
+        <p class="step-desc">Classifica os 7 aspetos gerais da universidade de 0 a 10:</p>
+
+        <div class="sliders-list">
+          <div class="slider-row">
+            <div class="slider-info">
+              <span>Qualidade do campus <small>(instalações, espaços verdes)</small></span>
+              <span class="badge">{{ step2Form.get('campusQuality')?.value }}/10</span>
+            </div>
+            <mat-slider min="0" max="10" step="1" discrete class="slider">
+              <input matSliderThumb formControlName="campusQuality">
+            </mat-slider>
           </div>
 
-          <div class="step-actions">
-            <div></div>
-            <button mat-raised-button color="primary" matStepperNext [disabled]="step1Form.invalid">
-              Seguinte: Avaliar Universidade <mat-icon>arrow_forward</mat-icon>
-            </button>
-          </div>
-        </form>
-      </mat-step>
-
-      <!-- PASSO 2: CRITÉRIOS DA UNIVERSIDADE -->
-      <mat-step [stepControl]="step2Form" label="Universidade (0-10)">
-        <form [formGroup]="step2Form" class="step-form">
-          <p class="step-desc">Classifica os seguintes 7 aspetos gerais da universidade de 0 a 10:</p>
-
-          <div class="sliders-grid">
-            <div class="slider-group">
-              <div class="slider-label">
-                <span>Qualidade do campus <small>(instalações, espaços verdes, conforto)</small></span>
-                <span class="score-badge">{{ step2Form.get('campusQuality')?.value }}/10</span>
-              </div>
-              <mat-slider min="0" max="10" step="1" discrete class="custom-slider">
-                <input matSliderThumb formControlName="campusQuality">
-              </mat-slider>
+          <div class="slider-row">
+            <div class="slider-info">
+              <span>Localização e acessibilidade <small>(transportes, acessos)</small></span>
+              <span class="badge">{{ step2Form.get('locationAccessibility')?.value }}/10</span>
             </div>
-
-            <div class="slider-group">
-              <div class="slider-label">
-                <span>Localização e acessibilidade <small>(transportes, acessos)</small></span>
-                <span class="score-badge">{{ step2Form.get('locationAccessibility')?.value }}/10</span>
-              </div>
-              <mat-slider min="0" max="10" step="1" discrete class="custom-slider">
-                <input matSliderThumb formControlName="locationAccessibility">
-              </mat-slider>
-            </div>
-
-            <div class="slider-group">
-              <div class="slider-label">
-                <span>Custo de vida na cidade <small>(alojamento, alimentação)</small></span>
-                <span class="score-badge">{{ step2Form.get('costOfLiving')?.value }}/10</span>
-              </div>
-              <mat-slider min="0" max="10" step="1" discrete class="custom-slider">
-                <input matSliderThumb formControlName="costOfLiving">
-              </mat-slider>
-            </div>
-
-            <div class="slider-group">
-              <div class="slider-label">
-                <span>Ambiente e vida social <small>(associações, eventos, convívio)</small></span>
-                <span class="score-badge">{{ step2Form.get('socialEnvironment')?.value }}/10</span>
-              </div>
-              <mat-slider min="0" max="10" step="1" discrete class="custom-slider">
-                <input matSliderThumb formControlName="socialEnvironment">
-              </mat-slider>
-            </div>
-
-            <div class="slider-group">
-              <div class="slider-label">
-                <span>Reputação e prestígio percebido</span>
-                <span class="score-badge">{{ step2Form.get('reputation')?.value }}/10</span>
-              </div>
-              <mat-slider min="0" max="10" step="1" discrete class="custom-slider">
-                <input matSliderThumb formControlName="reputation">
-              </mat-slider>
-            </div>
-
-            <div class="slider-group">
-              <div class="slider-label">
-                <span>Qualidade das bibliotecas e estudo</span>
-                <span class="score-badge">{{ step2Form.get('librariesQuality')?.value }}/10</span>
-              </div>
-              <mat-slider min="0" max="10" step="1" discrete class="custom-slider">
-                <input matSliderThumb formControlName="librariesQuality">
-              </mat-slider>
-            </div>
-
-            <div class="slider-group">
-              <div class="slider-label">
-                <span>Comida e serviços no campus <small>(cantina, bar, etc.)</small></span>
-                <span class="score-badge">{{ step2Form.get('foodServices')?.value }}/10</span>
-              </div>
-              <mat-slider min="0" max="10" step="1" discrete class="custom-slider">
-                <input matSliderThumb formControlName="foodServices">
-              </mat-slider>
-            </div>
+            <mat-slider min="0" max="10" step="1" discrete class="slider">
+              <input matSliderThumb formControlName="locationAccessibility">
+            </mat-slider>
           </div>
 
-          <div class="step-actions">
-            <button mat-button matStepperPrevious>
-              <mat-icon>arrow_back</mat-icon> Anterior
-            </button>
-            <button mat-raised-button color="primary" matStepperNext>
-              Seguinte: Avaliar Curso <mat-icon>arrow_forward</mat-icon>
-            </button>
-          </div>
-        </form>
-      </mat-step>
-
-      <!-- PASSO 3: CRITÉRIOS DO CURSO -->
-      <mat-step [stepControl]="step3Form" label="Curso (0-10)">
-        <form [formGroup]="step3Form" class="step-form">
-          <p class="step-desc">Classifica os 7 aspetos específicos do teu curso de 0 a 10:</p>
-
-          <div class="sliders-grid">
-            <div class="slider-group">
-              <div class="slider-label">
-                <span>Qualidade dos professores <small>(didática, disponibilidade)</small></span>
-                <span class="score-badge">{{ step3Form.get('teachersQuality')?.value }}/10</span>
-              </div>
-              <mat-slider min="0" max="10" step="1" discrete class="custom-slider">
-                <input matSliderThumb formControlName="teachersQuality">
-              </mat-slider>
+          <div class="slider-row">
+            <div class="slider-info">
+              <span>Custo de vida na cidade <small>(alojamento, alimentação)</small></span>
+              <span class="badge">{{ step2Form.get('costOfLiving')?.value }}/10</span>
             </div>
-
-            <div class="slider-group">
-              <div class="slider-label">
-                <span>Interesse pessoal na matéria</span>
-                <span class="score-badge">{{ step3Form.get('subjectInterest')?.value }}/10</span>
-              </div>
-              <mat-slider min="0" max="10" step="1" discrete class="custom-slider">
-                <input matSliderThumb formControlName="subjectInterest">
-              </mat-slider>
-            </div>
-
-            <div class="slider-group">
-              <div class="slider-label">
-                <span>Instalações específicas do curso <small>(labs, equipamento)</small></span>
-                <span class="score-badge">{{ step3Form.get('courseFacilities')?.value }}/10</span>
-              </div>
-              <mat-slider min="0" max="10" step="1" discrete class="custom-slider">
-                <input matSliderThumb formControlName="courseFacilities">
-              </mat-slider>
-            </div>
-
-            <div class="slider-group">
-              <div class="slider-label">
-                <span>Colegas de curso <small>(ambiente de turma, entreajuda)</small></span>
-                <span class="score-badge">{{ step3Form.get('classmatesEnvironment')?.value }}/10</span>
-              </div>
-              <mat-slider min="0" max="10" step="1" discrete class="custom-slider">
-                <input matSliderThumb formControlName="classmatesEnvironment">
-              </mat-slider>
-            </div>
-
-            <div class="slider-group">
-              <div class="slider-label">
-                <span>Carga de trabalho vs. tempo livre</span>
-                <span class="score-badge">{{ step3Form.get('workloadBalance')?.value }}/10</span>
-              </div>
-              <mat-slider min="0" max="10" step="1" discrete class="custom-slider">
-                <input matSliderThumb formControlName="workloadBalance">
-              </mat-slider>
-            </div>
-
-            <div class="slider-group">
-              <div class="slider-label">
-                <span>Oportunidades práticas <small>(projetos, estágios)</small></span>
-                <span class="score-badge">{{ step3Form.get('practicalOpportunities')?.value }}/10</span>
-              </div>
-              <mat-slider min="0" max="10" step="1" discrete class="custom-slider">
-                <input matSliderThumb formControlName="practicalOpportunities">
-              </mat-slider>
-            </div>
-
-            <div class="slider-group">
-              <div class="slider-label">
-                <span>Perspetivas de futuro</span>
-                <span class="score-badge">{{ step3Form.get('futureProspects')?.value }}/10</span>
-              </div>
-              <mat-slider min="0" max="10" step="1" discrete class="custom-slider">
-                <input matSliderThumb formControlName="futureProspects">
-              </mat-slider>
-            </div>
+            <mat-slider min="0" max="10" step="1" discrete class="slider">
+              <input matSliderThumb formControlName="costOfLiving">
+            </mat-slider>
           </div>
 
-          <div class="step-actions">
-            <button mat-button matStepperPrevious>
-              <mat-icon>arrow_back</mat-icon> Anterior
-            </button>
-            <button mat-raised-button color="primary" matStepperNext>
-              Seguinte: Resumo <mat-icon>arrow_forward</mat-icon>
-            </button>
-          </div>
-        </form>
-      </mat-step>
-
-      <!-- PASSO 4: RESUMO & SUBMISSÃO -->
-      <mat-step label="Resumo & Submeter">
-        <div class="summary-container">
-          <div class="score-card">
-            <span class="score-number">{{ calculatedScore }}</span>
-            <span class="score-max">/ 10</span>
-            <p class="score-label">Classificação Final Calculada</p>
+          <div class="slider-row">
+            <div class="slider-info">
+              <span>Ambiente e vida social <small>(associações, eventos)</small></span>
+              <span class="badge">{{ step2Form.get('socialEnvironment')?.value }}/10</span>
+            </div>
+            <mat-slider min="0" max="10" step="1" discrete class="slider">
+              <input matSliderThumb formControlName="socialEnvironment">
+            </mat-slider>
           </div>
 
-          <div class="summary-details">
-            <div class="summary-item">
-              <strong>Universidade:</strong> {{ universityName }}
+          <div class="slider-row">
+            <div class="slider-info">
+              <span>Reputação e prestígio percebido</span>
+              <span class="badge">{{ step2Form.get('reputation')?.value }}/10</span>
             </div>
-            <div class="summary-item">
-              <strong>Curso:</strong> {{ step1Form.get('courseName')?.value }}
-            </div>
-            <div class="summary-item">
-              <strong>Visibilidade:</strong>
-              <span *ngIf="step1Form.get('isAnonymous')?.value" class="badge-anon">Estudante Anónimo</span>
-              <span *ngIf="!step1Form.get('isAnonymous')?.value" class="badge-public">Público (Nome do Perfil)</span>
-            </div>
-            <div class="summary-comment">
-              <strong>Comentário:</strong>
-              <p>"{{ step1Form.get('comment')?.value }}"</p>
-            </div>
+            <mat-slider min="0" max="10" step="1" discrete class="slider">
+              <input matSliderThumb formControlName="reputation">
+            </mat-slider>
           </div>
 
-          <div class="step-actions">
-            <button mat-button matStepperPrevious [disabled]="isSubmitting">
-              <mat-icon>arrow_back</mat-icon> Alterar Notas
-            </button>
-            <button mat-raised-button color="primary" (click)="submitReview()" [disabled]="isSubmitting" class="submit-btn">
-              <mat-spinner diameter="20" *ngIf="isSubmitting"></mat-spinner>
-              <span *ngIf="!isSubmitting">Submeter Avaliação</span>
-            </button>
+          <div class="slider-row">
+            <div class="slider-info">
+              <span>Qualidade das bibliotecas e estudo</span>
+              <span class="badge">{{ step2Form.get('librariesQuality')?.value }}/10</span>
+            </div>
+            <mat-slider min="0" max="10" step="1" discrete class="slider">
+              <input matSliderThumb formControlName="librariesQuality">
+            </mat-slider>
+          </div>
+
+          <div class="slider-row">
+            <div class="slider-info">
+              <span>Comida e serviços no campus <small>(cantina, bar)</small></span>
+              <span class="badge">{{ step2Form.get('foodServices')?.value }}/10</span>
+            </div>
+            <mat-slider min="0" max="10" step="1" discrete class="slider">
+              <input matSliderThumb formControlName="foodServices">
+            </mat-slider>
           </div>
         </div>
-      </mat-step>
-    </mat-stepper>
-  </mat-dialog-content>
-</div>
+
+        <div class="step-actions">
+          <button mat-button matStepperPrevious>Anterior</button>
+          <button mat-flat-button color="primary" matStepperNext>Seguinte: Avaliar Curso</button>
+        </div>
+      </form>
+    </mat-step>
+
+    <!-- PASSO 3: CRITÉRIOS DO CURSO -->
+    <mat-step [stepControl]="step3Form" label="Curso (0-10)">
+      <form [formGroup]="step3Form" class="step-form">
+        <p class="step-desc">Classifica os 7 aspetos específicos do teu curso de 0 a 10:</p>
+
+        <div class="sliders-list">
+          <div class="slider-row">
+            <div class="slider-info">
+              <span>Qualidade dos professores <small>(didática, disponibilidade)</small></span>
+              <span class="badge">{{ step3Form.get('teachersQuality')?.value }}/10</span>
+            </div>
+            <mat-slider min="0" max="10" step="1" discrete class="slider">
+              <input matSliderThumb formControlName="teachersQuality">
+            </mat-slider>
+          </div>
+
+          <div class="slider-row">
+            <div class="slider-info">
+              <span>Interesse pessoal na matéria</span>
+              <span class="badge">{{ step3Form.get('subjectInterest')?.value }}/10</span>
+            </div>
+            <mat-slider min="0" max="10" step="1" discrete class="slider">
+              <input matSliderThumb formControlName="subjectInterest">
+            </mat-slider>
+          </div>
+
+          <div class="slider-row">
+            <div class="slider-info">
+              <span>Instalações do curso <small>(labs, equipamento)</small></span>
+              <span class="badge">{{ step3Form.get('courseFacilities')?.value }}/10</span>
+            </div>
+            <mat-slider min="0" max="10" step="1" discrete class="slider">
+              <input matSliderThumb formControlName="courseFacilities">
+            </mat-slider>
+          </div>
+
+          <div class="slider-row">
+            <div class="slider-info">
+              <span>Colegas de curso <small>(ambiente, entreajuda)</small></span>
+              <span class="badge">{{ step3Form.get('classmatesEnvironment')?.value }}/10</span>
+            </div>
+            <mat-slider min="0" max="10" step="1" discrete class="slider">
+              <input matSliderThumb formControlName="classmatesEnvironment">
+            </mat-slider>
+          </div>
+
+          <div class="slider-row">
+            <div class="slider-info">
+              <span>Carga de trabalho vs. tempo livre</span>
+              <span class="badge">{{ step3Form.get('workloadBalance')?.value }}/10</span>
+            </div>
+            <mat-slider min="0" max="10" step="1" discrete class="slider">
+              <input matSliderThumb formControlName="workloadBalance">
+            </mat-slider>
+          </div>
+
+          <div class="slider-row">
+            <div class="slider-info">
+              <span>Oportunidades práticas <small>(projetos, estágios)</small></span>
+              <span class="badge">{{ step3Form.get('practicalOpportunities')?.value }}/10</span>
+            </div>
+            <mat-slider min="0" max="10" step="1" discrete class="slider">
+              <input matSliderThumb formControlName="practicalOpportunities">
+            </mat-slider>
+          </div>
+
+          <div class="slider-row">
+            <div class="slider-info">
+              <span>Perspetivas de futuro</span>
+              <span class="badge">{{ step3Form.get('futureProspects')?.value }}/10</span>
+            </div>
+            <mat-slider min="0" max="10" step="1" discrete class="slider">
+              <input matSliderThumb formControlName="futureProspects">
+            </mat-slider>
+          </div>
+        </div>
+
+        <div class="step-actions">
+          <button mat-button matStepperPrevious>Anterior</button>
+          <button mat-flat-button color="primary" matStepperNext>Seguinte: Resumo</button>
+        </div>
+      </form>
+    </mat-step>
+
+    <!-- PASSO 4: RESUMO & SUBMISSÃO -->
+    <mat-step label="Resumo & Submeter">
+      <div class="summary-box">
+        <div class="score-display">
+          <span class="score-num">{{ calculatedScore }}</span>
+          <span class="score-max">/ 10</span>
+          <p class="score-label">Classificação Geral Calculada</p>
+        </div>
+
+        <div class="details-list">
+          <div class="detail-row">
+            <strong>Universidade:</strong> {{ universityName }}
+          </div>
+          <div class="detail-row">
+            <strong>Curso:</strong> {{ step1Form.get('courseName')?.value }}
+          </div>
+          <div class="detail-row">
+            <strong>Visibilidade:</strong>
+            <span *ngIf="step1Form.get('isAnonymous')?.value">Estudante Anónimo</span>
+            <span *ngIf="!step1Form.get('isAnonymous')?.value">Público</span>
+          </div>
+          <div class="comment-box">
+            <strong>Comentário:</strong>
+            <p>"{{ step1Form.get('comment')?.value }}"</p>
+          </div>
+        </div>
+
+        <div class="step-actions">
+          <button mat-button matStepperPrevious [disabled]="isSubmitting">Alterar Notas</button>
+          <button mat-flat-button color="primary" (click)="submitReview()" [disabled]="isSubmitting">
+            <mat-spinner diameter="20" *ngIf="isSubmitting"></mat-spinner>
+            <span *ngIf="!isSubmitting">Submeter Avaliação</span>
+          </button>
+        </div>
+      </div>
+    </mat-step>
+  </mat-stepper>
+</mat-dialog-content>

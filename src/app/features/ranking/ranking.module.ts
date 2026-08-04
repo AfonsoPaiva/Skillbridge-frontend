@@ -7,6 +7,8 @@ import { RankingComponent } from './ranking.component';
 import { UniversityDetailDialogComponent } from './university-detail-dialog/university-detail-dialog.component';
 import { UniversityReviewDialogComponent } from './university-review-dialog/university-review-dialog.component';
 
+import { SharedModule } from '../../shared/shared.module';
+
 @NgModule({
   declarations: [
     RankingComponent,
@@ -18,6 +20,7 @@ import { UniversityReviewDialogComponent } from './university-review-dialog/univ
     FormsModule,
     ReactiveFormsModule,
     MaterialModule,
+    SharedModule,
     RankingRoutingModule
   ]
 })
