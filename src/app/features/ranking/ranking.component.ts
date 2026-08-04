@@ -44,8 +44,13 @@ export class RankingComponent implements OnInit {
   canUserReview(univ: UniversityRankingSummary): boolean {
     if (!this.auth.isLoggedIn) return false;
     const profile = this.auth.cachedProfile;
-    if (!profile || !profile.university) return false;
-    return profile.university.trim().toLowerCase() === univ.estabelecimento.trim().toLowerCase();
+    if (!profile) return false;
+
+    const target = (univ.estabelecimento || '').trim().toLowerCase();
+    const currentUniv = (profile.university || '').trim().toLowerCase();
+    const licUniv = (profile.licenciatura_university || '').trim().toLowerCase();
+
+    return (currentUniv !== '' && currentUniv === target) || (licUniv !== '' && licUniv === target);
   }
 
   loadRankings(): void {
@@ -99,11 +104,24 @@ export class RankingComponent implements OnInit {
       return;
     }
 
+    const profile = this.auth.cachedProfile;
+    const target = (univ.estabelecimento || '').trim().toLowerCase();
+    const currentUniv = (profile?.university || '').trim().toLowerCase();
+    const licUniv = (profile?.licenciatura_university || '').trim().toLowerCase();
+
+    let userCourse = '';
+    if (currentUniv === target) {
+      userCourse = profile?.course || '';
+    } else if (licUniv === target) {
+      userCourse = profile?.licenciatura_course || '';
+    }
+
     this.dialog.open(UniversityReviewDialogComponent, {
       width: '750px',
       data: {
         universityName: univ.estabelecimento,
-        courses: univ.cursos || []
+        courses: univ.cursos || [],
+        userCourse: userCourse
       }
     }).afterClosed().subscribe((submitted) => {
       if (submitted) {

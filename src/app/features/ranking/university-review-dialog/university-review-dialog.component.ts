@@ -10,6 +10,7 @@ import { AuthService } from '../../../core/services/auth.service';
 export interface UniversityReviewDialogData {
   universityName: string;
   courses: string[];
+  userCourse?: string;
 }
 
 @Component({
@@ -41,7 +42,21 @@ export class UniversityReviewDialogComponent implements OnInit {
 
   ngOnInit(): void {
     const profile = this.auth.cachedProfile;
-    this.userCourse = profile?.course || '';
+    if (this.data.userCourse) {
+      this.userCourse = this.data.userCourse;
+    } else {
+      const target = (this.universityName || '').trim().toLowerCase();
+      const currentUniv = (profile?.university || '').trim().toLowerCase();
+      const licUniv = (profile?.licenciatura_university || '').trim().toLowerCase();
+
+      if (currentUniv === target) {
+        this.userCourse = profile?.course || '';
+      } else if (licUniv === target) {
+        this.userCourse = profile?.licenciatura_course || '';
+      } else {
+        this.userCourse = profile?.course || '';
+      }
+    }
 
     this.step1Form = this.fb.group({
       courseName: [{ value: this.userCourse, disabled: !!this.userCourse }, Validators.required],

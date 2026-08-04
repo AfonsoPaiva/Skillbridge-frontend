@@ -21,7 +21,8 @@
         </div>
         <div class="profile-hero__info">
           <h1>{{ user.name }}</h1>
-          <p><mat-icon>school</mat-icon> {{ user.university }} · {{ user.course }}</p>
+          <p *ngIf="user.university"><mat-icon>school</mat-icon> {{ user.university }} <ng-container *ngIf="user.course">· {{ user.course }}</ng-container></p>
+          <p *ngIf="user.licenciatura_university"><mat-icon>history_edu</mat-icon> Licenciatura: {{ user.licenciatura_university }} <ng-container *ngIf="user.licenciatura_course">· {{ user.licenciatura_course }}</ng-container></p>
           <p><mat-icon>badge</mat-icon> {{ getRoleLabel(user.role) }}</p>
           <div class="follow-counts">
             <span class="follow-count-item" (click)="openFollowersDialog()">

@@ -7,6 +7,8 @@ export interface User {
   email_verified: boolean;
   university: string;
   course: string;
+  licenciatura_university?: string;
+  licenciatura_course?: string;
   year: string;
   bio: string;
   avatar_url: string;

@@ -40,6 +40,7 @@ export class EditProfileComponent implements OnInit {
   // university autocomplete state copied from onboarding
   universities: string[] = [];
   filteredUniversities$ = of<string[]>([]);
+  filteredLicUniversities$ = of<string[]>([]);
   loadingUniversities = false;
 
   // courses for selected institution
@@ -92,13 +93,15 @@ export class EditProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      name:       ['', [Validators.required, Validators.minLength(2)]],
-      role:       ['', Validators.required],
-      university: [''],
-      course:     [''],
-      year:       [''],
-      bio:        [''],
-      avatar_url: [''],
+      name:                   ['', [Validators.required, Validators.minLength(2)]],
+      role:                   ['', Validators.required],
+      university:             [''],
+      course:                 [''],
+      licenciatura_university: [''],
+      licenciatura_course:     [''],
+      year:                   [''],
+      bio:                    [''],
+      avatar_url:             [''],
       contact_links: this.fb.group({
         facebook: [''],
         instagram: [''],
@@ -129,6 +132,16 @@ export class EditProfileComponent implements OnInit {
 
     // Setup reactive local university search (fast, no per-keystroke API requests)
     this.filteredUniversities$ = this.form.get('university')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(120),
+      distinctUntilChanged(),
+      map(query => {
+        const q = typeof query === 'string' ? query : '';
+        return rankedAutocomplete(this.universities, q, 20);
+      })
+    );
+
+    this.filteredLicUniversities$ = this.form.get('licenciatura_university')!.valueChanges.pipe(
       startWith(''),
       debounceTime(120),
       distinctUntilChanged(),
