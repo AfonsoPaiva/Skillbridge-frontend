@@ -64,7 +64,7 @@
       padding: 10px 12px;
       background: rgba(v.$color-primary, 0.08);
       border-left: 3px solid v.$color-primary;
-      border-radius: v.$radius-xs;
+      border-radius: 4px;
       margin-bottom: v.$space-4;
       font-size: 0.85rem;
 
@@ -101,7 +101,7 @@
       padding: 10px;
       margin-top: v.$space-4;
       background: rgba(v.$color-border, 0.3);
-      border-radius: v.$radius-xs;
+      border-radius: 4px;
       font-size: 0.82rem;
       color: v.$color-text-soft;
       transition: all 200ms ease;
