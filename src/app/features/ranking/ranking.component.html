@@ -3,7 +3,7 @@
   <div class="page-header">
     <div>
       <h1>Ranking das Universidades</h1>
-      <p>Classificações autênticas de 0 a 10 atribuídas por estudantes das instituições de ensino superior em Portugal.</p>
+      <p>Classificações autênticas atribuídas por estudantes das instituições de ensino superior.</p>
     </div>
     <div *ngIf="!auth.isLoggedIn" class="header-actions">
       <button mat-flat-button color="primary" class="cta-onboarding-btn" (click)="openOnboarding()">
@@ -17,7 +17,8 @@
   <div class="filters">
     <mat-form-field appearance="outline" class="search-field">
       <mat-label>Pesquisar universidade ou curso...</mat-label>
-      <input matInput [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" placeholder="Ex: Universidade do Porto, Engenharia Informática">
+      <input matInput [(ngModel)]="searchQuery" (keyup.enter)="onSearch()"
+        placeholder="Ex: Universidade do Porto, Engenharia Informática">
       <button mat-icon-button matSuffix (click)="onSearch()" matTooltip="Pesquisar">
         <mat-icon>search</mat-icon>
       </button>
@@ -60,13 +61,14 @@
 
         <div class="univ-info">
           <h3 class="univ-name">{{ univ.estabelecimento }}</h3>
-          
+
           <div class="univ-meta">
             <span class="meta-item">
               <mat-icon>school</mat-icon> {{ univ.total_cursos }} Cursos
             </span>
             <span class="meta-item">
-              <mat-icon>rate_review</mat-icon> {{ univ.total_reviews || 0 }} {{ (univ.total_reviews || 0) === 1 ? 'Avaliação' : 'Avaliações' }}
+              <mat-icon>rate_review</mat-icon> {{ univ.total_reviews || 0 }} {{ (univ.total_reviews || 0) === 1 ?
+              'Avaliação' : 'Avaliações' }}
             </span>
           </div>
 
@@ -86,7 +88,8 @@
         <button mat-button class="detail-btn">
           Ver Avaliações
         </button>
-        <button *ngIf="canUserReview(univ)" mat-flat-button color="primary" class="rate-btn" (click)="openReviewDirect($event, univ)">
+        <button *ngIf="canUserReview(univ)" mat-flat-button color="primary" class="rate-btn"
+          (click)="openReviewDirect($event, univ)">
           <mat-icon>star</mat-icon> Avaliar
         </button>
       </div>

@@ -119,6 +119,8 @@ html {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  // Prevent any child element from causing horizontal scroll at the root.
+  overflow-x: hidden;
 }
 
 body {
