@@ -142,15 +142,15 @@ export class RankingComponent implements OnInit {
     return 'score-green';
   }
 
+  readonly defaultLogo = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="%2368007a"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/></svg>`;
+
   fallbackLogo(univ: UniversityRankingSummary): string {
-    const domain = univ.estabelecimento
-      .toLowerCase()
-      .replace(/[^a-z0-9]/g, '') + '.pt';
-    return `https://icons.duckduckgo.com/ip3/${domain}.ico`;
+    return this.defaultLogo;
   }
 
-  onImageError(event: any, univ: UniversityRankingSummary): void {
-    event.target.src = this.fallbackLogo(univ);
+  onImageError(event: any, univ?: UniversityRankingSummary): void {
+    if (event.target.src === this.defaultLogo) return;
+    event.target.src = this.defaultLogo;
   }
 
   slugify(text: string): string {

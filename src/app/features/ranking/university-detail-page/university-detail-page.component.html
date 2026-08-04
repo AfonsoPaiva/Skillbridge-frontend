@@ -32,11 +32,14 @@
         </div>
 
         <div class="header-right-actions">
-          <div class="summary-score-badge" [ngClass]="getScoreColorClass(universitySummary.average_rating)" *ngIf="universitySummary">
-            <span class="score-val">{{ universitySummary.average_rating > 0 ? (universitySummary.average_rating | number:'1.1-1') + '/10' : 'N/A' }}</span>
+          <div class="summary-score-badge" [ngClass]="getScoreColorClass(universitySummary.average_rating)"
+            *ngIf="universitySummary">
+            <span class="score-val">{{ universitySummary.average_rating > 0 ? (universitySummary.average_rating |
+              number:'1.1-1') + '/10' : 'N/A' }}</span>
           </div>
 
-          <button *ngIf="canUserReview && viewMode === 'details'" mat-flat-button color="primary" (click)="startEvaluation()" class="header-rate-btn">
+          <button *ngIf="canUserReview && viewMode === 'details'" mat-flat-button color="primary"
+            (click)="startEvaluation()" class="header-rate-btn">
             <mat-icon>{{ myExistingReview ? 'edit' : 'rate_review' }}</mat-icon>
             {{ myExistingReview ? 'Editar Avaliação' : 'Avaliar esta Universidade' }}
           </button>
@@ -79,7 +82,8 @@
             <div class="review-top">
               <div class="user-meta">
                 <div class="user-avatar">
-                  <img *ngIf="!review.is_anonymous && review.author_avatar" [src]="review.author_avatar" [alt]="review.author_name">
+                  <img *ngIf="!review.is_anonymous && review.author_avatar" [src]="review.author_avatar"
+                    [alt]="review.author_name">
                   <mat-icon *ngIf="review.is_anonymous || !review.author_avatar">person</mat-icon>
                 </div>
                 <div>
@@ -92,12 +96,8 @@
                   <span>{{ review.overall_score | number:'1.1-1' }}</span><small>/10</small>
                 </div>
                 <!-- DELETE OWN REVIEW BUTTON -->
-                <button *ngIf="currentUser && review.user_id === currentUser.id"
-                        mat-icon-button
-                        color="warn"
-                        (click)="deleteReview(review.id)"
-                        matTooltip="Apagar a minha avaliação"
-                        class="delete-review-btn">
+                <button *ngIf="currentUser && review.user_id === currentUser.id" mat-icon-button color="warn"
+                  (click)="deleteReview(review.id)" matTooltip="Apagar a minha avaliação" class="delete-review-btn">
                   <mat-icon>delete</mat-icon>
                 </button>
               </div>
@@ -106,20 +106,34 @@
             <p class="review-text">"{{ review.comment }}"</p>
 
             <div class="review-tags">
-              <span class="tag" [ngClass]="getScoreColorClass(review.campus_quality)">Campus: <strong>{{ review.campus_quality }}/10</strong></span>
-              <span class="tag" [ngClass]="getScoreColorClass(review.location_accessibility)">Localização: <strong>{{ review.location_accessibility }}/10</strong></span>
-              <span class="tag" [ngClass]="getScoreColorClass(review.cost_of_living)">Custo de Vida: <strong>{{ review.cost_of_living }}/10</strong></span>
-              <span class="tag" [ngClass]="getScoreColorClass(review.social_environment)">Vida Social: <strong>{{ review.social_environment }}/10</strong></span>
-              <span class="tag" [ngClass]="getScoreColorClass(review.reputation)">Reputação: <strong>{{ review.reputation }}/10</strong></span>
-              <span class="tag" [ngClass]="getScoreColorClass(review.libraries_quality)">Bibliotecas: <strong>{{ review.libraries_quality }}/10</strong></span>
-              <span class="tag" [ngClass]="getScoreColorClass(review.food_services)">Alimentação: <strong>{{ review.food_services }}/10</strong></span>
-              <span class="tag" [ngClass]="getScoreColorClass(review.teachers_quality)">Professores: <strong>{{ review.teachers_quality }}/10</strong></span>
-              <span class="tag" [ngClass]="getScoreColorClass(review.subject_interest)">Matérias: <strong>{{ review.subject_interest }}/10</strong></span>
-              <span class="tag" [ngClass]="getScoreColorClass(review.course_facilities)">Inst. Curso: <strong>{{ review.course_facilities }}/10</strong></span>
-              <span class="tag" [ngClass]="getScoreColorClass(review.classmates_environment)">Colegas: <strong>{{ review.classmates_environment }}/10</strong></span>
-              <span class="tag" [ngClass]="getScoreColorClass(review.workload_balance)">Carga Trabalho: <strong>{{ review.workload_balance }}/10</strong></span>
-              <span class="tag" [ngClass]="getScoreColorClass(review.practical_opportunities)">Oportunidades: <strong>{{ review.practical_opportunities }}/10</strong></span>
-              <span class="tag" [ngClass]="getScoreColorClass(review.future_prospects)">Futuro: <strong>{{ review.future_prospects }}/10</strong></span>
+              <span class="tag" [ngClass]="getScoreColorClass(review.campus_quality)">Campus: <strong>{{
+                  review.campus_quality }}/10</strong></span>
+              <span class="tag" [ngClass]="getScoreColorClass(review.location_accessibility)">Localização: <strong>{{
+                  review.location_accessibility }}/10</strong></span>
+              <span class="tag" [ngClass]="getScoreColorClass(review.cost_of_living)">Custo de Vida: <strong>{{
+                  review.cost_of_living }}/10</strong></span>
+              <span class="tag" [ngClass]="getScoreColorClass(review.social_environment)">Vida Social: <strong>{{
+                  review.social_environment }}/10</strong></span>
+              <span class="tag" [ngClass]="getScoreColorClass(review.reputation)">Reputação: <strong>{{
+                  review.reputation }}/10</strong></span>
+              <span class="tag" [ngClass]="getScoreColorClass(review.libraries_quality)">Bibliotecas: <strong>{{
+                  review.libraries_quality }}/10</strong></span>
+              <span class="tag" [ngClass]="getScoreColorClass(review.food_services)">Alimentação: <strong>{{
+                  review.food_services }}/10</strong></span>
+              <span class="tag" [ngClass]="getScoreColorClass(review.teachers_quality)">Professores: <strong>{{
+                  review.teachers_quality }}/10</strong></span>
+              <span class="tag" [ngClass]="getScoreColorClass(review.subject_interest)">Matérias: <strong>{{
+                  review.subject_interest }}/10</strong></span>
+              <span class="tag" [ngClass]="getScoreColorClass(review.course_facilities)">Inst. Curso: <strong>{{
+                  review.course_facilities }}/10</strong></span>
+              <span class="tag" [ngClass]="getScoreColorClass(review.classmates_environment)">Colegas: <strong>{{
+                  review.classmates_environment }}/10</strong></span>
+              <span class="tag" [ngClass]="getScoreColorClass(review.workload_balance)">Carga Trabalho: <strong>{{
+                  review.workload_balance }}/10</strong></span>
+              <span class="tag" [ngClass]="getScoreColorClass(review.practical_opportunities)">Oportunidades: <strong>{{
+                  review.practical_opportunities }}/10</strong></span>
+              <span class="tag" [ngClass]="getScoreColorClass(review.future_prospects)">Futuro: <strong>{{
+                  review.future_prospects }}/10</strong></span>
             </div>
 
             <div class="review-date">
@@ -142,7 +156,7 @@
         </button>
       </div>
 
-      <mat-stepper linear #stepper class="eval-stepper">
+      <mat-stepper linear #stepper class="eval-stepper" [orientation]="isMobile ? 'vertical' : 'horizontal'">
         <!-- FASE 1: Informação Inicial & Comentário -->
         <mat-step [stepControl]="step1Form">
           <form [formGroup]="step1Form" class="step-form">
@@ -159,9 +173,11 @@
             <div class="form-group">
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Comentário Geral sobre a Universidade e Curso</mat-label>
-                <textarea matInput formControlName="comment" rows="4" placeholder="Partilha a tua experiência sincera sobre as instalações, os professores, ambiente social, etc..."></textarea>
+                <textarea matInput formControlName="comment" rows="4"
+                  placeholder="Partilha a tua experiência sincera sobre as instalações, os professores, ambiente social, etc..."></textarea>
                 <mat-error *ngIf="step1Form.get('comment')?.hasError('required')">Comentário é obrigatório.</mat-error>
-                <mat-error *ngIf="step1Form.get('comment')?.hasError('minlength')">Escreve pelo menos 10 caracteres.</mat-error>
+                <mat-error *ngIf="step1Form.get('comment')?.hasError('minlength')">Escreve pelo menos 10
+                  caracteres.</mat-error>
               </mat-form-field>
             </div>
 
@@ -173,7 +189,8 @@
 
             <div class="step-actions">
               <button mat-button (click)="cancelEvaluation()">Cancelar</button>
-              <button mat-flat-button color="primary" matStepperNext [disabled]="step1Form.invalid">Seguinte: Avaliar Universidade</button>
+              <button mat-flat-button color="primary" matStepperNext [disabled]="step1Form.invalid">Seguinte: Avaliar
+                Universidade</button>
             </div>
           </form>
         </mat-step>
@@ -181,7 +198,7 @@
         <!-- FASE 2: Avaliação por Universidade -->
         <mat-step [stepControl]="step2Form">
           <form [formGroup]="step2Form" class="step-form">
-            <ng-template matStepLabel>Por Universidade (0 a 10)</ng-template>
+            <ng-template matStepLabel>Por Universidade</ng-template>
             <p class="step-subtitle">Classifica cada aspeto da instituição de 0 (Péssimo) a 10 (Excelente):</p>
 
             <div class="rating-sliders">
@@ -194,7 +211,8 @@
                   <mat-slider min="0" max="10" step="1" discrete>
                     <input matSliderThumb formControlName="campusQuality">
                   </mat-slider>
-                  <span class="score-pill" [ngClass]="getScoreColorClass(step2Form.get('campusQuality')?.value)">{{ step2Form.get('campusQuality')?.value }}/10</span>
+                  <span class="score-pill" [ngClass]="getScoreColorClass(step2Form.get('campusQuality')?.value)">{{
+                    step2Form.get('campusQuality')?.value }}/10</span>
                 </div>
               </div>
 
@@ -207,7 +225,9 @@
                   <mat-slider min="0" max="10" step="1" discrete>
                     <input matSliderThumb formControlName="locationAccessibility">
                   </mat-slider>
-                  <span class="score-pill" [ngClass]="getScoreColorClass(step2Form.get('locationAccessibility')?.value)">{{ step2Form.get('locationAccessibility')?.value }}/10</span>
+                  <span class="score-pill"
+                    [ngClass]="getScoreColorClass(step2Form.get('locationAccessibility')?.value)">{{
+                    step2Form.get('locationAccessibility')?.value }}/10</span>
                 </div>
               </div>
 
@@ -220,7 +240,8 @@
                   <mat-slider min="0" max="10" step="1" discrete>
                     <input matSliderThumb formControlName="costOfLiving">
                   </mat-slider>
-                  <span class="score-pill" [ngClass]="getScoreColorClass(step2Form.get('costOfLiving')?.value)">{{ step2Form.get('costOfLiving')?.value }}/10</span>
+                  <span class="score-pill" [ngClass]="getScoreColorClass(step2Form.get('costOfLiving')?.value)">{{
+                    step2Form.get('costOfLiving')?.value }}/10</span>
                 </div>
               </div>
 
@@ -233,7 +254,8 @@
                   <mat-slider min="0" max="10" step="1" discrete>
                     <input matSliderThumb formControlName="socialEnvironment">
                   </mat-slider>
-                  <span class="score-pill" [ngClass]="getScoreColorClass(step2Form.get('socialEnvironment')?.value)">{{ step2Form.get('socialEnvironment')?.value }}/10</span>
+                  <span class="score-pill" [ngClass]="getScoreColorClass(step2Form.get('socialEnvironment')?.value)">{{
+                    step2Form.get('socialEnvironment')?.value }}/10</span>
                 </div>
               </div>
 
@@ -246,7 +268,8 @@
                   <mat-slider min="0" max="10" step="1" discrete>
                     <input matSliderThumb formControlName="reputation">
                   </mat-slider>
-                  <span class="score-pill" [ngClass]="getScoreColorClass(step2Form.get('reputation')?.value)">{{ step2Form.get('reputation')?.value }}/10</span>
+                  <span class="score-pill" [ngClass]="getScoreColorClass(step2Form.get('reputation')?.value)">{{
+                    step2Form.get('reputation')?.value }}/10</span>
                 </div>
               </div>
 
@@ -259,7 +282,8 @@
                   <mat-slider min="0" max="10" step="1" discrete>
                     <input matSliderThumb formControlName="librariesQuality">
                   </mat-slider>
-                  <span class="score-pill" [ngClass]="getScoreColorClass(step2Form.get('librariesQuality')?.value)">{{ step2Form.get('librariesQuality')?.value }}/10</span>
+                  <span class="score-pill" [ngClass]="getScoreColorClass(step2Form.get('librariesQuality')?.value)">{{
+                    step2Form.get('librariesQuality')?.value }}/10</span>
                 </div>
               </div>
 
@@ -272,14 +296,16 @@
                   <mat-slider min="0" max="10" step="1" discrete>
                     <input matSliderThumb formControlName="foodServices">
                   </mat-slider>
-                  <span class="score-pill" [ngClass]="getScoreColorClass(step2Form.get('foodServices')?.value)">{{ step2Form.get('foodServices')?.value }}/10</span>
+                  <span class="score-pill" [ngClass]="getScoreColorClass(step2Form.get('foodServices')?.value)">{{
+                    step2Form.get('foodServices')?.value }}/10</span>
                 </div>
               </div>
             </div>
 
             <div class="step-actions">
               <button mat-button matStepperPrevious>Anterior</button>
-              <button mat-flat-button color="primary" matStepperNext [disabled]="step2Form.invalid">Seguinte: Avaliar Curso</button>
+              <button mat-flat-button color="primary" matStepperNext [disabled]="step2Form.invalid">Seguinte: Avaliar
+                Curso</button>
             </div>
           </form>
         </mat-step>
@@ -287,7 +313,7 @@
         <!-- FASE 3: Avaliação por Curso & Submissão -->
         <mat-step [stepControl]="step3Form">
           <form [formGroup]="step3Form" class="step-form">
-            <ng-template matStepLabel>Por Curso (0 a 10)</ng-template>
+            <ng-template matStepLabel>Por Curso</ng-template>
 
             <p class="step-subtitle">Classifica o teu curso específico ({{ userCourse }}):</p>
 
@@ -301,7 +327,8 @@
                   <mat-slider min="0" max="10" step="1" discrete>
                     <input matSliderThumb formControlName="teachersQuality">
                   </mat-slider>
-                  <span class="score-pill" [ngClass]="getScoreColorClass(step3Form.get('teachersQuality')?.value)">{{ step3Form.get('teachersQuality')?.value }}/10</span>
+                  <span class="score-pill" [ngClass]="getScoreColorClass(step3Form.get('teachersQuality')?.value)">{{
+                    step3Form.get('teachersQuality')?.value }}/10</span>
                 </div>
               </div>
 
@@ -314,7 +341,8 @@
                   <mat-slider min="0" max="10" step="1" discrete>
                     <input matSliderThumb formControlName="subjectInterest">
                   </mat-slider>
-                  <span class="score-pill" [ngClass]="getScoreColorClass(step3Form.get('subjectInterest')?.value)">{{ step3Form.get('subjectInterest')?.value }}/10</span>
+                  <span class="score-pill" [ngClass]="getScoreColorClass(step3Form.get('subjectInterest')?.value)">{{
+                    step3Form.get('subjectInterest')?.value }}/10</span>
                 </div>
               </div>
 
@@ -327,7 +355,8 @@
                   <mat-slider min="0" max="10" step="1" discrete>
                     <input matSliderThumb formControlName="courseFacilities">
                   </mat-slider>
-                  <span class="score-pill" [ngClass]="getScoreColorClass(step3Form.get('courseFacilities')?.value)">{{ step3Form.get('courseFacilities')?.value }}/10</span>
+                  <span class="score-pill" [ngClass]="getScoreColorClass(step3Form.get('courseFacilities')?.value)">{{
+                    step3Form.get('courseFacilities')?.value }}/10</span>
                 </div>
               </div>
 
@@ -340,7 +369,9 @@
                   <mat-slider min="0" max="10" step="1" discrete>
                     <input matSliderThumb formControlName="classmatesEnvironment">
                   </mat-slider>
-                  <span class="score-pill" [ngClass]="getScoreColorClass(step3Form.get('classmatesEnvironment')?.value)">{{ step3Form.get('classmatesEnvironment')?.value }}/10</span>
+                  <span class="score-pill"
+                    [ngClass]="getScoreColorClass(step3Form.get('classmatesEnvironment')?.value)">{{
+                    step3Form.get('classmatesEnvironment')?.value }}/10</span>
                 </div>
               </div>
 
@@ -353,7 +384,8 @@
                   <mat-slider min="0" max="10" step="1" discrete>
                     <input matSliderThumb formControlName="workloadBalance">
                   </mat-slider>
-                  <span class="score-pill" [ngClass]="getScoreColorClass(step3Form.get('workloadBalance')?.value)">{{ step3Form.get('workloadBalance')?.value }}/10</span>
+                  <span class="score-pill" [ngClass]="getScoreColorClass(step3Form.get('workloadBalance')?.value)">{{
+                    step3Form.get('workloadBalance')?.value }}/10</span>
                 </div>
               </div>
 
@@ -366,7 +398,9 @@
                   <mat-slider min="0" max="10" step="1" discrete>
                     <input matSliderThumb formControlName="practicalOpportunities">
                   </mat-slider>
-                  <span class="score-pill" [ngClass]="getScoreColorClass(step3Form.get('practicalOpportunities')?.value)">{{ step3Form.get('practicalOpportunities')?.value }}/10</span>
+                  <span class="score-pill"
+                    [ngClass]="getScoreColorClass(step3Form.get('practicalOpportunities')?.value)">{{
+                    step3Form.get('practicalOpportunities')?.value }}/10</span>
                 </div>
               </div>
 
@@ -379,7 +413,8 @@
                   <mat-slider min="0" max="10" step="1" discrete>
                     <input matSliderThumb formControlName="futureProspects">
                   </mat-slider>
-                  <span class="score-pill" [ngClass]="getScoreColorClass(step3Form.get('futureProspects')?.value)">{{ step3Form.get('futureProspects')?.value }}/10</span>
+                  <span class="score-pill" [ngClass]="getScoreColorClass(step3Form.get('futureProspects')?.value)">{{
+                    step3Form.get('futureProspects')?.value }}/10</span>
                 </div>
               </div>
             </div>

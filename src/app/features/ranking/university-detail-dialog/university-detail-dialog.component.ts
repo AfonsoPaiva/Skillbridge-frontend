@@ -84,15 +84,15 @@ export class UniversityDetailDialogComponent implements OnInit {
     return this.reviews.find(r => r.user_id === profile.id);
   }
 
+  readonly defaultLogo = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="%2368007a"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/></svg>`;
+
   get fallbackLogo(): string {
-    const domain = this.university.estabelecimento
-      .toLowerCase()
-      .replace(/[^a-z0-9]/g, '') + '.pt';
-    return `https://icons.duckduckgo.com/ip3/${domain}.ico`;
+    return this.defaultLogo;
   }
 
   onImageError(event: any): void {
-    event.target.src = this.fallbackLogo;
+    if (event.target.src === this.defaultLogo) return;
+    event.target.src = this.defaultLogo;
   }
 
   openReviewDialog(): void {
