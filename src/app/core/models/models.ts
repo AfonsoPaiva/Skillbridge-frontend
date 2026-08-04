@@ -9,6 +9,7 @@ export interface User {
   course: string;
   licenciatura_university?: string;
   licenciatura_course?: string;
+  university_last_changed_at?: string;
   year: string;
   bio: string;
   avatar_url: string;

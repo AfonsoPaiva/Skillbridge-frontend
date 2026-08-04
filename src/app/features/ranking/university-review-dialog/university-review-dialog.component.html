@@ -1,5 +1,6 @@
 <div mat-dialog-title class="dialog-header">
-  <h2>Avaliar {{ universityName }}</h2>
+  <h2 *ngIf="!isEditMode">Avaliar {{ universityName }}</h2>
+  <h2 *ngIf="isEditMode">Editar Avaliação — {{ universityName }}</h2>
   <button mat-icon-button mat-dialog-close matTooltip="Fechar">
     <mat-icon>close</mat-icon>
   </button>
@@ -252,7 +253,7 @@
           <button mat-button matStepperPrevious [disabled]="isSubmitting">Alterar Notas</button>
           <button mat-flat-button color="primary" (click)="submitReview()" [disabled]="isSubmitting">
             <mat-spinner diameter="20" *ngIf="isSubmitting"></mat-spinner>
-            <span *ngIf="!isSubmitting">Submeter Avaliação</span>
+            <span *ngIf="!isSubmitting">{{ isEditMode ? 'Guardar Alterações' : 'Submeter Avaliação' }}</span>
           </button>
         </div>
       </div>

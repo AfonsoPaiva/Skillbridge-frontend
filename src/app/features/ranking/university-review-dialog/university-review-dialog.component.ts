@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from '../../../core/services/api.service';
-import { CreateUniversityReviewPayload } from '../../../core/models/models';
+import { CreateUniversityReviewPayload, UniversityReviewItem } from '../../../core/models/models';
 
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -11,6 +11,7 @@ export interface UniversityReviewDialogData {
   universityName: string;
   courses: string[];
   userCourse?: string;
+  existingReview?: UniversityReviewItem;
 }
 
 @Component({
@@ -20,6 +21,7 @@ export interface UniversityReviewDialogData {
 })
 export class UniversityReviewDialogComponent implements OnInit {
   isSubmitting = false;
+  isEditMode = false;
   courses: string[] = [];
   universityName: string = '';
   userCourse: string = '';
@@ -42,7 +44,12 @@ export class UniversityReviewDialogComponent implements OnInit {
 
   ngOnInit(): void {
     const profile = this.auth.cachedProfile;
-    if (this.data.userCourse) {
+    const existing = this.data.existingReview;
+    this.isEditMode = !!existing;
+
+    if (existing) {
+      this.userCourse = existing.course_name || this.userCourse;
+    } else if (this.data.userCourse) {
       this.userCourse = this.data.userCourse;
     } else {
       const target = (this.universityName || '').trim().toLowerCase();
@@ -60,28 +67,28 @@ export class UniversityReviewDialogComponent implements OnInit {
 
     this.step1Form = this.fb.group({
       courseName: [{ value: this.userCourse, disabled: !!this.userCourse }, Validators.required],
-      comment: ['', [Validators.required, Validators.minLength(10)]],
-      isAnonymous: [false]
+      comment: [existing ? existing.comment : '', [Validators.required, Validators.minLength(10)]],
+      isAnonymous: [existing ? existing.is_anonymous : false]
     });
 
     this.step2Form = this.fb.group({
-      campusQuality: [7, [Validators.required, Validators.min(0), Validators.max(10)]],
-      locationAccessibility: [7, [Validators.required, Validators.min(0), Validators.max(10)]],
-      costOfLiving: [5, [Validators.required, Validators.min(0), Validators.max(10)]],
-      socialEnvironment: [7, [Validators.required, Validators.min(0), Validators.max(10)]],
-      reputation: [8, [Validators.required, Validators.min(0), Validators.max(10)]],
-      librariesQuality: [7, [Validators.required, Validators.min(0), Validators.max(10)]],
-      foodServices: [6, [Validators.required, Validators.min(0), Validators.max(10)]]
+      campusQuality: [existing ? existing.campus_quality : 7, [Validators.required, Validators.min(0), Validators.max(10)]],
+      locationAccessibility: [existing ? existing.location_accessibility : 7, [Validators.required, Validators.min(0), Validators.max(10)]],
+      costOfLiving: [existing ? existing.cost_of_living : 5, [Validators.required, Validators.min(0), Validators.max(10)]],
+      socialEnvironment: [existing ? existing.social_environment : 7, [Validators.required, Validators.min(0), Validators.max(10)]],
+      reputation: [existing ? existing.reputation : 8, [Validators.required, Validators.min(0), Validators.max(10)]],
+      librariesQuality: [existing ? existing.libraries_quality : 7, [Validators.required, Validators.min(0), Validators.max(10)]],
+      foodServices: [existing ? existing.food_services : 6, [Validators.required, Validators.min(0), Validators.max(10)]]
     });
 
     this.step3Form = this.fb.group({
-      teachersQuality: [7, [Validators.required, Validators.min(0), Validators.max(10)]],
-      subjectInterest: [8, [Validators.required, Validators.min(0), Validators.max(10)]],
-      courseFacilities: [7, [Validators.required, Validators.min(0), Validators.max(10)]],
-      classmatesEnvironment: [8, [Validators.required, Validators.min(0), Validators.max(10)]],
-      workloadBalance: [6, [Validators.required, Validators.min(0), Validators.max(10)]],
-      practicalOpportunities: [7, [Validators.required, Validators.min(0), Validators.max(10)]],
-      futureProspects: [8, [Validators.required, Validators.min(0), Validators.max(10)]]
+      teachersQuality: [existing ? existing.teachers_quality : 7, [Validators.required, Validators.min(0), Validators.max(10)]],
+      subjectInterest: [existing ? existing.subject_interest : 8, [Validators.required, Validators.min(0), Validators.max(10)]],
+      courseFacilities: [existing ? existing.course_facilities : 7, [Validators.required, Validators.min(0), Validators.max(10)]],
+      classmatesEnvironment: [existing ? existing.classmates_environment : 8, [Validators.required, Validators.min(0), Validators.max(10)]],
+      workloadBalance: [existing ? existing.workload_balance : 6, [Validators.required, Validators.min(0), Validators.max(10)]],
+      practicalOpportunities: [existing ? existing.practical_opportunities : 7, [Validators.required, Validators.min(0), Validators.max(10)]],
+      futureProspects: [existing ? existing.future_prospects : 8, [Validators.required, Validators.min(0), Validators.max(10)]]
     });
 
     if (this.courses.length === 0) {

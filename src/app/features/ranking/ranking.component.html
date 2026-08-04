@@ -42,9 +42,9 @@
 
   <!-- UNIVERSITIES GRID -->
   <div *ngIf="!isLoading && filteredUniversities.length > 0" class="grid">
-    <div *ngFor="let univ of filteredUniversities; let i = index" class="vcard" (click)="openUniversityDetails(univ)">
-      <div class="vcard-rank">
-        #{{ i + 1 }}
+    <div *ngFor="let univ of filteredUniversities" class="vcard" (click)="openUniversityDetails(univ)">
+      <div class="vcard-score-badge" [ngClass]="getScoreColorClass(univ.average_rating)">
+        {{ univ.average_rating > 0 ? (univ.average_rating | number:'1.1-1') + '/10' : 'N/A' }}
       </div>
 
       <div class="vcard-top">
@@ -58,15 +58,6 @@
             <mat-icon>school</mat-icon> {{ univ.total_cursos }} Cursos
           </span>
         </div>
-      </div>
-
-      <div class="vcard-middle">
-        <div class="score-badge">
-          <span class="score-value">{{ univ.average_rating > 0 ? (univ.average_rating | number:'1.1-1') : 'N/A' }}</span>
-          <span class="score-scale">/10</span>
-          <mat-icon class="star-icon">star</mat-icon>
-        </div>
-        <span class="reviews-count">{{ univ.total_reviews }} {{ univ.total_reviews === 1 ? 'avaliação' : 'avaliações' }}</span>
       </div>
 
       <div class="vcard-actions">

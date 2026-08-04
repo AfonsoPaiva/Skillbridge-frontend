@@ -78,6 +78,12 @@ export class UniversityDetailDialogComponent implements OnInit {
     }
   }
 
+  get myExistingReview(): UniversityReviewItem | undefined {
+    const profile = this.auth.cachedProfile;
+    if (!profile) return undefined;
+    return this.reviews.find(r => r.user_id === profile.id);
+  }
+
   get fallbackLogo(): string {
     const domain = this.university.estabelecimento
       .toLowerCase()
@@ -111,12 +117,15 @@ export class UniversityDetailDialogComponent implements OnInit {
       userCourse = profile?.licenciatura_course || '';
     }
 
+    const existing = this.myExistingReview;
+
     const reviewRef = this.dialog.open(UniversityReviewDialogComponent, {
       width: '750px',
       data: {
         universityName: this.university.estabelecimento,
         courses: this.university.cursos || [],
-        userCourse: userCourse
+        userCourse: userCourse,
+        existingReview: existing
       }
     });
 

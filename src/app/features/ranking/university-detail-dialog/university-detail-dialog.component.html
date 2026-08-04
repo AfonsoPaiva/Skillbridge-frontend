@@ -41,7 +41,8 @@
     </mat-form-field>
 
     <button *ngIf="canUserReview" mat-flat-button color="primary" (click)="openReviewDialog()" class="rate-btn">
-      <mat-icon>rate_review</mat-icon> Avaliar esta Universidade
+      <mat-icon>{{ myExistingReview ? 'edit' : 'rate_review' }}</mat-icon>
+      {{ myExistingReview ? 'Editar Avaliação' : 'Avaliar esta Universidade' }}
     </button>
   </div>
 

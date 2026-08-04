@@ -76,6 +76,13 @@ export class RankingComponent implements OnInit {
     this.loadRankings();
   }
 
+  getScoreColorClass(score: number): string {
+    if (!score || score <= 0) return 'score-neutral';
+    if (score <= 2) return 'score-red';
+    if (score <= 6) return 'score-yellow';
+    return 'score-green';
+  }
+
   fallbackLogo(univ: UniversityRankingSummary): string {
     const domain = univ.estabelecimento
       .toLowerCase()
@@ -116,16 +123,36 @@ export class RankingComponent implements OnInit {
       userCourse = profile?.licenciatura_course || '';
     }
 
-    this.dialog.open(UniversityReviewDialogComponent, {
-      width: '750px',
-      data: {
-        universityName: univ.estabelecimento,
-        courses: univ.cursos || [],
-        userCourse: userCourse
-      }
-    }).afterClosed().subscribe((submitted) => {
-      if (submitted) {
-        this.loadRankings();
+    this.api.getUniversityReviews(univ.estabelecimento).subscribe({
+      next: (reviews) => {
+        const existing = reviews.find(r => profile && r.user_id === profile.id);
+        this.dialog.open(UniversityReviewDialogComponent, {
+          width: '750px',
+          data: {
+            universityName: univ.estabelecimento,
+            courses: univ.cursos || [],
+            userCourse: userCourse,
+            existingReview: existing
+          }
+        }).afterClosed().subscribe((submitted) => {
+          if (submitted) {
+            this.loadRankings();
+          }
+        });
+      },
+      error: () => {
+        this.dialog.open(UniversityReviewDialogComponent, {
+          width: '750px',
+          data: {
+            universityName: univ.estabelecimento,
+            courses: univ.cursos || [],
+            userCourse: userCourse
+          }
+        }).afterClosed().subscribe((submitted) => {
+          if (submitted) {
+            this.loadRankings();
+          }
+        });
       }
     });
   }
