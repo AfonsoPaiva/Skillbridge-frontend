@@ -5,6 +5,12 @@
       <h1>Ranking das Universidades</h1>
       <p>Classificações autênticas de 0 a 10 atribuídas por estudantes das instituições de ensino superior em Portugal.</p>
     </div>
+    <div *ngIf="!auth.isLoggedIn" class="header-actions">
+      <button mat-flat-button color="primary" class="cta-onboarding-btn" (click)="openOnboarding()">
+        <mat-icon>person_add</mat-icon>
+        Cria conta para deixar a tua opinião
+      </button>
+    </div>
   </div>
 
   <!-- FILTERS & SEARCH -->

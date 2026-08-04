@@ -43,6 +43,12 @@
             <mat-icon>{{ myExistingReview ? 'edit' : 'rate_review' }}</mat-icon>
             {{ myExistingReview ? 'Editar Avaliação' : 'Avaliar esta Universidade' }}
           </button>
+
+          <button *ngIf="!auth.isLoggedIn && viewMode === 'details'" mat-flat-button color="primary"
+            (click)="openOnboarding()" class="header-rate-btn">
+            <mat-icon>person_add</mat-icon>
+            Cria conta para deixar a tua opinião
+          </button>
         </div>
       </div>
     </div>
@@ -74,6 +80,10 @@
           <p>Ainda não existem avaliações submetidas para esta seleção.</p>
           <button *ngIf="canUserReview" mat-stroked-button color="primary" (click)="startEvaluation()">
             Sê o primeiro a avaliar!
+          </button>
+          <button *ngIf="!auth.isLoggedIn" mat-flat-button color="primary" (click)="openOnboarding()">
+            <mat-icon>person_add</mat-icon>
+            Cria conta para deixar a tua opinião
           </button>
         </div>
 

@@ -1,9 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { UniversityRankingSummary } from '../../core/models/models';
+
+const DIALOG_CONFIG = {
+  width: '540px',
+  maxWidth: '95vw',
+  maxHeight: '90vh',
+  panelClass: ['onboarding-dialog', 'slide-in-dialog'],
+  autoFocus: false,
+  restoreFocus: false
+};
 
 @Component({
   selector: 'app-ranking',
@@ -32,7 +42,8 @@ export class RankingComponent implements OnInit {
     private api: ApiService,
     public auth: AuthService,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -167,10 +178,15 @@ export class RankingComponent implements OnInit {
     this.router.navigate(['/ranking', this.slugify(univ.estabelecimento)]);
   }
 
+  async openOnboarding(): Promise<void> {
+    const { OnboardingComponent } = await import('../onboarding/onboarding.component');
+    this.dialog.open(OnboardingComponent, DIALOG_CONFIG);
+  }
+
   openReviewDirect(event: MouseEvent, univ: UniversityRankingSummary): void {
     event.stopPropagation();
     if (!this.auth.isLoggedIn) {
-      this.snackBar.open('Tens de ter uma conta para avaliar a tua instituição.', 'Fechar', { duration: 4000 });
+      this.openOnboarding();
       return;
     }
     this.router.navigate(['/ranking', this.slugify(univ.estabelecimento)], { queryParams: { mode: 'evaluate' } });

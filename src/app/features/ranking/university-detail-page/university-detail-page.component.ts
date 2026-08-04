@@ -2,6 +2,7 @@ import { Component, OnInit, HostListener } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../../core/services/auth.service';
 import {
@@ -9,6 +10,15 @@ import {
   UniversityReviewItem,
   CreateUniversityReviewPayload
 } from '../../../core/models/models';
+
+const DIALOG_CONFIG = {
+  width: '540px',
+  maxWidth: '95vw',
+  maxHeight: '90vh',
+  panelClass: ['onboarding-dialog', 'slide-in-dialog'],
+  autoFocus: false,
+  restoreFocus: false
+};
 
 @Component({
   selector: 'app-university-detail-page',
@@ -47,7 +57,8 @@ export class UniversityDetailPageComponent implements OnInit {
     private fb: FormBuilder,
     private api: ApiService,
     public auth: AuthService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) {}
 
   @HostListener('window:resize')
@@ -278,9 +289,14 @@ export class UniversityDetailPageComponent implements OnInit {
     });
   }
 
+  async openOnboarding(): Promise<void> {
+    const { OnboardingComponent } = await import('../../onboarding/onboarding.component');
+    this.dialog.open(OnboardingComponent, DIALOG_CONFIG);
+  }
+
   startEvaluation(): void {
     if (!this.auth.isLoggedIn) {
-      this.snackBar.open('Tens de ter uma conta para avaliar a tua instituição.', 'Fechar', { duration: 4000 });
+      this.openOnboarding();
       return;
     }
     this.setupForms();
