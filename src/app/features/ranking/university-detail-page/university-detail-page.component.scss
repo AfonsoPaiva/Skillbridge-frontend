@@ -684,12 +684,40 @@
   @media (max-width: 600px) {
     padding: v.$space-3 !important;
 
+    .form-group {
+      margin-top: 14px !important;
+      margin-bottom: 22px !important;
+    }
+
+    .mat-mdc-form-field {
+      margin-top: 10px !important;
+      overflow: visible !important;
+
+      .mat-mdc-text-field-wrapper {
+        overflow: visible !important;
+      }
+    }
+
+    textarea.mat-mdc-input-element,
+    textarea {
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+      resize: none !important;
+
+      &::-webkit-scrollbar {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+      }
+    }
+
     .mat-vertical-content-container {
       margin-left: 12px !important;
     }
 
     .mat-vertical-content {
       padding: 0 0 16px 12px !important;
+      overflow: visible !important;
     }
 
     .mat-vertical-stepper-header {

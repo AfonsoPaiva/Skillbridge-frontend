@@ -172,8 +172,144 @@
   </div>
 </section>
 
-<!-- ===================== APOIADO POR ===================== -->
-<app-university-carousel></app-university-carousel>
+<!-- ===================== RANKING DE UNIVERSIDADES ===================== -->
+<section class="section section--ranking" id="ranking">
+  <div class="container">
+    <div class="section__header" @fadeUp>
+      <span class="section__tag">Transparência & Opiniões</span>
+      <h2>Ranking de Universidades em Portugal</h2>
+      <p>
+        Descobre a voz real dos estudantes. Um ranking dinâmico baseado em avaliações autênticas sobre ensino, instalações, ambiente e empregabilidade.
+      </p>
+    </div>
+
+    <div class="ranking-infographic" @fadeUp>
+      <!-- Visual Card / Leaderboard Mockup -->
+      <div class="ranking-infographic__visual">
+        <div class="ranking-card">
+          <div class="ranking-card__header">
+            <div class="ranking-card__title-group">
+              <mat-icon class="header-icon">military_tech</mat-icon>
+              <div>
+                <span class="ranking-card__sub">Top Instituições</span>
+                <h3 class="ranking-card__title">Líderes de Satisfação</h3>
+              </div>
+            </div>
+            <span class="ranking-card__badge">
+              <mat-icon>star</mat-icon> 4.8 / 5.0
+            </span>
+          </div>
+
+          <div class="ranking-card__list">
+            <div class="ranking-item">
+              <span class="ranking-item__rank rank--1">#1</span>
+              <div class="ranking-item__info">
+                <strong>Universidade do Porto</strong>
+                <span>Qualidade do Ensino & Investigação</span>
+              </div>
+              <div class="ranking-item__score">
+                <span class="score-stars">★★★★★</span>
+                <span class="score-val">4.9</span>
+              </div>
+            </div>
+
+            <div class="ranking-item">
+              <span class="ranking-item__rank rank--2">#2</span>
+              <div class="ranking-item__info">
+                <strong>Universidade de Coimbra</strong>
+                <span>Ambiente Académico & Comunidade</span>
+              </div>
+              <div class="ranking-item__score">
+                <span class="score-stars">★★★★★</span>
+                <span class="score-val">4.8</span>
+              </div>
+            </div>
+
+            <div class="ranking-item">
+              <span class="ranking-item__rank rank--3">#3</span>
+              <div class="ranking-item__info">
+                <strong>Instituto Superior Técnico</strong>
+                <span>Empregabilidade & Infraestruturas</span>
+              </div>
+              <div class="ranking-item__score">
+                <span class="score-stars">★★★★☆</span>
+                <span class="score-val">4.7</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Infographic Criteria Bar -->
+          <div class="ranking-card__criteria">
+            <div class="criterion">
+              <span class="criterion__label">Ensino</span>
+              <div class="criterion__bar"><div class="criterion__fill" style="width: 96%"></div></div>
+              <span class="criterion__val">96%</span>
+            </div>
+            <div class="criterion">
+              <span class="criterion__label">Instalações</span>
+              <div class="criterion__bar"><div class="criterion__fill" style="width: 92%"></div></div>
+              <span class="criterion__val">92%</span>
+            </div>
+            <div class="criterion">
+              <span class="criterion__label">Empregabilidade</span>
+              <div class="criterion__bar"><div class="criterion__fill" style="width: 94%"></div></div>
+              <span class="criterion__val">94%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Floating Badge -->
+        <div class="ranking-infographic__float">
+          <mat-icon>rate_review</mat-icon>
+          <div>
+            <strong>100% Opiniões Reais</strong>
+            <span>Avaliadas por alunos e alumni</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature Highlights & CTA -->
+      <div class="ranking-infographic__content">
+        <div class="ranking-feature">
+          <div class="ranking-feature__icon">
+            <mat-icon>school</mat-icon>
+          </div>
+          <div class="ranking-feature__text">
+            <h3>Avaliações Autênticas</h3>
+            <p>Opiniões transparentes de quem estuda ou estudou nas universidades portuguesas.</p>
+          </div>
+        </div>
+
+        <div class="ranking-feature">
+          <div class="ranking-feature__icon">
+            <mat-icon>analytics</mat-icon>
+          </div>
+          <div class="ranking-feature__text">
+            <h3>Critérios Multidimensionais</h3>
+            <p>Classificação detalhada em ensino, instalações, vida académica e saídas de trabalho.</p>
+          </div>
+        </div>
+
+        <div class="ranking-feature">
+          <div class="ranking-feature__icon">
+            <mat-icon>insights</mat-icon>
+          </div>
+          <div class="ranking-feature__text">
+            <h3>Escolhas Conscientes</h3>
+            <p>Compara instituições e descobre o ambiente ideal para o teu percurso académico.</p>
+          </div>
+        </div>
+
+        <div class="ranking-infographic__cta">
+          <a routerLink="/ranking" mat-raised-button color="primary" class="cta-btn cta-btn--primary ranking-btn">
+            <mat-icon>leaderboard</mat-icon>
+            Ver Ranking de Universidades
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- ===================== PROJETOS DESTAQUE ===================== -->
 <section class="section section--alt" id="projetos">
